@@ -14,6 +14,7 @@ class App extends Component {
     this.controls = null;
     this.videoNode = null;
 
+    this.innerView = true; // 是否是内视角
     this.isUserInteracting = false;     // 标记用户是否正在交互中
     this.onMouseDownMouseX = 0;         // 鼠标点击的初始坐标x
     this.onMouseDownMouseY = 0;         // 鼠标点击的初始坐标y
@@ -39,7 +40,7 @@ class App extends Component {
 
     this.initMesh();
     this.initEvent();
-    //this.initControls();
+    this.initControls();
     this.animate();
     this.initRenderer();
 
@@ -181,12 +182,27 @@ class App extends Component {
 
   onDocumentMouseWheel = (event) => {
     this.distance += event.deltaY * 0.5;
-    if (this.distance >= 1500) {
-      this.distance = 1500;
-    }
     if (this.distance <= 0) {
-      this.distance = 1;
+      this.distance = 0;
+    } else if (this.distance > 0 && this.distance < 1000) {
+      if (!this.innerView) {
+        console.log('进来', this.camera.position.y)
+        this.innerView = true;
+        this.controls.enableZoom = false;
+      }
     }
+    else if (this.distance >= 1000 && this.distance <= 1500) {
+      if (this.innerView) {
+        console.log('出来')
+        this.innerView = false;
+        this.controls.enableZoom = true;
+      }
+    }
+    else if (this.distance >= 1500) {
+      //this.distance = 1500;
+    }
+    console.log('distance', this.distance);
+
   }
 
 
@@ -207,15 +223,17 @@ class App extends Component {
 
   animate = () => {
     requestAnimationFrame(this.animate);
-    //this.controls.update();
-    this.lat = Math.max(- 85, Math.min(85, this.lat));
-    this.phi = THREE.Math.degToRad(90 - this.lat);
-    this.theta = THREE.Math.degToRad(this.lon);
-    this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
-    this.camera.position.y = this.distance * Math.cos(this.phi);
-    this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-    this.camera.lookAt(this.camera.target);
-
+    if (this.innerView) {
+      this.lat = Math.max(- 85, Math.min(85, this.lat));
+      this.phi = THREE.Math.degToRad(90 - this.lat);
+      this.theta = THREE.Math.degToRad(this.lon);
+      this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
+      this.camera.position.y = this.distance * Math.cos(this.phi);
+      this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
+      this.camera.lookAt(this.camera.target);
+    } else {
+      this.controls.update();
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -224,7 +242,7 @@ class App extends Component {
     this.controls = controls;
     controls.enableDamping = true
     controls.dampingFactor = 0.25
-    controls.enableZoom = true;
+    controls.enableZoom = false;
     controls.autoRotate = false;
     controls.enableKeys = true;
     controls.keys = {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
 import Orbitcontrols from 'three-orbitcontrols';
+import * as HLS from 'hls.js';
 
 class App extends Component {
 
@@ -11,6 +12,7 @@ class App extends Component {
     this.camera = null;
     this.renderer = null;
     this.controls = null;
+    this.videoNode = null;
   }
 
   componentDidMount() {
@@ -19,50 +21,67 @@ class App extends Component {
 
   init = () => {
     this.initScene();
-    this.createCube()
-    this.createLine()
-    this.animate();
+    this.initMesh();
     this.initControls();
+    this.animate();
+
   }
 
   initScene = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      75, this.mount.clientWidth / this.mount.clientHeight, 0.1, 1000);
+      75, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
+
+    camera.position.set(0, 0, 0);
+    camera.target = new THREE.Vector3(0, 0, 0);
+
     renderer.setSize(this.mount.clientWidth, this.mount.clientHeight);
     this.mount.appendChild(renderer.domElement);
     camera.position.z = 5;
   }
 
-  createCube = () => {
-    const geometry = new THREE.BoxGeometry(1, 2, 1, 4);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    this.cube = cube
-    this.scene.add(cube);
-  }
+  initMesh = () => {
+    // 创建几何体
+    let geometry = new THREE.SphereGeometry(500, 60, 40); // 球体
+    geometry.scale(-1, 1, 1);
+    var video = this.videoNode;
+    this.video = video;
+    video.width = 0;
+    video.height = 0;
+    video.loop = true;
+    video.muted = true;
+    video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+    if (HLS.isSupported()) {
+      var hls = new HLS();
+      hls.loadSource('http://cache.utovr.com/201508270528174780.m3u8');
+      hls.attachMedia(video);
+      hls.on(HLS.Events.MANIFEST_PARSED, function () {
+        video.play();
+      });
+    } else {
+      console.log('设备不支持')
+      alert("设备不支持");
+    }
 
-  createLine = () => {
-    const material = new THREE.LineBasicMaterial({ color: 0x0f00ff }) //定义线的材质
-    const geometry = new THREE.Geometry()
-    geometry.vertices.push(new THREE.Vector3(-2, 0, 0))
-    geometry.vertices.push(new THREE.Vector3(0, 2, 0)); //相当于是从 将前两个坐标连成一条线
-    const line = new THREE.Line(geometry, material)
-    this.line = line
-    line.position.x = -1
-    line.position.y = 2
-    this.scene.add(line)
+    // 添加视频作为纹理，并纹理作为材质
+    var texture = new THREE.VideoTexture(video);
+    texture.minFilter = THREE.LinearFilter;
+    texture.format = THREE.RGBFormat;
+    var material = new THREE.MeshBasicMaterial({ map: texture });
+    // 创建网格 = 几何体 + 材质
+    let mesh = new THREE.Mesh(geometry, material);
+    // 创建场景，并添加mesh
+    this.scene = new THREE.Scene();
+    this.scene.add(mesh);
   }
 
   animate = () => {
     requestAnimationFrame(this.animate);
-    this.cube.rotation.x += 0.01;
-    this.cube.rotation.y += 0.01;
-    this.line.rotation.x += 0.02
+    this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -71,8 +90,20 @@ class App extends Component {
     this.controls = controls;
     controls.enableDamping = true
     controls.dampingFactor = 0.25
-    controls.enableZoom = false
-
+    controls.enableZoom = true;
+    controls.autoRotate = false;
+    controls.enableKeys = true;
+    controls.keys = {
+      LEFT: 37, //left arrow
+      UP: 38, // up arrow
+      RIGHT: 39, // right arrow
+      BOTTOM: 40 // down arrow
+    }
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.PAN
+    }
   }
 
   componentWillUnmount() {
@@ -81,11 +112,22 @@ class App extends Component {
 
   render() {
     return (
-      <div
-        id="canvas"
-        style={{ width: '100vw', height: '100vh', background: '#888' }}
-        ref={(mount) => { this.mount = mount }}
-      />
+      <div style={{
+        width: '100vw', height: '100vh',
+        background: '#888', overflow: "hidden"
+      }}>
+        <div
+          id="canvas"
+          style={{ width: '100%', height: '100%', background: '#888' }}
+          ref={(mount) => { this.mount = mount }}
+        >
+        </div>
+        <video id="video"
+          style={{ display: "none" }}
+          ref={(mount) => { this.videoNode = mount }} >
+        </video>
+      </div>
+
     );
   }
 }

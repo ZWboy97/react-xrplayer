@@ -159,7 +159,7 @@ class App extends Component {
         }}>
         <div
           id="canvas"
-          style={{ width: '100%', height: '100%', background: '#888', display: "none" }}
+          style={{ width: '100%', height: '100%', background: '#888' }}
           ref={(mount) => { this.mount = mount }}
         >
         </div>

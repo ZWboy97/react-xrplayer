@@ -103,6 +103,8 @@ class App extends Component {
     // 创建场景，并添加mesh
     this.scene = new THREE.Scene();
     this.scene.add(mesh);
+    var axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
+    this.scene.add(axisHelper);
   }
 
   initEvent = () => {
@@ -139,7 +141,7 @@ class App extends Component {
   }
 
   onTouchstart = (event) => {
-    if (event.targetTouches.length == 1) {
+    if (event.targetTouches.length === 1) {
       event.preventDefault();
       this.isUserInteracting = true;
       // 记录滑动开始的坐标
@@ -240,11 +242,12 @@ class App extends Component {
   initControls = () => {
     const controls = new Orbitcontrols(this.camera, this.renderer.domElement);
     this.controls = controls;
-    controls.enableDamping = true
-    controls.dampingFactor = 0.25
     controls.enableZoom = false;
     controls.autoRotate = false;
     controls.enableKeys = true;
+    controls.panSpeed = 3;
+    controls.rotateSpeed = 3;
+    controls.zoomSpeed = 2;
     controls.keys = {
       LEFT: 37, //left arrow
       UP: 38, // up arrow

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
-import Orbitcontrols from 'three-orbitcontrols';
+//import Orbitcontrols from 'three-orbitcontrols';
 import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
+import SpriteShapeHelper from './display/SpriteShapeHelper';
 
 class App extends Component {
 
@@ -17,18 +18,16 @@ class App extends Component {
 
     this.innerView = true; // 是否是内视角
     this.innerViewControls = null;
+    this.spriteShapeHelper = null;
   }
 
   componentDidMount() {
-    this.init();
-  }
-
-  init = () => {
     this.initScene();
     this.initMesh();
     this.initEvent();
     this.initControls();
     this.animate();
+    this.initDisplay();
     this.initRenderer();
   }
 
@@ -45,17 +44,7 @@ class App extends Component {
     camera.position.z = 5;
   }
 
-  initRenderer = () => {
-    const renderer = this.renderer;
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.sortObjects = false;
-    renderer.autoClear = false;
-    this.mount.appendChild(renderer.domElement);
-  }
-
   initMesh = () => {
-    // 创建几何体
     let geometry = new THREE.SphereGeometry(500, 60, 40); // 球体
     geometry.scale(-1, 1, 1);
     var video = this.videoNode;
@@ -76,7 +65,6 @@ class App extends Component {
       console.log('设备不支持')
       alert("设备不支持");
     }
-
     // 添加视频作为纹理，并纹理作为材质
     var texture = new THREE.VideoTexture(video);
     texture.minFilter = THREE.LinearFilter;
@@ -94,10 +82,26 @@ class App extends Component {
   initEvent = () => {
     window.addEventListener('resize', this.onWindowResize, false); //
   }
+
+  initDisplay = () => {
+    this.spriteShapeHelper = new SpriteShapeHelper(this.scene);
+    this.spriteShapeHelper.initPoints();
+
+  }
+
   onWindowResize = () => {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  initRenderer = () => {
+    const renderer = this.renderer;
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.sortObjects = false;
+    renderer.autoClear = false;
+    this.mount.appendChild(renderer.domElement);
   }
 
   animate = () => {
@@ -106,6 +110,9 @@ class App extends Component {
       this.innerViewControls.update();
     } else {
       this.controls.update();
+    }
+    if (this.spriteShapeHelper) {
+      this.spriteShapeHelper.update();
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -155,6 +162,8 @@ class App extends Component {
           style={{ display: "none" }}
           ref={(mount) => { this.videoNode = mount }} >
         </video>
+        <div id="display"
+          style={{ display: "none" }}></div>
       </div>
 
     );

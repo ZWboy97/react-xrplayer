@@ -7,10 +7,13 @@ import TWEEN from '@tweenjs/tween.js';
 
 class SpriteShapeHelper {
 
-    constructor(scene) {
+    constructor(scene, camera) {
         this.scene = scene;
+        this.camera = camera;
         this.pointList = [];
         this.pointGroup = null;
+
+        this.objectClickHandler = null;
     }
 
     setPointList = (list) => {
@@ -53,6 +56,7 @@ class SpriteShapeHelper {
             this.createPoint(point)
         });
         this.scene.add(this.pointGroup);
+        this.bindEvent();
     }
 
     contertSph2Rect = (phi, theta) => {
@@ -125,6 +129,28 @@ class SpriteShapeHelper {
 
     update = () => {
         TWEEN.update();
+    }
+
+    bindEvent = () => {
+        let raycaster = new THREE.Raycaster();
+        document.addEventListener('click', (event) => {
+            event.preventDefault();
+            let mouse = new THREE.Vector2();
+            //通过鼠标点击的位置计算出raycaster所需要的点的位置，以屏幕中心为原点，值的范围为-1到1.
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            // 通过鼠标点的位置和当前相机的矩阵计算出raycaster
+            raycaster.setFromCamera(mouse, this.camera);
+            // 获取raycaster直线和所有模型相交的数组集合
+            var intersects = raycaster.intersectObjects(this.pointArr);
+            //如果只需要将第一个触发事件，那就取数组的第一个模型
+            if (intersects.length > 0) {
+                //this.showModal(intersects[0].object.name)
+                if (this.objectClickHandler) {
+                    this.objectClickHandler(intersects);
+                }
+            }
+        }, true);
     }
 }
 

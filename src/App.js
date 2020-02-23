@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
+import EffectInfoCard from './effect/EffectInfoCard';
 
 class App extends Component {
 
@@ -84,8 +85,11 @@ class App extends Component {
   }
 
   initDisplay = () => {
-    this.spriteShapeHelper = new SpriteShapeHelper(this.scene);
+    this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera);
     this.spriteShapeHelper.initPoints();
+    this.spriteShapeHelper.objectClickHandler = (intersects) => {
+      console.log(intersects);
+    }
 
   }
 
@@ -148,13 +152,14 @@ class App extends Component {
 
   render() {
     return (
-      <div style={{
-        width: '100vw', height: '100vh',
-        background: '#888', overflow: "hidden"
-      }}>
+      <div
+        style={{
+          width: '100vw', height: '100vh',
+          background: '#888', overflow: "hidden"
+        }}>
         <div
           id="canvas"
-          style={{ width: '100%', height: '100%', background: '#888' }}
+          style={{ width: '100%', height: '100%', background: '#888', display: "none" }}
           ref={(mount) => { this.mount = mount }}
         >
         </div>
@@ -164,8 +169,8 @@ class App extends Component {
         </video>
         <div id="display"
           style={{ display: "none" }}></div>
+        <EffectInfoCard></EffectInfoCard>
       </div>
-
     );
   }
 }

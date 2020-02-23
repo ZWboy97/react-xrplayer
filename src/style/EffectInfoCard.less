@@ -1,0 +1,150 @@
+* {
+    -webkit-tap-highlight-color: transparent;
+    appearance: none;
+    outline: none;
+    user-select: none;
+    touch-action: none;
+}
+
+.md-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 8.44rem;
+    height: auto;
+    font-size: 0.32rem;
+    z-index: 12;
+    visibility: hidden;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.md-show {
+    visibility: visible;
+}
+
+.md-main {
+    height: 12.2rem;
+    padding: 5.626667rem 0 0 0.973333rem;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    //color: #5b5b5b;
+    //background: #656565;
+    position: relative;
+    margin-bottom: 0.466667rem;
+    background: url(./images/card/huadengjie.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-main-huadengjie {
+    background: url(./images/card/huadengjie.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-main-ranbaotadeng {
+    background: url(./images/card/ranbaotadeng.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-main-touguasongzi {
+    background: url(./images/card/touguasongzi.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-main-wuhuolong {
+    background: url(./images/card/wuhuolong.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-main-paopazhaoqin {
+    background: url(./images/card/paopazhaoqin.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-effect-3 .md-wrap {
+    transform: translateY(20%);
+    opacity: 0;
+    transition: all .5s;
+}
+
+.md-show.md-effect-3 .md-wrap {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.md-wrap .md-text-mask {
+    position: absolute;
+    width: 6.48rem;
+    height: 0.666667rem;
+    margin-top: -0.64rem;
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.3)), to(white));
+    background: linear-gradient(rgba(255, 255, 255, 0.3), white);
+}
+
+.md-content {
+    width: 6.48rem;
+    height: 5.6rem;
+    padding-right: 0.4rem;
+    overflow: auto;
+    text-align: justify;
+    text-indent: 2em;
+    line-height: 2;
+    -webkit-overflow-scrolling: touch;
+    -ms-touch-action: auto;
+    touch-action: auto;
+}
+
+.md-content p {
+    -ms-touch-action: auto;
+    touch-action: auto;
+}
+
+.md-button {
+    display: block;
+    width: 292px;
+    height: 93px;
+}
+
+.btn-home {
+    float: left;
+    background: url(./images/buttons.png) 0 0 no-repeat;
+    background-size: cover;
+}
+
+.btn-share {
+    float: right;
+    background: url(./images/buttons.png) 100% 0 no-repeat;
+    background-size: cover;
+}
+
+.md-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    top: 0;
+    left: 0;
+    z-index: 11;
+    opacity: 0;
+    background: rgba(0, 0, 0, .6);
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+}
+
+.md-show~.md-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.md-close {
+    position: absolute;
+    z-index: 120;
+    right: -0.186667rem;
+    top: 0.8rem;
+    width: 0.68rem;
+    height: 0.68rem;
+    background: url(./images/close.png) 0 0 no-repeat;
+    background-size: cover;
+}

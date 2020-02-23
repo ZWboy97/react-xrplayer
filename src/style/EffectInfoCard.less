@@ -1,36 +1,25 @@
-* {
-    -webkit-tap-highlight-color: transparent;
-    appearance: none;
-    outline: none;
-    user-select: none;
-    touch-action: none;
-}
-
 .md-modal {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 8.44rem;
-    height: auto;
-    font-size: 0.32rem;
+    width: 48rem;
+    height: 48rem;
+    font-size: 1rem;
     z-index: 12;
-    visibility: hidden;
+    visibility: visible;
     -webkit-transform: translateX(-50%) translateY(-50%);
     -ms-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
 }
 
-.md-show {
-    visibility: visible;
-}
-
 .md-main {
-    height: 12.2rem;
+    height: 100%;
+    width: auto;
     padding: 5.626667rem 0 0 0.973333rem;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    //color: #5b5b5b;
-    //background: #656565;
+    color: #5b5b5b;
+    background: #656565;
     position: relative;
     margin-bottom: 0.466667rem;
     background: url(./images/card/huadengjie.png) center center no-repeat;
@@ -68,7 +57,7 @@
     transition: all .5s;
 }
 
-.md-show.md-effect-3 .md-wrap {
+.md-show .md-effect-3 .md-wrap {
     transform: translateY(0);
     opacity: 1;
 }
@@ -76,16 +65,16 @@
 .md-wrap .md-text-mask {
     position: absolute;
     width: 6.48rem;
-    height: 0.666667rem;
     margin-top: -0.64rem;
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.3)), to(white));
     background: linear-gradient(rgba(255, 255, 255, 0.3), white);
 }
 
 .md-content {
-    width: 6.48rem;
-    height: 5.6rem;
-    padding-right: 0.4rem;
+    width: 50%;
+    height: auto;
+    padding: 25%;
+    margin-top: 5%;
     overflow: auto;
     text-align: justify;
     text-indent: 2em;
@@ -108,13 +97,13 @@
 
 .btn-home {
     float: left;
-    background: url(./images/buttons.png) 0 0 no-repeat;
+    background: url(./images/close.png) 0 0 no-repeat;
     background-size: cover;
 }
 
 .btn-share {
     float: right;
-    background: url(./images/buttons.png) 100% 0 no-repeat;
+    background: url(./images/close.png) 100% 0 no-repeat;
     background-size: cover;
 }
 
@@ -140,7 +129,7 @@
 
 .md-close {
     position: absolute;
-    z-index: 120;
+    z-index: 12;
     right: -0.186667rem;
     top: 0.8rem;
     width: 0.68rem;

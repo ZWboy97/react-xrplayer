@@ -112,14 +112,12 @@ class InnerViewControls {
             if (!this.innerView) {
                 console.log('进来', this.camera.position.y)
                 this.innerView = true;
-                this.controls.enableZoom = false;
             }
         }
         else if (this.distance >= 1000 && this.distance <= 1500) {
             if (this.innerView) {
                 console.log('出来')
                 this.innerView = false;
-                this.controls.enableZoom = true;
             }
         }
         else if (this.distance >= 1500) {

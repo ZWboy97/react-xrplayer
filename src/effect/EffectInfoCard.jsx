@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import '../style/EffectInfoCard.less';
 
 class EffectInfoCard extends Component {
 
-
-
+    onCloseClickListener = (e) => {
+        e.preventDefault();
+        if (this.props.onCloseClickHandler) {
+            this.props.onCloseClickHandler();
+        }
+    }
 
     render() {
         return (
             <div className="md-modal ">
-                {/* <button id="unmuteButton">声音</button>
-                <button id="playButton">播放暂停</button>
-                <button id="view-fullscreen">全屏</button>
-                <button id="cancel-fullscreen">关全屏</button>
-                <button id="addCubuButton">添加展示物体</button>
-                <button id="removeCubeButton">移除展示物体</button> */}
-                <div className="md-close"></div>
+                <div
+                    className="md-close"
+                    onClick={this.onCloseClickListener}
+                ></div>
                 <div className="md-main">
                     <div className="md-content">
                         <p>中秋是我国三大灯节之一，人月双圆，少不了花灯。早在北宋《武林旧事》中，记载中秋夜节俗：将“一点红”灯放入江中漂流玩耍……</p>
@@ -26,7 +28,11 @@ class EffectInfoCard extends Component {
                 </div>
             </div>)
     }
-
 }
 
+EffectInfoCard.propTypes = {
+    onCloseClickHandler: PropTypes.func.isRequired
+};
+
 export default EffectInfoCard;
+

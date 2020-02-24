@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import EffectInfoCard from './EffectInfoCard';
+import EffectImageCard from './EffectImageCard';
 import '../style/EffectInfoCard.less';
 
 class EffectContainer extends Component {
@@ -21,13 +22,23 @@ class EffectContainer extends Component {
                     }}
                 ></EffectInfoCard>
             )
-        } else {
+        } if (data.type === 'image') {
+            return (
+                <EffectImageCard
+                    onCloseClickHandler={() => {
+                        this.props.onCloseClickHandler && this.props.onCloseClickHandler();
+                    }}
+                    imageUrl={data.imageUrl}
+                    jumpUrl={data.jumpUrl}
+                ></EffectImageCard>
+            )
+        }
+        else {
             return ""
         }
     }
 
     render() {
-
         const showEffect = this.getEffect(this.props.data);
         return (
             <div >

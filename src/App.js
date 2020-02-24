@@ -94,7 +94,9 @@ class App extends Component {
     this.spriteShapeHelper.initPoints();
     this.spriteShapeHelper.objectClickHandler = (intersects) => {
       const effectData = {
-        type: intersects[0].object.name
+        type: intersects[0].object.name,
+        imageUrl: "http://seopic.699pic.com/photo/50055/5642.jpg_wh1200.jpg",
+        jumpUrl: 'http://www.youmuvideo.com'
       }
       this.setState({
         showingEffect: true,

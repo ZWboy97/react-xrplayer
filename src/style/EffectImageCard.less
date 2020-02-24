@@ -1,0 +1,66 @@
+.container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 42rem;
+    font-size: 1rem;
+    z-index: 12;
+    visibility: visible;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.content {
+    margin: auto;
+
+    .image {
+        width: 100%;
+        cursor: pointer;
+        box-shadow: h-shadow v-shadow blur spread color inset;
+        -moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, .5);
+        -webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, .5);
+    }
+}
+
+
+
+.md-main {
+    height: 100%;
+    width: auto;
+    padding: 5.626667rem 0 0 0.973333rem;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #5b5b5b;
+    background: #656565;
+    position: relative;
+    margin-bottom: 0.466667rem;
+    background: url(./images/card/huadengjie.png) center center no-repeat;
+    background-size: contain;
+}
+
+.md-content {
+    width: 50%;
+    height: auto;
+    padding: 25%;
+    margin-top: 5%;
+    overflow: auto;
+    text-align: justify;
+    text-indent: 2em;
+    line-height: 2;
+    -webkit-overflow-scrolling: touch;
+    -ms-touch-action: auto;
+    touch-action: auto;
+}
+
+.close {
+    position: absolute;
+    z-index: 12;
+    right: 1rem;
+    top: 1rem;
+    width: 2rem;
+    cursor: pointer;
+    height: 2rem;
+    background: url(./images/close.png) 0 0 no-repeat;
+    background-size: cover;
+}

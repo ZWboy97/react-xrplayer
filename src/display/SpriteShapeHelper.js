@@ -31,7 +31,7 @@ class SpriteShapeHelper {
             {
                 phi: 32,
                 theta: 14,
-                name: 'wuhuolong',
+                name: 'image',
             },
             {
                 phi: -153,

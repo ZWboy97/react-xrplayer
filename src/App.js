@@ -8,6 +8,10 @@ import EffectInfoCard from './effect/EffectInfoCard';
 
 class App extends Component {
 
+  state = {
+    showingEffect: false
+  }
+
   constructor(props) {
     super(props);
     this.mount = null;
@@ -57,7 +61,7 @@ class App extends Component {
     video.setAttribute('webkit-playsinline', 'webkit-playsinline');
     if (HLS.isSupported()) {
       var hls = new HLS();
-      hls.loadSource('http://cache.utovr.com/201508270528174780.m3u8');
+      hls.loadSource('http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8');
       hls.attachMedia(video);
       hls.on(HLS.Events.MANIFEST_PARSED, function () {
         video.play();
@@ -88,6 +92,7 @@ class App extends Component {
     this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera);
     this.spriteShapeHelper.initPoints();
     this.spriteShapeHelper.objectClickHandler = (intersects) => {
+      this.setState({ showingEffect: true });
       console.log(intersects);
     }
 
@@ -169,7 +174,17 @@ class App extends Component {
         </video>
         <div id="display"
           style={{ display: "none" }}></div>
-        <EffectInfoCard></EffectInfoCard>
+        {
+          this.state.showingEffect ?
+            <EffectInfoCard
+              onCloseClickHandler={() => {
+                this.setState({ showingEffect: false })
+              }
+              }
+            ></EffectInfoCard>
+            :
+            ""
+        }
       </div>
     );
   }

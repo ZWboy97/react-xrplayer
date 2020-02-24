@@ -26,7 +26,7 @@ class SpriteShapeHelper {
             {
                 phi: -90,
                 theta: -10,
-                name: 'huadengjie',
+                name: 'infocard',
             },
             {
                 phi: 32,

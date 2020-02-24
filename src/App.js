@@ -4,12 +4,13 @@ import * as THREE from 'three';
 import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
-import EffectInfoCard from './effect/EffectInfoCard';
+import EffectContainer from './effect/EffectContainer';
 
 class App extends Component {
 
   state = {
-    showingEffect: false
+    showingEffect: false,
+    effectData: null
   }
 
   constructor(props) {
@@ -85,15 +86,22 @@ class App extends Component {
   }
 
   initEvent = () => {
-    window.addEventListener('resize', this.onWindowResize, false); //
+    window.addEventListener('resize', this.onWindowResize, false);
   }
 
   initDisplay = () => {
     this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera);
     this.spriteShapeHelper.initPoints();
     this.spriteShapeHelper.objectClickHandler = (intersects) => {
-      this.setState({ showingEffect: true });
-      console.log(intersects);
+      const effectData = {
+        type: intersects[0].object.name
+      }
+      this.setState({
+        showingEffect: true,
+        effectData: effectData
+      });
+      console.log(intersects[0]);
+      console.log(intersects[0].object.name);
     }
 
   }
@@ -129,26 +137,6 @@ class App extends Component {
   initControls = () => {
     this.innerViewControls = new InnerViewControls(this.camera);
     this.innerViewControls.initControlsListener();
-    // Three.js自带的控制器
-    // const controls = new Orbitcontrols(this.camera, this.renderer.domElement);
-    // this.controls = controls;
-    // controls.enableZoom = false;
-    // controls.autoRotate = false;
-    // controls.enableKeys = true;
-    // controls.panSpeed = 3;
-    // controls.rotateSpeed = 3;
-    // controls.zoomSpeed = 2;
-    // controls.keys = {
-    //   LEFT: 37, //left arrow
-    //   UP: 38, // up arrow
-    //   RIGHT: 39, // right arrow
-    //   BOTTOM: 40 // down arrow
-    // }
-    // controls.mouseButtons = {
-    //   LEFT: THREE.MOUSE.ROTATE,
-    //   MIDDLE: THREE.MOUSE.DOLLY,
-    //   RIGHT: THREE.MOUSE.PAN
-    // }
   }
 
   componentWillUnmount() {
@@ -176,12 +164,14 @@ class App extends Component {
           style={{ display: "none" }}></div>
         {
           this.state.showingEffect ?
-            <EffectInfoCard
+            <EffectContainer
+              data={this.state.effectData}
               onCloseClickHandler={() => {
-                this.setState({ showingEffect: false })
-              }
-              }
-            ></EffectInfoCard>
+                this.setState({
+                  effectData: null
+                })
+              }}
+            ></EffectContainer>
             :
             ""
         }

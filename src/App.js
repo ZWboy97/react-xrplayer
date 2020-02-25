@@ -7,6 +7,7 @@ import SpriteShapeHelper from './display/SpriteShapeHelper';
 import EffectContainer from './effect/EffectContainer';
 import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
+import TWEEN from '@tweenjs/tween.js';
 
 class App extends Component {
 
@@ -38,18 +39,40 @@ class App extends Component {
     this.animate();
     this.initDisplay();
     this.initRenderer();
+    this.initAction();
+  }
+
+  initAction = () => {
+    const coords = { // Start 
+      x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, fov: 150
+    };
+    new TWEEN.Tween(coords)
+      .to({ x: 100, y: 0, z: 100, fov: 80 }, 8000)
+      .delay(2000)
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .onUpdate(() => {
+        this.camera.position.x = coords.x;
+        this.camera.position.y = coords.y;
+        this.camera.position.z = coords.z;
+        this.camera.fov = coords.fov;
+        this.camera.updateProjectionMatrix();
+      })
+      .onComplete(() => {
+        this.innerViewControls && this.innerViewControls.connect();
+      })
+      .start()
   }
 
   initScene = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      75, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
+      100, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = renderer;
+    camera.position.set(1600, 1600, 1600);
+    camera.target = new THREE.Vector3(0, 0, 0);
     this.scene = scene;
     this.camera = camera;
-    this.renderer = renderer;
-    camera.position.set(1000, 1000, 1000);
-    camera.target = new THREE.Vector3(0, 0, 0);
   }
 
   initMesh = () => {
@@ -142,7 +165,7 @@ class App extends Component {
   animate = () => {
     requestAnimationFrame(this.animate);
     if (this.innerView) {
-      this.innerViewControls.update();
+      this.innerViewControls && this.innerViewControls.update();
     } else {
       this.controls.update();
     }

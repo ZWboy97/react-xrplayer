@@ -8,6 +8,7 @@ class InnerViewControls {
 
     constructor(camera) {
         this.camera = camera;
+        this.isConnected = false;
         this.isUserInteracting = false;     // 标记用户是否正在交互中
         this.onMouseDownMouseX = 0;         // 鼠标点击的初始坐标x
         this.onMouseDownMouseY = 0;         // 鼠标点击的初始坐标y
@@ -22,8 +23,12 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
-        this.initSphericalData();
     }
+
+    connect = () => {
+        this.isConnected = true;
+        this.initSphericalData();
+    };
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
     initSphericalData = () => {
@@ -33,7 +38,7 @@ class InnerViewControls {
         this.phi = spherical.phi;
         this.theta = spherical.theta;
         this.distance = spherical.radius;
-        this.lon = THREE.Math.radToDeg(this.theta);
+        this.lon = 90 - THREE.Math.radToDeg(this.theta);
         this.lat = 90 - THREE.Math.radToDeg(this.phi);
     }
 
@@ -53,6 +58,13 @@ class InnerViewControls {
     }
 
     update = () => {
+        if (this.isConnected) {
+            this.updateCameraPosition();
+        }
+        this.camera.lookAt(this.camera.target);
+    }
+
+    updateCameraPosition = () => {
         this.lat = Math.max(- 85, Math.min(85, this.lat));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
@@ -60,7 +72,6 @@ class InnerViewControls {
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-        this.camera.lookAt(this.camera.target);
     }
 
     onDocumentMouseDown = (event) => {

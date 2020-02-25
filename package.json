@@ -59,6 +59,7 @@
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "2.3.4",
     "three": "^0.113.2",
+    "three-fbxloader-offical": "^1.0.0",
     "three-orbitcontrols": "^2.110.3",
     "ts-pnp": "1.1.5",
     "url-loader": "2.3.0",

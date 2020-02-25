@@ -112,7 +112,6 @@ class SpriteShapeHelper {
 
     animatePoints = (meshGroup) => {
         let t = 300;
-        console.log('animata log');
         meshGroup.children.forEach(item => {
             let scale = item.scale;
             let tweenA = new TWEEN.Tween(scale)

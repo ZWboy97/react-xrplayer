@@ -22,8 +22,20 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
+        this.initSphericalData();
     }
 
+    // 将初始化的直角坐标转化为控制所需要的球体坐标数据
+    initSphericalData = () => {
+        const spherical = new THREE.Spherical();
+        const position = this.camera.position;
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        this.phi = spherical.phi;
+        this.theta = spherical.theta;
+        this.distance = spherical.radius;
+        this.lon = THREE.Math.radToDeg(this.theta);
+        this.lat = 90 - THREE.Math.radToDeg(this.phi);
+    }
 
     initControlsListener = () => {
         this.browser = window.navigator.userAgent.toLowerCase();

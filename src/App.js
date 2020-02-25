@@ -5,6 +5,8 @@ import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
 import EffectContainer from './effect/EffectContainer';
+import './App.css';
+import CenterModelHelper from './display/CenterModelHelper';
 
 class App extends Component {
 
@@ -25,6 +27,7 @@ class App extends Component {
     this.innerView = true; // 是否是内视角
     this.innerViewControls = null;
     this.spriteShapeHelper = null;
+    this.centerModelHelper = null;
   }
 
   componentDidMount() {
@@ -102,9 +105,23 @@ class App extends Component {
         showingEffect: true,
         effectData: effectData
       });
-      console.log(intersects[0]);
       console.log(intersects[0].object.name);
     }
+
+    this.centerModelHelper = new CenterModelHelper(this.scene);
+    // this.centerModelHelper.loadObj({
+    //   objUrl: "model.json",
+    //   texture: "texture1.png",
+    //   modeFormat: "obj",
+    //   scale: 1
+    // });
+    this.centerModelHelper.loadObj({
+      objUrl: "SambaDancing.fbx",
+      texture: "texture1.png",
+      modeFormat: "fbx",
+      scale: 1
+    });
+
 
   }
 
@@ -132,6 +149,9 @@ class App extends Component {
     }
     if (this.spriteShapeHelper) {
       this.spriteShapeHelper.update();
+    }
+    if (this.centerModelHelper) {
+      this.centerModelHelper.update();
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -162,7 +182,8 @@ class App extends Component {
           style={{ display: "none" }}
           ref={(mount) => { this.videoNode = mount }} >
         </video>
-        <div id="display"
+        <div
+          id="display"
           style={{ display: "none" }}></div>
         {
           this.state.showingEffect ?

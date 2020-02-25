@@ -48,9 +48,8 @@ class App extends Component {
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
-    camera.position.set(0, 0, 0);
+    camera.position.set(1000, 1000, 1000);
     camera.target = new THREE.Vector3(0, 0, 0);
-    camera.position.z = 5;
   }
 
   initMesh = () => {

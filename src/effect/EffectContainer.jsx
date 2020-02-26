@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import EffectInfoCard from './EffectInfoCard';
 import EffectImageCard from './EffectImageCard';
+import EffectVideoPanel from './EffectVideoPanel';
 import '../style/EffectInfoCard.less';
 
 class EffectContainer extends Component {
@@ -22,7 +23,7 @@ class EffectContainer extends Component {
                     }}
                 ></EffectInfoCard>
             )
-        } if (data.type === 'image') {
+        } else if (data.type === 'image') {
             return (
                 <EffectImageCard
                     onCloseClickHandler={() => {
@@ -31,6 +32,15 @@ class EffectContainer extends Component {
                     imageUrl={data.imageUrl}
                     jumpUrl={data.jumpUrl}
                 ></EffectImageCard>
+            )
+        } else if (data.type === 'video') {
+            return (
+                <EffectVideoPanel
+                    onCloseClickHandler={() => {
+                        this.props.onCloseClickHandler && this.props.onCloseClickHandler();
+                    }}
+                    videoUrl={data.videoUrl}
+                ></EffectVideoPanel>
             )
         }
         else {

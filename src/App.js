@@ -102,7 +102,8 @@ class App extends Component {
       const effectData = {
         type: intersects[0].object.name,
         imageUrl: "http://seopic.699pic.com/photo/50055/5642.jpg_wh1200.jpg",
-        jumpUrl: 'http://www.youmuvideo.com'
+        jumpUrl: 'http://www.youmuvideo.com',
+        videoUrl: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8'
       }
       this.setState({
         showingEffect: true,

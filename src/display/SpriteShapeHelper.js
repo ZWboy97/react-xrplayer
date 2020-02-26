@@ -36,7 +36,7 @@ class SpriteShapeHelper {
             {
                 phi: -153,
                 theta: -44,
-                name: 'paopazhaoqin',
+                name: 'video',
             },
             {
                 phi: 67,

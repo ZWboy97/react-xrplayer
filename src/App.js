@@ -8,6 +8,7 @@ import EffectContainer from './effect/EffectContainer';
 import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
+import CameraInOutAction from './action/CameraInOutAction';
 
 class App extends Component {
 
@@ -29,6 +30,7 @@ class App extends Component {
     this.innerViewControls = null;
     this.spriteShapeHelper = null;
     this.centerModelHelper = null;
+    this.cameraInOutAction = null;
   }
 
   componentDidMount() {
@@ -40,27 +42,6 @@ class App extends Component {
     this.initDisplay();
     this.initRenderer();
     this.initAction();
-  }
-
-  initAction = () => {
-    const coords = { // Start 
-      x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, fov: 150
-    };
-    new TWEEN.Tween(coords)
-      .to({ x: 100, y: 0, z: 100, fov: 80 }, 8000)
-      .delay(2000)
-      .easing(TWEEN.Easing.Quadratic.Out)
-      .onUpdate(() => {
-        this.camera.position.x = coords.x;
-        this.camera.position.y = coords.y;
-        this.camera.position.z = coords.z;
-        this.camera.fov = coords.fov;
-        this.camera.updateProjectionMatrix();
-      })
-      .onComplete(() => {
-        this.innerViewControls && this.innerViewControls.connect();
-      })
-      .start()
   }
 
   initScene = () => {
@@ -143,8 +124,18 @@ class App extends Component {
       modeFormat: "fbx",
       scale: 1
     });
+  }
 
-
+  initAction = () => {
+    this.cameraInOutAction = new CameraInOutAction(
+      this.camera,
+      { x: 100, y: 0, z: 100, fov: 80 },
+      8000, 1000
+    )
+    this.cameraInOutAction.onCompleteHandler = () => {
+      this.innerViewControls && this.innerViewControls.connect();
+    }
+    this.cameraInOutAction.start();
   }
 
   onWindowResize = () => {
@@ -169,12 +160,10 @@ class App extends Component {
     } else {
       this.controls.update();
     }
-    if (this.spriteShapeHelper) {
-      this.spriteShapeHelper.update();
-    }
     if (this.centerModelHelper) {
       this.centerModelHelper.update();
     }
+    TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
     this.renderer.render(this.scene, this.camera);
   }
 

@@ -9,12 +9,14 @@ import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
 import CameraInOutAction from './action/CameraInOutAction';
+import FullScreen from './utils/fullscreen';
 
 class App extends Component {
 
   state = {
     showingEffect: false,
-    effectData: null
+    effectData: null,
+    isFullScreen: false
   }
 
   constructor(props) {
@@ -179,38 +181,45 @@ class App extends Component {
 
   render() {
     return (
-      <div
-        style={{
-          width: '100vw', height: '100vh',
-          background: '#888', overflow: "hidden"
-        }}>
+      <FullScreen
+        enabled={this.state.isFullScreen}
+        onChange={isFull => this.setState({ isFullScreen: isFull })}
+      >
         <div
-          id="canvas"
-          style={{ width: '100%', height: '100%', background: '#888' }}
-          ref={(mount) => { this.mount = mount }}
+          style={{
+            width: '100vw', height: '100vh',
+            background: '#888', overflow: "hidden"
+          }}
         >
+          <div
+            id="canvas"
+            style={{ width: '100%', height: '100%', background: '#888' }}
+            ref={(mount) => { this.mount = mount }}
+          >
+          </div>
+          {
+            this.state.showingEffect ?
+              <EffectContainer
+                data={this.state.effectData}
+                onCloseClickHandler={() => {
+                  this.setState({
+                    effectData: null
+                  })
+                }}
+              ></EffectContainer>
+              :
+              ""
+          }
+          <video id="video"
+            style={{ display: "none" }}
+            ref={(mount) => { this.videoNode = mount }} >
+          </video>
+          <div
+            id="display"
+            style={{ display: "none" }}>
+          </div>
         </div>
-        <video id="video"
-          style={{ display: "none" }}
-          ref={(mount) => { this.videoNode = mount }} >
-        </video>
-        <div
-          id="display"
-          style={{ display: "none" }}></div>
-        {
-          this.state.showingEffect ?
-            <EffectContainer
-              data={this.state.effectData}
-              onCloseClickHandler={() => {
-                this.setState({
-                  effectData: null
-                })
-              }}
-            ></EffectContainer>
-            :
-            ""
-        }
-      </div>
+      </FullScreen >
     );
   }
 }

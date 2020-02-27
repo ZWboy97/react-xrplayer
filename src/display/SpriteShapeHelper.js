@@ -41,7 +41,7 @@ class SpriteShapeHelper {
             {
                 phi: 67,
                 theta: 19,
-                name: 'ranbaotadeng',
+                name: 'control',
             },
             {
                 phi: 58,

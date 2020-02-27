@@ -1,19 +1,43 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import '../style/EffectControlPanel.less';
 
 class EffectControlPanel extends Component {
 
+    componentDidMount() {
+    }
+
+    onCloseClickListener = (e) => {
+        e.preventDefault();
+        if (this.props.onCloseClickHandler) {
+            this.props.onCloseClickHandler();
+        }
+    }
+
+    componentWillUnmount() {
+    }
+
     render() {
         return (
-            <div className="container">
-                <button id="unmuteButton">声音</button>
-                <button id="playButton">播放暂停</button>
-                <button id="view-fullscreen">全屏</button>
-                <button id="cancel-fullscreen">关全屏</button>
-                <button id="addCubuButton">添加展示物体</button>
-                <button id="removeCubeButton">移除展示物体</button>
-            </div>)
+            <div className="overlay">
+                <div className="container ">
+                    <div
+                        className="close"
+                        onClick={this.onCloseClickListener}
+                    ></div>
+                    <div className="content">
+                        <button>控制面板</button>
+                    </div>
+                </div>
+
+            </div>
+        )
     }
 }
 
+EffectControlPanel.propTypes = {
+    onCloseClickHandler: PropTypes.func.isRequired,
+};
+
 export default EffectControlPanel;
+

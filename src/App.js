@@ -182,10 +182,9 @@ class App extends Component {
   render() {
     return (
       <FullScreen
-        enabled={this.state.isFull}
+        enabled={this.state.isFullScreen}
         onChange={isFull => this.setState({ isFullScreen: isFull })}
       >
-        <button onClick={() => { this.setState({ isFullScreen: !this.state.isFullScreen }) }}>全屏</button>
         <div
           style={{
             width: '100vw', height: '100vh',

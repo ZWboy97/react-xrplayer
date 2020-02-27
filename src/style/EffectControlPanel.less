@@ -1,0 +1,46 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 42rem;
+    min-height: 20%;
+    font-size: 1rem;
+    background-color: rgba(0, 0, 0, .3);
+    z-index: 12;
+    visibility: visible;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.content {
+    margin: auto;
+
+    .video {
+        width: 100%;
+        box-shadow: h-shadow v-shadow blur spread color inset;
+        -moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, .5);
+        -webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, .5);
+    }
+}
+
+.close {
+    position: absolute;
+    z-index: 12;
+    right: 1rem;
+    top: 1rem;
+    width: 2rem;
+    cursor: pointer;
+    height: 2rem;
+    background: url(./images/close.png) 0 0 no-repeat;
+    background-size: cover;
+}

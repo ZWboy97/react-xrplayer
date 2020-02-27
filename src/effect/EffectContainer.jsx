@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import EffectInfoCard from './EffectInfoCard';
 import EffectImageCard from './EffectImageCard';
 import EffectVideoPanel from './EffectVideoPanel';
-import '../style/EffectInfoCard.less';
+import EffectControlPanel from './EffectControlPanel';
 
 class EffectContainer extends Component {
 
@@ -41,6 +41,14 @@ class EffectContainer extends Component {
                     }}
                     videoUrl={data.videoUrl}
                 ></EffectVideoPanel>
+            )
+        } else if (data.type === 'control') {
+            return (
+                <EffectControlPanel
+                    onCloseClickHandler={() => {
+                        this.props.onCloseClickHandler && this.props.onCloseClickHandler();
+                    }}
+                ></EffectControlPanel>
             )
         }
         else {

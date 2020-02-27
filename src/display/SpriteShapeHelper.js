@@ -74,11 +74,9 @@ class SpriteShapeHelper {
         meshGroup.name = point.name;
         meshGroup.position.set(...position);
 
-        let mesh = this.createSpriteShape('#ffffff', 0.8, 10);
+        let mesh = this.createSpriteShape("hotspot_video.png", 1, 16);
         meshGroup.add(mesh);
-        mesh = this.createSpriteShape('#2d2d2d', 0.6, 12);
-        meshGroup.add(mesh);
-        mesh = this.createSpriteShape('#2d2d2d', 0.2, 24);
+        mesh = this.getBackgroundTexture('#2d2d2d', 0.2, 20);
         meshGroup.add(mesh);
         this.pointArr.push(mesh);
         mesh.name = point.name;
@@ -86,7 +84,21 @@ class SpriteShapeHelper {
         this.animatePoints(meshGroup);
     }
 
-    createSpriteShape = (color, opacity, scale) => {
+    createSpriteShape = (url, opacity, scale) => {
+        let texture = new THREE.TextureLoader().load(url);
+        texture.needsUpdate = true; //注意这句不能少
+        let material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            opacity: opacity,
+            depthTest: false
+        });
+        let mesh = new THREE.Sprite(material);
+        mesh.scale.set(scale * 2, scale * 2, 1);
+        return mesh;
+    }
+
+    getBackgroundTexture = (color, opacity, scale) => {
         let canvas = document.createElement("canvas");
         const container = document.getElementById('display')
         container.appendChild(canvas);
@@ -96,7 +108,6 @@ class SpriteShapeHelper {
         ctx.fillStyle = color;
         ctx.arc(64, 64, 64, 0, 2 * Math.PI);
         ctx.fill();
-
         let texture = new THREE.Texture(canvas);
         texture.needsUpdate = true; //注意这句不能少
         let material = new THREE.SpriteMaterial({

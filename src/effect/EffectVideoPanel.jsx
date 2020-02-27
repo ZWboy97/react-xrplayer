@@ -49,17 +49,20 @@ class EffectVideoPanel extends Component {
 
     render() {
         return (
-            <div className="container ">
-                <div
-                    className="close"
-                    onClick={this.onCloseClickListener}
-                ></div>
-                <div className="content">
-                    <video
-                        className="video"
-                        controls
-                        ref={(mount) => { this.videoNode = mount }}
-                    ></video>
+            <div className="overlay">
+
+                <div className="container ">
+                    <div
+                        className="close"
+                        onClick={this.onCloseClickListener}
+                    ></div>
+                    <div className="content">
+                        <video
+                            className="video"
+                            controls
+                            ref={(mount) => { this.videoNode = mount }}
+                        ></video>
+                    </div>
                 </div>
             </div>)
     }

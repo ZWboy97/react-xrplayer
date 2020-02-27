@@ -4,7 +4,6 @@ import EffectInfoCard from './EffectInfoCard';
 import EffectImageCard from './EffectImageCard';
 import EffectVideoPanel from './EffectVideoPanel';
 import EffectControlPanel from './EffectControlPanel';
-import '../style/EffectInfoCard.less';
 
 class EffectContainer extends Component {
 

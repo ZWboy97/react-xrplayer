@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
+import { connect } from 'react-redux'
+import { fetchLiveConfigure } from './redux/basic.redux';
 //import Orbitcontrols from 'three-orbitcontrols';
 import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
@@ -44,6 +46,8 @@ class App extends Component {
     this.initDisplay();
     this.initRenderer();
     this.initAction();
+    //TODO test redux 
+    this.props.fetchLiveConfigure();
   }
 
   initScene = () => {
@@ -180,6 +184,8 @@ class App extends Component {
   }
 
   render() {
+    // TODO test redux state
+    console.log('redux.data.live_configure', this.props.live_configure);
     return (
       <FullScreen
         enabled={this.state.isFullScreen}
@@ -224,4 +230,7 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(
+  state => state.basic,
+  { fetchLiveConfigure }
+)(App);

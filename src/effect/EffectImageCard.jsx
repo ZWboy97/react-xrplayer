@@ -23,18 +23,16 @@ class EffectImageCard extends Component {
         return (
             <div className="overlay">
                 <div className="container">
-                    <div
-                        className="close"
-                        onClick={this.onCloseClickListener}
-                    ></div>
-                    <div className="content">
-                        <img
-                            className="image"
-                            onClick={this.onImageClickListenr}
-                            src={this.props.imageUrl}
-                            alt=""></img>
-                    </div>
+                    <img
+                        className="image"
+                        onClick={this.onImageClickListenr}
+                        src={this.props.imageUrl}
+                        alt=""></img>
                 </div>
+                <div
+                    className="close"
+                    onClick={this.onCloseClickListener}
+                ></div>
             </div>
         )
     }

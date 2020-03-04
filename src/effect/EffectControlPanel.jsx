@@ -20,16 +20,14 @@ class EffectControlPanel extends Component {
     render() {
         return (
             <div className="overlay">
-                <div className="container ">
-                    <div
-                        className="close"
-                        onClick={this.onCloseClickListener}
-                    ></div>
-                    <div className="content">
-                        <button>控制面板</button>
-                    </div>
-                </div>
+                <div className="control-container ">
 
+                    <button>控制面板</button>
+                </div>
+                <div
+                    className="close"
+                    onClick={this.onCloseClickListener}
+                ></div>
             </div>
         )
     }

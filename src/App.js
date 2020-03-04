@@ -135,7 +135,7 @@ class App extends Component {
       if (this.spriteData.has(key)) {
         this.setState({
           showingEffect: true,
-          effectData: this.spriteData.get(this.spriteData.get(key))
+          effectData: this.spriteData.get(key)
         });
       }
       console.log(intersects[0].object.name);

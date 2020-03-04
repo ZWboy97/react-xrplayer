@@ -23,6 +23,13 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
+
+        //键盘交互控件
+        this.onKeyLeft = false;
+        this.onKeyRight = false;
+        this.onKeyUp = false;
+        this.onKeyDown = false;
+        this.onKeyShift = false;
     }
 
     connect = () => {
@@ -54,10 +61,32 @@ class InnerViewControls {
             document.addEventListener('mousemove', this.onDocumentMouseMove, false);
             document.addEventListener('mouseup', this.onDocumentMouseUp, false);
             document.addEventListener('wheel', this.onDocumentMouseWheel, false);
+            //添加键盘监听
+            document.addEventListener('keydown', this.onDocumentKeyDown, false);
+            document.addEventListener('keyup', this.onDocumentKeyUp, false);
         }
     }
 
     update = () => {
+        //键盘监听执行
+        var dLon = 2;
+        var dLat = 2;
+        if (this.onKeyShift) {
+            dLon = 10;
+            dLat = 10;
+        }
+        if (this.onKeyLeft) {
+            this.lon -= dLon;
+        }
+        if (this.onKeyRight) {
+            this.lon += dLon;
+        }
+        if (this.onKeyUp) {
+            this.lat -= dLat;
+        }
+        if (this.onKeyDown) {
+            this.lat += dLat;
+        }
         if (this.isConnected) {
             this.updateCameraPosition();
         }
@@ -86,9 +115,23 @@ class InnerViewControls {
         this.onPointerDownLat = this.lat; // 纬度
     }
 
+    onDocumentMouseMove = (event) => {
+        if (this.isUserInteracting === true) {
+            // 在鼠标Down位置叠加偏移量
+            this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
+            this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
+            // 用于立体场景音效
+            // mouseActionLocal([lon, lat]); 
+        }
+    }
+
+    onDocumentMouseUp = (event) => {
+        this.isUserInteracting = false;
+    }
+
     onTouchstart = (event) => {
         if (event.targetTouches.length === 1) {
-            event.preventDefault();
+            console.log('touch', 'start');
             this.isUserInteracting = true;
             // 记录滑动开始的坐标
             var touch = event.targetTouches[0];
@@ -100,28 +143,15 @@ class InnerViewControls {
         }
     }
 
-    onDocumentMouseMove = (event) => {
-        if (this.isUserInteracting === true) {
-            // 在鼠标Down位置叠加偏移量
-            this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
-            this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
-            // 用于立体场景音效
-            // mouseActionLocal([lon, lat]); 
-        }
-    }
-
     onTouchmove = (event) => {
         if (this.isUserInteracting === true) {
             var touch = event.targetTouches[0];
+            console.log('touching', touch.pageX);
             this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.1 + this.onPointerDownLon;
             this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.1 + this.onPointerDownLat;
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]); 
         }
-    }
-
-    onDocumentMouseUp = (event) => {
-        this.isUserInteracting = false;
     }
 
     onTouchend = (event) => {
@@ -149,6 +179,63 @@ class InnerViewControls {
         }
         console.log('distance', this.distance);
 
+    }
+
+    onDocumentKeyDown = (event) => {
+        event.preventDefault();
+        var keyCode = event.keyCode || event.which || event.charCode;
+        switch (keyCode) {
+
+            case 65: /*a*/
+            case 37: /*left*/ this.onKeyLeft = true; this.onKeyRight = false; break;
+
+            case 68: /*d*/
+            case 39: /*right*/ this.onKeyRight = true; this.onKeyLeft = false; break;
+
+            case 87: /*w*/
+            case 38: /*up*/ this.onKeyUp = true; this.onKeyDown = false; break;
+
+            case 83: /*s*/
+            case 40: /*down*/ this.onKeyDown = true; this.onKeyUp = false; break;
+
+            case 16: /*Shift*/ this.onKeyShift = true; break;
+
+            case 81: /*q*/
+                if (!!document.pointerLockElement) {
+                    document.exitPointerLock();
+                }
+                else {
+                    document.body.requestPointerLock();
+                    this.isUserInteracting = false;
+                }
+                break;
+
+            default: break;
+
+        }
+    }
+
+    onDocumentKeyUp = (event) => {
+        var keyCode = event.keyCode || event.which || event.charCode;
+        switch (keyCode) {
+
+            case 65: /*a*/
+            case 37: /*left*/ this.onKeyLeft = false; break;
+
+            case 68: /*d*/
+            case 39: /*right*/ this.onKeyRight = false; break;
+
+            case 87: /*w*/
+            case 38: /*up*/ this.onKeyUp = false; break;
+
+            case 83: /*s*/
+            case 40: /*down*/ this.onKeyDown = false; break;
+
+            case 16: /*L_Shift*/ this.onKeyShift = false; break;
+
+            default: break;
+
+        }
     }
 
 }

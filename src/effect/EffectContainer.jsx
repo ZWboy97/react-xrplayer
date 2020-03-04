@@ -21,6 +21,7 @@ class EffectContainer extends Component {
                     onCloseClickHandler={() => {
                         this.props.onCloseClickHandler && this.props.onCloseClickHandler();
                     }}
+                    iframeUrl={data.iframeUrl}
                 ></EffectInfoCard>
             )
         } else if (data.type === 'image') {

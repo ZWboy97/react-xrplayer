@@ -35,6 +35,7 @@ class App extends Component {
     this.spriteShapeHelper = null;
     this.centerModelHelper = null;
     this.cameraInOutAction = null;
+    this.spriteData = null;
   }
 
   componentDidMount() {
@@ -101,20 +102,42 @@ class App extends Component {
     window.addEventListener('resize', this.onWindowResize, false);
   }
 
+  initspriteData = () => {
+    this.spriteData = new Map();
+    this.spriteData.set('infocard', {
+      id: 'infocard',
+      type: 'infocard',
+      iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+    });
+    this.spriteData.set('image', {
+      id: 'image',
+      type: 'image',
+      imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+      jumpUrl: 'http://www.youmuvideo.com',
+    });
+    this.spriteData.set('video', {
+      id: 'video',
+      type: 'video',
+      videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
+    });
+    this.spriteData.set('control', {
+      id: 'control',
+      type: 'control',
+    });
+  }
+
   initDisplay = () => {
+    this.initspriteData();
     this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera);
     this.spriteShapeHelper.initPoints();
     this.spriteShapeHelper.objectClickHandler = (intersects) => {
-      const effectData = {
-        type: intersects[0].object.name,
-        imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-        jumpUrl: 'http://www.youmuvideo.com',
-        videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
+      const key = intersects[0].object.name;
+      if (this.spriteData.has(key)) {
+        this.setState({
+          showingEffect: true,
+          effectData: this.spriteData.get(this.spriteData.get(key))
+        });
       }
-      this.setState({
-        showingEffect: true,
-        effectData: effectData
-      });
       console.log(intersects[0].object.name);
     }
 

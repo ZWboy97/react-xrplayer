@@ -16,7 +16,7 @@ class EffectInfoCard extends Component {
         return (
             <div className="overlay">
                 <Iframe
-                    url="https://gs.ctrip.com/html5/you/place/14.html"
+                    url={this.props.iframeUrl}
                     className="iframe"
                     loading='true'
                     allow="fullscreen"
@@ -31,7 +31,8 @@ class EffectInfoCard extends Component {
 }
 
 EffectInfoCard.propTypes = {
-    onCloseClickHandler: PropTypes.func.isRequired
+    onCloseClickHandler: PropTypes.func.isRequired,
+    iframeUrl: PropTypes.string.isRequired
 };
 
 export default EffectInfoCard;

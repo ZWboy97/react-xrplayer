@@ -109,7 +109,7 @@ class App extends Component {
         type: intersects[0].object.name,
         imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
         jumpUrl: 'http://www.youmuvideo.com',
-        videoUrl: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8'
+        videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
       }
       this.setState({
         showingEffect: true,

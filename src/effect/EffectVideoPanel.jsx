@@ -22,6 +22,21 @@ class EffectVideoPanel extends Component {
         this.video.muted = true;
         console.log('videoUrl', this.props.videoUrl);
         this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+        const videoUrl = this.props.videoUrl;
+        if (videoUrl.endsWith('.mp4')) {
+            this.loadMp4Video();
+        } else if (videoUrl.endsWith('.m3u8')) {
+            this.loadHlsVideo();
+        }
+
+    }
+
+    loadMp4Video = () => {
+        this.video.src = this.props.videoUrl;
+        this.video.play();
+    }
+
+    loadHlsVideo = () => {
         if (HLS.isSupported()) {
             console.log('hls', 'support');
             this.hls.loadSource(this.props.videoUrl);
@@ -52,18 +67,16 @@ class EffectVideoPanel extends Component {
             <div className="overlay">
 
                 <div className="container ">
-                    <div
-                        className="close"
-                        onClick={this.onCloseClickListener}
-                    ></div>
-                    <div className="content">
-                        <video
-                            className="video"
-                            controls
-                            ref={(mount) => { this.videoNode = mount }}
-                        ></video>
-                    </div>
+                    <video
+                        className="video"
+                        controls
+                        ref={(mount) => { this.videoNode = mount }}
+                    ></video>
                 </div>
+                <div
+                    className="close"
+                    onClick={this.onCloseClickListener}
+                ></div>
             </div>)
     }
 }

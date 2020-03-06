@@ -104,6 +104,9 @@ class InnerViewControls {
     }
 
     onDocumentMouseDown = (event) => {
+        if (!!document.pointerLockElement) {
+            return;
+        }
         event.preventDefault();
         console.log('鼠标点击Down')
         this.isUserInteracting = true;
@@ -122,6 +125,10 @@ class InnerViewControls {
             this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]); 
+        }
+        if (!!document.pointerLockElement) {
+            this.lon = event.movementX * 0.1 + this.lon;
+            this.lat = event.movementY * 0.1 + this.lat;
         }
     }
 

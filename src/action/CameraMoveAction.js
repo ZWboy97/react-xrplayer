@@ -4,12 +4,13 @@
 import TWEEN from '@tweenjs/tween.js';
 
 
-class CameraInOutAction {
+class CameraMoveAction {
 
     constructor(camera, endState, duration = 5000, delay = 1000) {
         this.camera = camera;
         this.tween = null;
         this.onCompleteHandler = null;
+        this.onStartHandler = null;
         this.init(endState, duration, delay);
     }
 
@@ -36,6 +37,9 @@ class CameraInOutAction {
                 this.camera.fov = coords.fov;
                 this.camera.updateProjectionMatrix();
             })
+            .onStart(() => {
+                this.onStartHandler && this.onStartHandler();
+            })
             .onComplete(() => {
                 this.onCompleteHandler && this.onCompleteHandler();
             });
@@ -52,4 +56,4 @@ class CameraInOutAction {
     }
 }
 
-export default CameraInOutAction;
+export default CameraMoveAction;

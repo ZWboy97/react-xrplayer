@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { connect } from 'react-redux'
 import { fetchLiveConfigure } from './redux/basic.redux';
-//import Orbitcontrols from 'three-orbitcontrols';
 import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
@@ -10,7 +9,8 @@ import EffectContainer from './effect/EffectContainer';
 import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
-import CameraInOutAction from './action/CameraInOutAction';
+import CameraMoveAction from './action/CameraMoveAction';
+import ViewConvertHelper from './action/ViewConvertHelper';
 import FullScreen from './utils/fullscreen';
 
 class App extends Component {
@@ -34,7 +34,7 @@ class App extends Component {
     this.innerViewControls = null;
     this.spriteShapeHelper = null;
     this.centerModelHelper = null;
-    this.cameraInOutAction = null;
+    this.viewConvertHelper = null;
     this.spriteData = null;
   }
 
@@ -54,10 +54,10 @@ class App extends Component {
   initScene = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      100, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
+      150, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer = renderer;
-    camera.position.set(1600, 1600, 1600);
+    camera.position.set(0, 450, 0);
     camera.target = new THREE.Vector3(0, 0, 0);
     this.scene = scene;
     this.camera = camera;
@@ -157,15 +157,8 @@ class App extends Component {
   }
 
   initAction = () => {
-    this.cameraInOutAction = new CameraInOutAction(
-      this.camera,
-      { x: 100, y: 0, z: 100, fov: 80 },
-      8000, 1000
-    )
-    this.cameraInOutAction.onCompleteHandler = () => {
-      this.innerViewControls && this.innerViewControls.connect();
-    }
-    this.cameraInOutAction.start();
+    this.viewConvertHelper = new ViewConvertHelper(this.camera, this.innerViewControls);
+    this.viewConvertHelper.toNormalView(8000, 2000);
   }
 
   onWindowResize = () => {
@@ -199,7 +192,8 @@ class App extends Component {
 
   initControls = () => {
     this.innerViewControls = new InnerViewControls(this.camera);
-    this.innerViewControls.initControlsListener();
+    this.innerViewControls.connect();
+
   }
 
   componentWillUnmount() {

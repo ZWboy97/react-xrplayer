@@ -30,12 +30,21 @@ class InnerViewControls {
         this.onKeyUp = false;
         this.onKeyDown = false;
         this.onKeyShift = false;
+
+        this.initControlsListener();
     }
 
+    /**
+     * 相机与控制器连接，数据生效
+     */
     connect = () => {
         this.isConnected = true;
         this.initSphericalData();
     };
+
+    disConnect = () => {
+        this.isConnected = false;
+    }
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
     initSphericalData = () => {

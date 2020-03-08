@@ -54,10 +54,10 @@ class App extends Component {
   initScene = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      100, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
+      150, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer = renderer;
-    camera.position.set(1600, 1600, 1600);
+    camera.position.set(0, 450, 0);
     camera.target = new THREE.Vector3(0, 0, 0);
     this.scene = scene;
     this.camera = camera;
@@ -159,9 +159,12 @@ class App extends Component {
   initAction = () => {
     this.cameraInOutAction = new CameraInOutAction(
       this.camera,
-      { x: 100, y: 0, z: 100, fov: 80 },
-      8000, 1000
+      { x: 0, y: 0, z: 100, fov: 80 },
+      8000, 2000
     )
+    this.cameraInOutAction.onStartHandler = () => {
+      this.innerViewControls && this.innerViewControls.disConnect();
+    }
     this.cameraInOutAction.onCompleteHandler = () => {
       this.innerViewControls && this.innerViewControls.connect();
     }
@@ -199,7 +202,8 @@ class App extends Component {
 
   initControls = () => {
     this.innerViewControls = new InnerViewControls(this.camera);
-    this.innerViewControls.initControlsListener();
+    this.innerViewControls.connect();
+
   }
 
   componentWillUnmount() {

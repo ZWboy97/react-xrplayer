@@ -10,6 +10,7 @@ class CameraInOutAction {
         this.camera = camera;
         this.tween = null;
         this.onCompleteHandler = null;
+        this.onStartHandler = null;
         this.init(endState, duration, delay);
     }
 
@@ -35,6 +36,9 @@ class CameraInOutAction {
                 this.camera.position.z = coords.z;
                 this.camera.fov = coords.fov;
                 this.camera.updateProjectionMatrix();
+            })
+            .onStart(() => {
+                this.onStartHandler && this.onStartHandler();
             })
             .onComplete(() => {
                 this.onCompleteHandler && this.onCompleteHandler();

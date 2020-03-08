@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { connect } from 'react-redux'
 import { fetchLiveConfigure } from './redux/basic.redux';
-//import Orbitcontrols from 'three-orbitcontrols';
 import InnerViewControls from './controls/InnerViewControls';
 import * as HLS from 'hls.js';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
@@ -10,7 +9,7 @@ import EffectContainer from './effect/EffectContainer';
 import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
-import CameraInOutAction from './action/CameraInOutAction';
+import CameraMoveAction from './action/CameraMoveAction';
 import FullScreen from './utils/fullscreen';
 
 class App extends Component {
@@ -34,7 +33,7 @@ class App extends Component {
     this.innerViewControls = null;
     this.spriteShapeHelper = null;
     this.centerModelHelper = null;
-    this.cameraInOutAction = null;
+    this.cameraMoveAction = null;
     this.spriteData = null;
   }
 
@@ -157,18 +156,18 @@ class App extends Component {
   }
 
   initAction = () => {
-    this.cameraInOutAction = new CameraInOutAction(
+    this.cameraMoveAction = new CameraMoveAction(
       this.camera,
       { x: 0, y: 0, z: 100, fov: 80 },
       8000, 2000
     )
-    this.cameraInOutAction.onStartHandler = () => {
+    this.cameraMoveAction.onStartHandler = () => {
       this.innerViewControls && this.innerViewControls.disConnect();
     }
-    this.cameraInOutAction.onCompleteHandler = () => {
+    this.cameraMoveAction.onCompleteHandler = () => {
       this.innerViewControls && this.innerViewControls.connect();
     }
-    this.cameraInOutAction.start();
+    this.cameraMoveAction.start();
   }
 
   onWindowResize = () => {

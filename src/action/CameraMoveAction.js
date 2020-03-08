@@ -4,7 +4,7 @@
 import TWEEN from '@tweenjs/tween.js';
 
 
-class CameraInOutAction {
+class CameraMoveAction {
 
     constructor(camera, endState, duration = 5000, delay = 1000) {
         this.camera = camera;
@@ -56,4 +56,4 @@ class CameraInOutAction {
     }
 }
 
-export default CameraInOutAction;
+export default CameraMoveAction;

@@ -10,6 +10,7 @@ import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
 import CameraMoveAction from './action/CameraMoveAction';
+import ViewConvertHelper from './action/ViewConvertHelper';
 import FullScreen from './utils/fullscreen';
 
 class App extends Component {
@@ -33,7 +34,7 @@ class App extends Component {
     this.innerViewControls = null;
     this.spriteShapeHelper = null;
     this.centerModelHelper = null;
-    this.cameraMoveAction = null;
+    this.viewConvertHelper = null;
     this.spriteData = null;
   }
 
@@ -156,18 +157,8 @@ class App extends Component {
   }
 
   initAction = () => {
-    this.cameraMoveAction = new CameraMoveAction(
-      this.camera,
-      { x: 0, y: 0, z: 100, fov: 80 },
-      8000, 2000
-    )
-    this.cameraMoveAction.onStartHandler = () => {
-      this.innerViewControls && this.innerViewControls.disConnect();
-    }
-    this.cameraMoveAction.onCompleteHandler = () => {
-      this.innerViewControls && this.innerViewControls.connect();
-    }
-    this.cameraMoveAction.start();
+    this.viewConvertHelper = new ViewConvertHelper(this.camera, this.innerViewControls);
+    this.viewConvertHelper.toNormalView(8000, 2000);
   }
 
   onWindowResize = () => {

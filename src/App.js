@@ -9,9 +9,9 @@ import EffectContainer from './effect/EffectContainer';
 import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
-import CameraMoveAction from './action/CameraMoveAction';
 import ViewConvertHelper from './action/ViewConvertHelper';
 import FullScreen from './utils/fullscreen';
+import TextureHelper from './texture/TextureHelper';
 
 class App extends Component {
 
@@ -68,26 +68,9 @@ class App extends Component {
     geometry.scale(-1, 1, 1);
     var video = this.videoNode;
     this.video = video;
-    video.width = 0;
-    video.height = 0;
-    video.loop = true;
-    video.muted = true;
-    video.setAttribute('webkit-playsinline', 'webkit-playsinline');
-    if (HLS.isSupported()) {
-      var hls = new HLS();
-      hls.loadSource('http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8');
-      hls.attachMedia(video);
-      hls.on(HLS.Events.MANIFEST_PARSED, function () {
-        video.play();
-      });
-    } else {
-      console.log('设备不支持')
-      alert("设备不支持");
-    }
-    // 添加视频作为纹理，并纹理作为材质
-    var texture = new THREE.VideoTexture(video);
-    texture.minFilter = THREE.LinearFilter;
-    texture.format = THREE.RGBFormat;
+    const textureHelper = new TextureHelper(video);
+    let hlsUrl = "http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8";
+    var texture = textureHelper.loaderHLS(hlsUrl);
     var material = new THREE.MeshBasicMaterial({ map: texture });
     // 创建网格 = 几何体 + 材质
     let mesh = new THREE.Mesh(geometry, material);

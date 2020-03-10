@@ -76,6 +76,11 @@ class TextureHelper {
         return this.getTextureFromVideo(this.containerNode);
     }
 
+    loadImage = (resUrl) => {
+        var texture = new THREE.TextureLoader().load(resUrl);
+        return texture;
+    }
+
     unloadFlvVideo = () => {
         if (this.videoLoader) {
             this.videoLoader.unload();

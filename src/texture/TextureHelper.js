@@ -24,7 +24,15 @@ class TextureHelper {
         this.containerNode.height = 0;
         this.containerNode.loop = true;
         this.containerNode.muted = true;
+        this.containerNode.crossOrigin = "anonymous"
         this.containerNode.setAttribute('webkit-playsinline', 'webkit-playsinline');
+    }
+
+    getTextureFromVideo = (video) => {
+        let texture = new THREE.VideoTexture(video);
+        texture.minFilter = THREE.LinearFilter;
+        texture.format = THREE.RGBFormat;
+        return texture;
     }
 
     loadFlvVideo = (resUrl) => {
@@ -39,11 +47,7 @@ class TextureHelper {
             console.error('Your browser does not support flvjs')
             this.onLoadErrorHandler('设备不支持FLV');
         }
-        // 添加视频作为纹理，并纹理作为材质
-        let texture = new THREE.VideoTexture(this.containerNode);
-        texture.minFilter = THREE.LinearFilter;
-        texture.format = THREE.RGBFormat;
-        return texture;
+        return this.getTextureFromVideo(this.containerNode);
     }
 
     loadHlsVideo = (resUrl) => {
@@ -61,17 +65,27 @@ class TextureHelper {
             console.log('设备不支持HLS')
             this.onLoadErrorHandler('设备不支持HLS');
         }
-        // 添加视频作为纹理，并纹理作为材质
-        let texture = new THREE.VideoTexture(this.containerNode);
-        texture.minFilter = THREE.LinearFilter;
-        texture.format = THREE.RGBFormat;
-        return texture;
+        return this.getTextureFromVideo(this.containerNode);
+    }
+
+    loadMp4Video = (resUrl) => {
+        this.initVideoNode();
+        this.containerNode.src = resUrl;
+        this.containerNode.load();
+        this.containerNode.play();
+        return this.getTextureFromVideo(this.containerNode);
     }
 
     unloadFlvVideo = () => {
         if (this.videoLoader) {
             this.videoLoader.unload();
             this.videoLoader.detachMediaElement();
+        }
+    }
+
+    unloadHlsVideo = () => {
+        if (this.videoLoader) {
+            this.videoLoader.destory();
         }
     }
 }

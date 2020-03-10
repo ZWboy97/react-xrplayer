@@ -4,6 +4,7 @@
  */
 import * as HLS from 'hls.js';
 import * as THREE from 'three';
+import flvjs from 'flv.js/dist/flv.min.js';
 
 class TextureHelper {
 
@@ -15,6 +16,7 @@ class TextureHelper {
         this.containerNode = containerNode;
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
+        this.videoLoader = null;
     }
 
     initVideoNode = () => {
@@ -25,10 +27,30 @@ class TextureHelper {
         this.containerNode.setAttribute('webkit-playsinline', 'webkit-playsinline');
     }
 
-    loaderHLS = (resUrl) => {
+    loadFlvVideo = (resUrl) => {
+        this.initVideoNode();
+        if (flvjs.isSupported()) {
+            let flvPlayer = flvjs.createPlayer({ type: 'flv', url: resUrl });
+            this.videoLoader = flvPlayer;
+            flvPlayer.attachMediaElement(this.containerNode);
+            flvPlayer.load();
+            flvPlayer.play();
+        } else {
+            console.error('Your browser does not support flvjs')
+            this.onLoadErrorHandler('设备不支持FLV');
+        }
+        // 添加视频作为纹理，并纹理作为材质
+        let texture = new THREE.VideoTexture(this.containerNode);
+        texture.minFilter = THREE.LinearFilter;
+        texture.format = THREE.RGBFormat;
+        return texture;
+    }
+
+    loadHlsVideo = (resUrl) => {
         this.initVideoNode();
         if (HLS.isSupported()) {
             var hls = new HLS();
+            this.videoLoader = hls;
             hls.loadSource(resUrl);
             hls.attachMedia(this.containerNode);
             hls.on(HLS.Events.MANIFEST_PARSED, () => {
@@ -39,11 +61,18 @@ class TextureHelper {
             console.log('设备不支持HLS')
             this.onLoadErrorHandler('设备不支持HLS');
         }
-        let texture = new THREE.VideoTexture(this.containerNode);
         // 添加视频作为纹理，并纹理作为材质
+        let texture = new THREE.VideoTexture(this.containerNode);
         texture.minFilter = THREE.LinearFilter;
         texture.format = THREE.RGBFormat;
         return texture;
+    }
+
+    unloadFlvVideo = () => {
+        if (this.videoLoader) {
+            this.videoLoader.unload();
+            this.videoLoader.detachMediaElement();
+        }
     }
 }
 

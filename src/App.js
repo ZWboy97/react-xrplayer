@@ -70,7 +70,9 @@ class App extends Component {
     this.video = video;
     const textureHelper = new TextureHelper(video);
     let hlsUrl = "http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8";
-    var texture = textureHelper.loaderHLS(hlsUrl);
+    var texture = textureHelper.loadHlsVideo(hlsUrl);
+    // let flvUrl = 'http://39.106.194.43:8090/live/sq3oOJjN6s.flv';
+    // let texture = textureHelper.loadFlvVideo(flvUrl)
     var material = new THREE.MeshBasicMaterial({ map: texture });
     // 创建网格 = 几何体 + 材质
     let mesh = new THREE.Mesh(geometry, material);

@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { connect } from 'react-redux'
 import { fetchLiveConfigure } from './redux/basic.redux';
 import InnerViewControls from './controls/InnerViewControls';
-import * as HLS from 'hls.js';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
 import EffectContainer from './effect/EffectContainer';
 import './App.css';
@@ -13,7 +12,7 @@ import ViewConvertHelper from './action/ViewConvertHelper';
 import FullScreen from './utils/fullscreen';
 import TextureHelper from './texture/TextureHelper';
 
-class App extends Component {
+class Player extends Component {
 
   state = {
     showingEffect: false,
@@ -233,4 +232,4 @@ class App extends Component {
 export default connect(
   state => state.basic,
   { fetchLiveConfigure }
-)(App);
+)(Player);

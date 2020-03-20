@@ -1,7 +1,14 @@
 {
-  "name": "react-threejs",
+  "name": "react-xrplayer",
   "version": "0.1.0",
+  "description": "A excellent xr player for react",
+  "main": "build/index.js",
   "private": true,
+  "keywords": [
+    "xr",
+    "xrplayer",
+    "panoramic"
+  ],
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",

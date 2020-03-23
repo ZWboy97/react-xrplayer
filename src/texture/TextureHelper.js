@@ -2,7 +2,7 @@
  * 负责加载纹理资源
  * 支持：全景图片，全景视频（flv，hls，mp4格式）
  */
-import * as HLS from 'hls.js';
+import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
 
@@ -52,12 +52,12 @@ class TextureHelper {
 
     loadHlsVideo = (resUrl) => {
         this.initVideoNode();
-        if (HLS.isSupported()) {
-            var hls = new HLS();
+        if (Hls.isSupported()) {
+            var hls = new Hls();
             this.videoLoader = hls;
             hls.loadSource(resUrl);
             hls.attachMedia(this.containerNode);
-            hls.on(HLS.Events.MANIFEST_PARSED, () => {
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.containerNode.play();
                 this.onLoadSuccessHandler();
             });

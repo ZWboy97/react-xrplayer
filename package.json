@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "A excellent xr player for react",
   "main": "lib/index.js",
-  "private": true,
   "keywords": [
     "xr",
     "xrplayer",
@@ -93,7 +92,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "compile": "npx babel src --out-dir lib --copy-files"
+    "compile": "npx babel src --out-dir lib --copy-files",
+    "prepublishOnly": "npm run compile"
   },
   "eslintConfig": {
     "extends": "react-app"

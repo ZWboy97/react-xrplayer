@@ -1,9 +1,23 @@
 {
-  "name": "react-threejs",
+  "name": "react-xrplayer",
   "version": "0.1.0",
+  "description": "A excellent xr player for react",
+  "main": "lib/index.js",
   "private": true,
+  "keywords": [
+    "xr",
+    "xrplayer",
+    "panoramic"
+  ],
+  "peerDependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
   "dependencies": {
-    "@babel/core": "7.8.4",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
     "@svgr/webpack": "4.3.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -34,7 +48,7 @@
     "flv.js": "^1.5.0",
     "fs-extra": "^8.1.0",
     "fscreen": "^1.0.2",
-    "hls.js": "^0.13.1",
+    "hls.js": "0.13.3-canary.5457",
     "html-webpack-plugin": "4.0.0-beta.11",
     "identity-obj-proxy": "3.0.0",
     "jest": "24.9.0",
@@ -78,7 +92,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "compile": "npx babel src --out-dir lib --copy-files"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -145,9 +160,7 @@
       "jest-watch-typeahead/testname"
     ]
   },
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3"
   }
 }

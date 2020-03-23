@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import XRPlayer from '../../src/index';
+import App from './app';
 
 
 ReactDOM.render(
-    <XRPlayer />,
+    <App />,
     document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

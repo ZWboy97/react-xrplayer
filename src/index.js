@@ -4,10 +4,16 @@ import Player from './Player';
 import { Provider } from 'react-redux' // https://react-redux.js.org/api/connect
 import store from './store';
 
-const XRPlayer = () => (
-    <Provider store={store}>
-        <Player />
-    </Provider>
-)
+class XRPlayer extends React.Component {
+    render() {
+        return (
+            <Provider store={store}>
+                <Player />
+            </Provider>
+            // <div>akfjeiajalkfjeiaijsldkjfiwae</div>
+        )
+    }
+}
 
 export default XRPlayer;
+

@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import '../style/EffectVideoPanel.less';
-import * as HLS from 'hls.js';
+import Hls from 'hls.js';
 
 
 class EffectVideoPanel extends Component {
@@ -16,7 +16,7 @@ class EffectVideoPanel extends Component {
     }
 
     componentDidMount() {
-        this.hls = new HLS();
+        this.hls = new Hls();
         this.video = this.videoNode;
         this.video.loop = true;
         this.video.muted = true;
@@ -37,11 +37,11 @@ class EffectVideoPanel extends Component {
     }
 
     loadHlsVideo = () => {
-        if (HLS.isSupported()) {
+        if (Hls.isSupported()) {
             console.log('hls', 'support');
             this.hls.loadSource(this.props.videoUrl);
             this.hls.attachMedia(this.video);
-            this.hls.on(HLS.Events.MANIFEST_PARSED, () => {
+            this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.video.play();
                 console.log('videoplay');
             });

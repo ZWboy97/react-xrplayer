@@ -3,6 +3,9 @@
  * Three.js自带的Controls控制效果不理想，所以自己实现控制器
  */
 import * as THREE from 'three';
+import DeviceOrientationControls from './DeviceOrientationControls';
+import * as dat from 'dat.gui';
+
 
 class InnerViewControls {
 
@@ -32,6 +35,21 @@ class InnerViewControls {
         this.onKeyShift = false;
 
         this.initControlsListener();
+
+        //重力交互控件
+        this.newCamera = new THREE.PerspectiveCamera();
+        this.orientationControls = new DeviceOrientationControls(this.newCamera);
+        this.orientationEnable = false;
+        if (this.orientationEnable === true) {
+            this.turnOnOrientationControls();
+        }
+
+        //GUI
+        var gui = new dat.GUI();
+        this.control = new function () {
+            this.orientationControl = 0;
+        };
+        gui.add(this.control, 'orientationControl',0,1).step(1);
     }
 
     /**
@@ -44,7 +62,7 @@ class InnerViewControls {
 
     disConnect = () => {
         this.isConnected = false;
-    }
+    };
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
     initSphericalData = () => {
@@ -56,7 +74,7 @@ class InnerViewControls {
         this.distance = spherical.radius;
         this.lon = 90 - THREE.Math.radToDeg(this.theta);
         this.lat = 90 - THREE.Math.radToDeg(this.phi);
-    }
+    };
 
     initControlsListener = () => {
         this.browser = window.navigator.userAgent.toLowerCase();
@@ -74,10 +92,15 @@ class InnerViewControls {
             document.addEventListener('keydown', this.onDocumentKeyDown, false);
             document.addEventListener('keyup', this.onDocumentKeyUp, false);
         }
-    }
+    };
 
     update = () => {
         //键盘监听执行
+        this.updateGUI();
+        if (this.isConnected && this.orientationEnable === true) {
+            this.updateCameraPositionOrientation();
+            return;
+        }
         var dLon = 2;
         var dLat = 2;
         if (this.onKeyShift) {
@@ -100,7 +123,16 @@ class InnerViewControls {
             this.updateCameraPosition();
         }
         this.camera.lookAt(this.camera.target);
-    }
+    };
+
+    updateGUI = () => {
+        if (this.orientationEnable === false && this.control.orientationControl >= 1) {
+            this.turnOnOrientationControls();
+        }
+        if (this.orientationEnable === true && this.control.orientationControl < 1) {
+            this.turnOffOrientationControls();
+        }
+    };
 
     updateCameraPosition = () => {
         this.lat = Math.max(- 85, Math.min(85, this.lat));
@@ -110,7 +142,16 @@ class InnerViewControls {
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-    }
+    };
+
+    updateCameraPositionOrientation = () => {
+        this.orientationControls.update();
+        var cameraDirtection = new THREE.Vector3(0,0,0);
+        this.newCamera.getWorldDirection(cameraDirtection);
+        cameraDirtection.multiplyScalar(-this.distance);
+        this.camera.position.copy(cameraDirtection);
+        this.camera.quaternion.copy(this.newCamera.quaternion);
+    };
 
     onDocumentMouseDown = (event) => {
         if (!!document.pointerLockElement) {
@@ -133,7 +174,7 @@ class InnerViewControls {
             this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
             this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
             // 用于立体场景音效
-            // mouseActionLocal([lon, lat]); 
+            // mouseActionLocal([lon, lat]);
         }
         if (!!document.pointerLockElement) {
             this.lon = event.movementX * 0.1 + this.lon;
@@ -166,7 +207,7 @@ class InnerViewControls {
             this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.1 + this.onPointerDownLon;
             this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.1 + this.onPointerDownLat;
             // 用于立体场景音效
-            // mouseActionLocal([lon, lat]); 
+            // mouseActionLocal([lon, lat]);
         }
     }
 
@@ -226,6 +267,12 @@ class InnerViewControls {
                 }
                 break;
 
+            case 82: /*r*/
+                console.log('alphaOffset = '+THREE.MathUtils.radToDeg(this.orientationControls.alphaOffset));
+                console.log('lon = '+this.lon);
+                console.log('dO.alpha = '+this.orientationControls.deviceOrientation.alpha);
+                break;
+
             default: break;
 
         }
@@ -252,7 +299,29 @@ class InnerViewControls {
             default: break;
 
         }
-    }
+    };
+
+    turnOnOrientationControls = () => {
+        this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
+        this.orientationEnable = true;
+    };
+
+    turnOffOrientationControls = () => {
+        this.orientationControls.disConnect();
+        var pos = this.camera.position;
+        this.lat = pos.angleTo(new THREE.Vector3(pos.x,0,pos.z));
+        this.lat  = THREE.MathUtils.radToDeg(this.lat);
+        if (pos.y < 0) {
+            this.lat = -this.lat;
+        }
+        pos.y = 0;
+        this.lon = pos.angleTo(new THREE.Vector3(1,0,0));
+        this.lon = THREE.MathUtils.radToDeg(this.lon);
+        if (pos.z < 0) {
+            this.lon = -this.lon;
+        }
+        this.orientationEnable = false;
+    };
 
 }
 

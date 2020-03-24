@@ -8,8 +8,15 @@ class CenterModelHelper {
 
     constructor(scene) {
         this.scene = scene;
-        this.loader = null;
-        this.data = null;
+        this.modelMap = new Map();
+    }
+
+    loadModelList = (model_list) => {
+        model_list && model_list.forEach(data => {
+            const loader = this.getLoader(data[1]);
+            this.modelMap.set(data[0], loader);
+            loader.loadObj(data[1]);
+        })
     }
 
     loadObj = (data) => {
@@ -53,10 +60,10 @@ class CenterModelHelper {
     }
 
     update = () => {
-        if (!this.loader) return;
-        if (this.data.modeFormat === 'fbx') {
-            this.loader.update();
-        }
+        this.modelMap.forEach(data => {
+            const loader = data;
+            loader.update();
+        })
     }
 }
 

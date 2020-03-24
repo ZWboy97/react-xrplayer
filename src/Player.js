@@ -5,14 +5,15 @@ import { fetchLiveConfigure } from './redux/basic.redux';
 import InnerViewControls from './controls/InnerViewControls';
 import SpriteShapeHelper from './display/SpriteShapeHelper';
 import EffectContainer from './effect/EffectContainer';
-import './App.css';
 import CenterModelHelper from './display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
 import ViewConvertHelper from './action/ViewConvertHelper';
 import FullScreen from './utils/fullscreen';
 import TextureHelper from './texture/TextureHelper';
+import Proptypes from 'prop-types';
+import './App.css';
 
-class Player extends Component {
+class XRPlayer extends Component {
 
   state = {
     showingEffect: false,
@@ -27,7 +28,7 @@ class Player extends Component {
     this.camera = null;
     this.renderer = null;
     this.controls = null;
-    this.videoNode = null;
+    this.sceneContainer = null;
 
     this.innerView = true; // 是否是内视角
     this.innerViewControls = null;
@@ -39,7 +40,7 @@ class Player extends Component {
 
   componentDidMount() {
     this.initScene();
-    this.initMesh();
+    this.initCamera();
     this.initEvent();
     this.initControls();
     this.animate();
@@ -50,68 +51,49 @@ class Player extends Component {
     this.props.fetchLiveConfigure();
   }
 
-  initScene = () => {
-    const scene = new THREE.Scene();
+  initCamera = () => {
+    const {
+      camera_fov, camera_far, camera_near,
+      camera_position: position, camera_target: target
+    } = this.props;
     const camera = new THREE.PerspectiveCamera(
-      150, this.mount.clientWidth / this.mount.clientHeight, 0.001, 10000);
+      camera_fov, this.mount.clientWidth / this.mount.clientHeight,
+      camera_near, camera_far);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer = renderer;
-    camera.position.set(0, 450, 0);
-    camera.target = new THREE.Vector3(0, 0, 0);
-    this.scene = scene;
+    camera.position.set(position.x, position.y, position.z);
+    camera.target = new THREE.Vector3(target.x, target.y, target.z);
     this.camera = camera;
   }
 
-  initMesh = () => {
+  initScene = () => {
+    const {
+      scene_texture_resource: textureResource,
+      axes_helper_display: isAxesHelperDisplay
+    } = this.props;
     let geometry = new THREE.SphereGeometry(500, 60, 40); // 球体
     geometry.scale(-1, 1, 1);
-    var video = this.videoNode;
-    this.video = video;
-    const textureHelper = new TextureHelper(video);
-    let hlsUrl = "http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8";
-    var texture = textureHelper.loadHlsVideo(hlsUrl);
-    var material = new THREE.MeshBasicMaterial({ map: texture });
-    // 创建网格 = 几何体 + 材质
+    const textureHelper = new TextureHelper(this.sceneContainer);
+    let texture = textureHelper.loadTexture(textureResource);
+    let material = new THREE.MeshBasicMaterial({ map: texture });
     let mesh = new THREE.Mesh(geometry, material);
-    // 创建场景，并添加mesh
     this.scene = new THREE.Scene();
     this.scene.add(mesh);
-    var axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
-    this.scene.add(axisHelper);
+    if (isAxesHelperDisplay) {
+      let axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
+      this.scene.add(axisHelper);
+    }
   }
 
   initEvent = () => {
     window.addEventListener('resize', this.onWindowResize, false);
   }
 
-  initspriteData = () => {
-    this.spriteData = new Map();
-    this.spriteData.set('infocard', {
-      id: 'infocard',
-      type: 'infocard',
-      iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
-    });
-    this.spriteData.set('image', {
-      id: 'image',
-      type: 'image',
-      imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-      jumpUrl: 'http://www.youmuvideo.com',
-    });
-    this.spriteData.set('video', {
-      id: 'video',
-      type: 'video',
-      videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
-    });
-    this.spriteData.set('control', {
-      id: 'control',
-      type: 'control',
-    });
-  }
-
   initDisplay = () => {
-    this.initspriteData();
+    const { event_list, hot_spot_list } = this.props;
+    this.spriteData = new Map(event_list);
     this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera);
-    this.spriteShapeHelper.initPoints();
+    this.spriteShapeHelper.setPointList(hot_spot_list);
     this.spriteShapeHelper.objectClickHandler = (intersects) => {
       const key = intersects[0].object.name;
       if (this.spriteData.has(key)) {
@@ -123,19 +105,9 @@ class Player extends Component {
       console.log(intersects[0].object.name);
     }
 
+    const { model_list } = this.props;
     this.centerModelHelper = new CenterModelHelper(this.scene);
-    // this.centerModelHelper.loadObj({
-    //   objUrl: "model.json",
-    //   texture: "texture1.png",
-    //   modeFormat: "obj",
-    //   scale: 1
-    // });
-    this.centerModelHelper.loadObj({
-      objUrl: "SambaDancing.fbx",
-      texture: "texture1.png",
-      modeFormat: "fbx",
-      scale: 1
-    });
+    this.centerModelHelper.loadModelList(model_list);
   }
 
   initAction = () => {
@@ -217,7 +189,7 @@ class Player extends Component {
           }
           <video id="video"
             style={{ display: "none" }}
-            ref={(mount) => { this.videoNode = mount }} >
+            ref={(mount) => { this.sceneContainer = mount }} >
           </video>
           <div
             id="display"
@@ -229,7 +201,82 @@ class Player extends Component {
   }
 }
 
+XRPlayer.protoTypes = {
+  camera_fov: Proptypes.number,
+  camera_near: Proptypes.number,
+  camera_far: Proptypes.number,
+  camera_position: Proptypes.object,
+  camera_target: Proptypes.object,
+  scene_texture_resource: Proptypes.object,
+  axes_helper_display: Proptypes.bool,
+  hot_spot_list: Proptypes.array,
+  event_list: Proptypes.array
+}
+
+XRPlayer.defaultProps = {
+  camera_fov: 150,
+  camera_near: 0.01,
+  camera_far: 10000,
+  camera_position: {
+    x: 0,
+    y: 450,
+    z: 0
+  },
+  camera_target: {
+    x: 0,
+    y: 0,
+    z: 0
+  },
+  scene_texture_resource: {
+    type: 'hls',
+    res_url: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8',
+  },
+  axes_helper_display: true,
+  hot_spot_list: [
+    ['infocard', { phi: -90, theta: -10, res_url: 'hotspot_video.png' }],
+    ['image', { phi: 32, theta: 14, res_url: 'hotspot_video.png' }],
+    ['video', { phi: -153, theta: -44, res_url: 'hotspot_video.png' }],
+    ['control', { phi: 67, theta: 19, res_url: 'hotspot_video.png' }]
+  ],
+  event_list: [
+    ['infocard', {
+      id: 'infocard',
+      type: 'infocard',
+      iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+    }],
+    ['image', {
+      id: 'image',
+      type: 'image',
+      imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+      jumpUrl: 'http://www.youmuvideo.com',
+    }],
+    ['video', {
+      id: 'video',
+      type: 'video',
+      videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
+    }],
+    ['control', {
+      id: 'control',
+      type: 'control',
+    }]
+  ],
+  model_list: [
+    ['12332', {
+      objUrl: "SambaDancing.fbx",
+      texture: "texture1.png",
+      modeFormat: "fbx",
+      scale: 1
+    }],
+    ['23433', {
+      objUrl: "model.json",
+      texture: "texture1.png",
+      modeFormat: "obj",
+      scale: 1
+    }]
+  ]
+}
+
 export default connect(
   state => state.basic,
   { fetchLiveConfigure }
-)(Player);
+)(XRPlayer);

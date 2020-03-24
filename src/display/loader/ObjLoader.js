@@ -36,6 +36,10 @@ class ObjLoader {
         this.mixer = null;
         this.animationAction = null;
     }
+
+    update = () => {
+
+    }
 }
 
 export default ObjLoader;

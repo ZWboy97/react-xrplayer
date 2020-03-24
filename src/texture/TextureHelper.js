@@ -81,6 +81,22 @@ class TextureHelper {
         return texture;
     }
 
+    loadTexture = (resource) => {
+        const { type, res_url } = resource;
+        switch (type) {
+            case 'hls':
+                return this.loadHlsVideo(res_url);
+            case 'flv':
+                return this.loadFlvVideo(res_url);
+            case 'mp4':
+                return this.loadMp4Video(res_url);
+            case 'image':
+                return this.loadImage(res_url);
+            default:
+                return null;
+        }
+    }
+
     unloadFlvVideo = () => {
         if (this.videoLoader) {
             this.videoLoader.unload();

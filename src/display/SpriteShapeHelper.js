@@ -22,34 +22,6 @@ class SpriteShapeHelper {
     }
 
     initPoints = () => {
-        this.pointList = [
-            {
-                phi: -90,
-                theta: -10,
-                name: 'infocard',
-            },
-            {
-                phi: 32,
-                theta: 14,
-                name: 'image',
-            },
-            {
-                phi: -153,
-                theta: -44,
-                name: 'video',
-            },
-            {
-                phi: 67,
-                theta: 19,
-                name: 'control',
-            },
-            {
-                phi: 58,
-                theta: -9,
-                name: 'touguasongzi',
-            },
-        ];
-
         this.pointGroup = new THREE.Group();
         this.pointArr = [];
         this.pointList.forEach((point) => {
@@ -69,9 +41,9 @@ class SpriteShapeHelper {
     }
 
     createPoint(point) {
-        let position = this.contertSph2Rect(point.phi, point.theta);
+        let position = this.contertSph2Rect(point[1].phi, point[1].theta);
         let meshGroup = new THREE.Group();
-        meshGroup.name = point.name;
+        meshGroup.name = point[0];
         meshGroup.position.set(...position);
 
         let mesh = this.createSpriteShape("hotspot_video.png", 1, 16);
@@ -79,7 +51,7 @@ class SpriteShapeHelper {
         mesh = this.getBackgroundTexture('#2d2d2d', 0.2, 20);
         meshGroup.add(mesh);
         this.pointArr.push(mesh);
-        mesh.name = point.name;
+        mesh.name = point[0];
         this.pointGroup.add(meshGroup);
         this.animatePoints(meshGroup);
     }

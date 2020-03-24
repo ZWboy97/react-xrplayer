@@ -10,7 +10,6 @@ class XRPlayer extends React.Component {
             <Provider store={store}>
                 <Player />
             </Provider>
-            // <div>akfjeiajalkfjeiaijsldkjfiwae</div>
         )
     }
 }

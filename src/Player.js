@@ -112,6 +112,7 @@ class XRPlayer extends Component {
 
   initAction = () => {
     this.viewConvertHelper = new ViewConvertHelper(this.camera, this.innerViewControls);
+    this.innerViewControls && this.innerViewControls.disConnect();
     this.viewConvertHelper.toNormalView(8000, 2000);
   }
 
@@ -230,6 +231,8 @@ XRPlayer.defaultProps = {
   scene_texture_resource: {
     type: 'hls',
     res_url: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8',
+    // type: 'image',
+    // res_url: 'https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg'
   },
   axes_helper_display: true,
   hot_spot_list: [

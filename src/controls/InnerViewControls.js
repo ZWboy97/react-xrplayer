@@ -37,19 +37,15 @@ class InnerViewControls {
         this.initControlsListener();
 
         //重力交互控件
-        this.newCamera = new THREE.PerspectiveCamera();
-        this.orientationControls = new DeviceOrientationControls(this.newCamera);
+        this.orientationControls = new DeviceOrientationControls(this.camera);
         this.orientationEnable = false;
-        if (this.orientationEnable === true) {
-            this.turnOnOrientationControls();
-        }
 
         //GUI
         var gui = new dat.GUI();
         this.control = new function () {
             this.orientationControl = 0;
-        };
-        gui.add(this.control, 'orientationControl',0,1).step(1);
+        }();
+        gui.add(this.control, 'orientationControl', 0, 1).step(1);
     }
 
     /**
@@ -95,10 +91,24 @@ class InnerViewControls {
     };
 
     update = () => {
-        //键盘监听执行
         this.updateGUI();
-        if (this.isConnected && this.orientationEnable === true) {
-            this.updateCameraPositionOrientation();
+        this.camera.lookAt(this.camera.target);
+        if (!this.isConnected) return;
+        this.updateCameraPosition();
+    };
+
+    updateGUI = () => {
+        if (this.orientationEnable === false && this.control.orientationControl >= 1) {
+            this.connectOrientationControls();
+        }
+        if (this.orientationEnable === true && this.control.orientationControl < 1) {
+            this.disconnectOrientationControls();
+        }
+    };
+
+    updateCameraPosition = () => {
+        if (this.orientationEnable === true) {
+            this.orientationControls.update(this.distance);
             return;
         }
         var dLon = 2;
@@ -119,22 +129,6 @@ class InnerViewControls {
         if (this.onKeyDown) {
             this.lat += dLat;
         }
-        if (this.isConnected) {
-            this.updateCameraPosition();
-        }
-        this.camera.lookAt(this.camera.target);
-    };
-
-    updateGUI = () => {
-        if (this.orientationEnable === false && this.control.orientationControl >= 1) {
-            this.turnOnOrientationControls();
-        }
-        if (this.orientationEnable === true && this.control.orientationControl < 1) {
-            this.turnOffOrientationControls();
-        }
-    };
-
-    updateCameraPosition = () => {
         this.lat = Math.max(- 85, Math.min(85, this.lat));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
@@ -142,15 +136,6 @@ class InnerViewControls {
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-    };
-
-    updateCameraPositionOrientation = () => {
-        this.orientationControls.update();
-        var cameraDirtection = new THREE.Vector3(0,0,0);
-        this.newCamera.getWorldDirection(cameraDirtection);
-        cameraDirtection.multiplyScalar(-this.distance);
-        this.camera.position.copy(cameraDirtection);
-        this.camera.quaternion.copy(this.newCamera.quaternion);
     };
 
     onDocumentMouseDown = (event) => {
@@ -268,9 +253,9 @@ class InnerViewControls {
                 break;
 
             case 82: /*r*/
-                console.log('alphaOffset = '+THREE.MathUtils.radToDeg(this.orientationControls.alphaOffset));
-                console.log('lon = '+this.lon);
-                console.log('dO.alpha = '+this.orientationControls.deviceOrientation.alpha);
+                console.log('alphaOffset = ' + THREE.MathUtils.radToDeg(this.orientationControls.alphaOffset));
+                console.log('lon = ' + this.lon);
+                console.log('dO.alpha = ' + this.orientationControls.deviceOrientation.alpha);
                 break;
 
             default: break;
@@ -301,26 +286,15 @@ class InnerViewControls {
         }
     };
 
-    turnOnOrientationControls = () => {
+    connectOrientationControls = () => {
         this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
         this.orientationEnable = true;
     };
 
-    turnOffOrientationControls = () => {
+    disconnectOrientationControls = () => {
         this.orientationControls.disConnect();
-        var pos = this.camera.position;
-        this.lat = pos.angleTo(new THREE.Vector3(pos.x,0,pos.z));
-        this.lat  = THREE.MathUtils.radToDeg(this.lat);
-        if (pos.y < 0) {
-            this.lat = -this.lat;
-        }
-        pos.y = 0;
-        this.lon = pos.angleTo(new THREE.Vector3(1,0,0));
-        this.lon = THREE.MathUtils.radToDeg(this.lon);
-        if (pos.z < 0) {
-            this.lon = -this.lon;
-        }
         this.orientationEnable = false;
+        this.initSphericalData();
     };
 
 }

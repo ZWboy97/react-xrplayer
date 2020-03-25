@@ -2,6 +2,9 @@
 #build
 build
 
+#IDE
+.idea
+
 # dependencies
 /node_modules
 /.pnp

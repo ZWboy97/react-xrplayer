@@ -92,9 +92,12 @@ class InnerViewControls {
 
     update = () => {
         this.updateGUI();
-        this.camera.lookAt(this.camera.target);
-        if (!this.isConnected) return;
+        if (!this.isConnected) {
+            this.camera.lookAt(this.camera.target);
+            return;
+        }
         this.updateCameraPosition();
+        this.camera.lookAt(this.camera.target);
     };
 
     updateGUI = () => {

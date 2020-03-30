@@ -7,9 +7,10 @@ import TWEEN from '@tweenjs/tween.js';
 
 class SpriteShapeHelper {
 
-    constructor(scene, camera) {
+    constructor(scene, camera, renderer) {
         this.scene = scene;
         this.camera = camera;
+        this.renderer = renderer;
         this.pointList = [];
         this.pointGroup = null;
 
@@ -72,6 +73,9 @@ class SpriteShapeHelper {
 
     getBackgroundTexture = (color, opacity, scale) => {
         let canvas = document.createElement("canvas");
+        canvas.click((e) => {
+            console.log('canvas', '点击了热点');
+        })
         const container = document.getElementById('display')
         container.appendChild(canvas);
         canvas.width = 128;
@@ -117,17 +121,18 @@ class SpriteShapeHelper {
         let raycaster = new THREE.Raycaster();
         document.addEventListener('click', (event) => {
             event.preventDefault();
-            let mouse = new THREE.Vector2();
-            //通过鼠标点击的位置计算出raycaster所需要的点的位置，以屏幕中心为原点，值的范围为-1到1.
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-            // 通过鼠标点的位置和当前相机的矩阵计算出raycaster
+            let mouse = new THREE.Vector2(); // 鼠标的二维设备坐标
+            //将屏幕点击的屏幕坐标转化为三维画面平面的坐标，值的范围为-1到1.
+            mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+            mouse.y = - (event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+            //从相机发射一条射线，经过鼠标点击位置
+            // mouse为鼠标的二维设备坐标，camera为射线起点处的相机
             raycaster.setFromCamera(mouse, this.camera);
-            // 获取raycaster直线和所有模型相交的数组集合
+            // 射线与模型的交点，这里交点会是多个，因为射线是穿过模型的，
+            //与模型的所有mesh都会有交点，但我们选取第一个，也就是intersects[0]。
             var intersects = raycaster.intersectObjects(this.pointArr);
             //如果只需要将第一个触发事件，那就取数组的第一个模型
             if (intersects.length > 0) {
-                //this.showModal(intersects[0].object.name)
                 if (this.objectClickHandler) {
                     this.objectClickHandler(intersects);
                 }

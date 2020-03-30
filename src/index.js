@@ -8,7 +8,7 @@ class XRPlayer extends React.Component {
     render() {
         return (
             <Provider store={store}>
-                <Player />
+                <Player {...this.props} />
             </Provider>
         )
     }

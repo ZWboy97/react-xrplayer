@@ -92,7 +92,7 @@ class XRPlayer extends Component {
   initDisplay = () => {
     const { event_list, hot_spot_list } = this.props;
     this.spriteData = new Map(event_list);
-    this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera);
+    this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera, this.renderer);
     this.spriteShapeHelper.setPointList(hot_spot_list);
     this.spriteShapeHelper.objectClickHandler = (intersects) => {
       const key = intersects[0].object.name;
@@ -117,15 +117,15 @@ class XRPlayer extends Component {
   }
 
   onWindowResize = () => {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.aspect = this.mount.clientWidth / this.mount.clientHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(this.mount.clientWidth, this.mount.clientHeight);
   }
 
   initRenderer = () => {
     const renderer = this.renderer;
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(this.mount.clientWidth, this.mount.clientHeight);
     renderer.sortObjects = false;
     renderer.autoClear = false;
     this.mount.appendChild(renderer.domElement);
@@ -158,6 +158,8 @@ class XRPlayer extends Component {
   render() {
     // TODO test redux state
     console.log('redux.data.live_configure', this.props.live_configure);
+    const { width, height } = this.props;
+    console.log('width', width);
     return (
       <FullScreen
         enabled={this.state.isFullScreen}
@@ -165,7 +167,7 @@ class XRPlayer extends Component {
       >
         <div
           style={{
-            width: '100vw', height: '100vh',
+            width: width, height: height,
             background: '#888', overflow: "hidden"
           }}
         >
@@ -203,6 +205,8 @@ class XRPlayer extends Component {
 }
 
 XRPlayer.protoTypes = {
+  width: Proptypes.string,
+  height: Proptypes.string,
   camera_fov: Proptypes.number,
   camera_near: Proptypes.number,
   camera_far: Proptypes.number,
@@ -215,6 +219,8 @@ XRPlayer.protoTypes = {
 }
 
 XRPlayer.defaultProps = {
+  width: '100vw',
+  height: '100vh',
   camera_fov: 150,
   camera_near: 0.01,
   camera_far: 10000,

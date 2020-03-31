@@ -12,7 +12,6 @@ class XRPlayer extends Component {
   state = {
     showingEffect: false,
     effectData: null,
-    isFullScreen: false
   }
 
   constructor(props) {
@@ -59,8 +58,8 @@ class XRPlayer extends Component {
     const { width, height } = this.props;
     return (
       <FullScreen
-        enabled={this.state.isFullScreen}
-        onChange={isFull => this.setState({ isFullScreen: isFull })}
+        enabled={this.props.is_full_screen}
+        onChange={isFull => this.props.onFullScreenChange(isFull)}
       >
         <div
           style={{
@@ -113,8 +112,10 @@ XRPlayer.protoTypes = {
   axes_helper_display: Proptypes.bool,
   hot_spot_list: Proptypes.array,
   event_list: Proptypes.array,
+  is_full_screen: Proptypes.bool,
 
-  onCreated: Proptypes.func
+  onCreated: Proptypes.func,
+  onFullScreenChange: Proptypes.func
 }
 
 XRPlayer.defaultProps = {
@@ -136,7 +137,9 @@ XRPlayer.defaultProps = {
   axes_helper_display: true,
   hot_spot_list: [],
   event_list: [],
-  model_list: []
+  model_list: [],
+  is_full_screen: false,
+  onFullScreenChange: (isFull) => { },
 }
 
 export default connect(

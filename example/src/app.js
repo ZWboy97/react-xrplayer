@@ -29,10 +29,10 @@ class App extends React.Component {
         ];
 
         this.hot_spot_list = [
-            ['infocard', { phi: -90, theta: -10, res_url: 'hotspot_video.png' }],
-            ['image', { phi: 32, theta: 14, res_url: 'hotspot_video.png' }],
-            ['video', { phi: -153, theta: -44, res_url: 'hotspot_video.png' }],
-            ['control', { phi: 67, theta: 19, res_url: 'hotspot_video.png' }]
+            ['infocard', { phi: -90, theta: -10, res_url: 'https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg' }],
+            //['image', { phi: 32, theta: 14, res_url: 'hotspot_video.png' }],
+            // ['video', { phi: -153, theta: -44, res_url: 'hotspot_video.png' }],
+            // ['control', { phi: 67, theta: 19, res_url: 'hotspot_video.png' }]
         ];
 
         this.event_list = [
@@ -62,18 +62,25 @@ class App extends React.Component {
     onXRCreated = (manager) => {
         this.xrManager = manager;
         this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
-        this.xrManager.toNormalView(8000, 1000);
-        this.xrManager.setModels(this.model_list);
+        //this.xrManager.toNormalView(8000, 1000);
+        //this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
+    }
+
+    onChangeSenceRes = () => {
+        this.xrManager.setSenceResource({
+            type: 'image',
+            res_url: 'https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg'
+        });
     }
 
 
     render() {
         return (
             <div>
-                <button onClick={() => { this.setState({ isFullScreen: true }) }}>操作</button>
+                <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
                 <XRPlayer
-                    width="100vw"
+                    width="30vw"
                     height="80vh"
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
@@ -83,6 +90,8 @@ class App extends React.Component {
                     is_full_screen={this.state.isFullScreen}
                     onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
                 ></XRPlayer>
+                <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
+                <button onClick={this.onChangeSenceRes}>切换场景</button>
             </div>
         )
     }

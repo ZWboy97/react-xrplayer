@@ -15,10 +15,13 @@ class XRPlayerManager {
         this.mount = mount;         // Threejs渲染挂载节点
         this.props = initProps;     // 初始化参数
         this.scene = null;
+        this.sceneMesh = null;
         this.camera = null;
         this.renderer = null;
         this.controls = null;
         this.sceneContainer = null; // 全景背景挂载节点
+
+        this.handler = null;
 
         this.innerView = true;      // 是否是内视角，之后想做多场景切换
         this.innerViewControls = null;
@@ -34,6 +37,7 @@ class XRPlayerManager {
         this.initScene();
         this.initRenderer();
         this.animate();
+        console.log('domElement', this.renderer.domElement.getBoundingClientRect().y);
     }
 
     initCamera = () => {
@@ -63,9 +67,9 @@ class XRPlayerManager {
         const textureHelper = new TextureHelper(this.sceneContainer);
         let texture = textureHelper.loadTexture(textureResource);
         let material = new THREE.MeshBasicMaterial({ map: texture });
-        let mesh = new THREE.Mesh(geometry, material);
+        this.sceneMesh = new THREE.Mesh(geometry, material);
         this.scene = new THREE.Scene();
-        this.scene.add(mesh);
+        this.scene.add(this.sceneMesh);
         if (isAxesHelperDisplay) {
             let axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
             this.scene.add(axisHelper);
@@ -95,6 +99,14 @@ class XRPlayerManager {
         this.renderer.render(this.scene, this.camera);
     }
 
+    /****************************全景背景相关控制接口************************* */
+    setSenceResource = (res) => {
+        const textureHelper = new TextureHelper(this.sceneContainer);
+        let texture = textureHelper.loadTexture(res);
+        let material = new THREE.MeshBasicMaterial({ map: texture });
+        this.sceneMesh.material = material;
+    }
+
     /****************************热点标签相关控制接口************************* */
     setHotSpots = (hot_spot_list, event_list) => {
         this.spriteData = new Map(event_list);
@@ -103,10 +115,8 @@ class XRPlayerManager {
         this.spriteShapeHelper.objectClickHandler = (intersects) => {
             const key = intersects[0].object.name;
             if (this.spriteData.has(key)) {
-                this.setState({
-                    showingEffect: true,
-                    effectData: this.spriteData.get(key)
-                });
+                const data = this.spriteData.get(key);
+                this.handler('hot_spot_click', { data })
             }
             console.log(intersects[0].object.name);
         }

@@ -47,7 +47,7 @@ class SpriteShapeHelper {
         meshGroup.name = point[0];
         meshGroup.position.set(...position);
 
-        let mesh = this.createSpriteShape("hotspot_video.png", 1, 16);
+        let mesh = this.createSpriteShape(point[1].res_url, 1, 16);
         meshGroup.add(mesh);
         mesh = this.getBackgroundTexture('#2d2d2d', 0.2, 20);
         meshGroup.add(mesh);
@@ -123,8 +123,9 @@ class SpriteShapeHelper {
             event.preventDefault();
             let mouse = new THREE.Vector2(); // 鼠标的二维设备坐标
             //将屏幕点击的屏幕坐标转化为三维画面平面的坐标，值的范围为-1到1.
-            mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-            mouse.y = - (event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+            const { x: domX, y: domY } = this.renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - domX) / this.renderer.domElement.clientWidth) * 2 - 1;
+            mouse.y = - ((event.clientY - domY) / this.renderer.domElement.clientHeight) * 2 + 1;
             //从相机发射一条射线，经过鼠标点击位置
             // mouse为鼠标的二维设备坐标，camera为射线起点处的相机
             raycaster.setFromCamera(mouse, this.camera);

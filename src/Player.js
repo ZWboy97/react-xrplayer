@@ -35,9 +35,24 @@ class XRPlayer extends Component {
 
   componentDidMount() {
     this.xrManager = new XRPlayerManager(this.mount, this.props);
+    this.xrManager.handler = this.eventHandler;
     this.props.onCreated && this.props.onCreated(this.xrManager);
 
     this.initEvent();
+  }
+
+  eventHandler = (name, props) => {
+    switch (name) {
+      case 'hot_spot_click':
+        this.setState({
+          showingEffect: true,
+          effectData: props.data
+        });
+        break;
+      default: break;
+    }
+    // 外部补充handler
+
   }
 
   initEvent = () => {

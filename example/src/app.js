@@ -5,6 +5,10 @@ import XRPlayer from '../../src/index';
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
+    state = {
+        isFullScreen: false
+    }
+
     constructor(props) {
         super(props);
         this.xrManager = null;
@@ -67,14 +71,17 @@ class App extends React.Component {
     render() {
         return (
             <div>
+                <button onClick={() => { this.setState({ isFullScreen: true }) }}>操作</button>
                 <XRPlayer
                     width="100vw"
-                    height="100vh"
+                    height="80vh"
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
                         type: 'hls',
                         res_url: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8'
                     }}
+                    is_full_screen={this.state.isFullScreen}
+                    onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
                 ></XRPlayer>
             </div>
         )

@@ -11,7 +11,6 @@ class SpriteShapeHelper {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
-        this.hotSpotMap = null;     // 热点标签数据Map
         this.hotSpotMeshMap = null; // 热点标签Mesh Map，便于动态缩减
         this.pointGroup = null;     // 场景中的热点组合
 
@@ -19,11 +18,6 @@ class SpriteShapeHelper {
     }
 
     resetHotSpotGroup = () => {
-        if (!this.hotSpotMap) {
-            this.hotSpotMap = new Map();
-        } else {
-            this.hotSpotMap.clear();
-        }
         if (!this.pointGroup) {
             this.pointGroup = new THREE.Group();
             this.scene.add(this.pointGroup);
@@ -34,17 +28,24 @@ class SpriteShapeHelper {
 
     setHotSpotList = (hot_spot_list) => {
         this.resetHotSpotGroup();
-        this.hotSpotMap = new Map(hot_spot_list);
-        this.hotSpotMap.forEach((value, key) => {
+        const hotSpotMap = new Map(hot_spot_list);
+        hotSpotMap.forEach((value, key) => {
             this.createPoint(key, value)
         });
     }
 
     addHotSpot = (hot_spot) => {
-        if (!this.hotSpotMap) {
+        if (!this.pointGroup) {
             this.resetHotSpotGroup();
         }
         this.createPoint(hot_spot.key, hot_spot.value)
+    }
+
+    removeHotSpot = (hot_spot_key) => {
+        const mesh = this.hotSpotMeshMap.get(hot_spot_key);
+        if (mesh) {
+            this.pointGroup.remove(mesh);
+        }
     }
 
     contertSph2Rect = (phi, theta) => {
@@ -57,21 +58,22 @@ class SpriteShapeHelper {
     }
 
     createPoint(key, value) {
-        let position = this.contertSph2Rect(value.phi, value.theta);
+        const { phi, theta, res_url, opacity = 1, scale = 16, animate = false } = value
+        let position = this.contertSph2Rect(phi, theta);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
         meshGroup.position.set(...position);
-        let mesh = this.createSpriteShape(value.res_url, 1, 16);
-        meshGroup.add(mesh);
-        mesh = this.getBackgroundTexture('#2d2d2d', 0.2, 20);
-        meshGroup.add(mesh);
-        this.hotSpotMeshMap.set(key, mesh);
+        let mesh = this.createSpriteShape(res_url, opacity, scale);
         mesh.name = key;
-        this.pointGroup.add(meshGroup);
-        this.animatePoints(meshGroup);
+        mesh.position.set(...position);
+        this.hotSpotMeshMap.set(key, mesh);
+        this.pointGroup.add(mesh);
+        if (animate) {
+            this.animatePoint(mesh);
+        }
     }
 
-    createSpriteShape = (url, opacity, scale) => {
+    createSpriteShape = (url, opacity = 1, scale = 16) => {
         let texture = new THREE.TextureLoader().load(url);
         texture.needsUpdate = true; //注意这句不能少
         let material = new THREE.SpriteMaterial({
@@ -111,19 +113,23 @@ class SpriteShapeHelper {
         return mesh;
     }
 
-    animatePoints = (meshGroup) => {
+    animatePoint = (mesh) => {
         let t = 300;
+        let scale = mesh.scale;
+        let tweenA = new TWEEN.Tween(scale)
+            .to({ x: scale.x * 0.8, y: scale.y * 0.8 }, 500)
+            .delay(100)
+        let tweenB = new TWEEN.Tween(scale)
+            .to({ x: scale.x * 1.2, y: scale.y * 1.2 }, 500)
+            .delay(100)
+        tweenA.chain(tweenB);
+        tweenB.chain(tweenA);
+        tweenA.start(t = t + 100);
+    }
+
+    animatePoints = (meshGroup) => {
         meshGroup.children.forEach(item => {
-            let scale = item.scale;
-            let tweenA = new TWEEN.Tween(scale)
-                .to({ x: scale.x * 0.8, y: scale.y * 0.8 }, 500)
-                .delay(100)
-            let tweenB = new TWEEN.Tween(scale)
-                .to({ x: scale.x * 1.2, y: scale.y * 1.2 }, 500)
-                .delay(100)
-            tweenA.chain(tweenB);
-            tweenB.chain(tweenA);
-            tweenA.start(t = t + 100);
+            this.animatePoint(item);
         })
     }
 
@@ -135,6 +141,7 @@ class SpriteShapeHelper {
         let raycaster = new THREE.Raycaster();
         document.addEventListener('click', (event) => {
             event.preventDefault();
+            console.log('检测热点点击');
             let mouse = new THREE.Vector2(); // 鼠标的二维设备坐标
             //将屏幕点击的屏幕坐标转化为三维画面平面的坐标，值的范围为-1到1.
             const { x: domX, y: domY } = this.renderer.domElement.getBoundingClientRect();

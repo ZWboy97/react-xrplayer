@@ -132,16 +132,19 @@ class XRPlayerManager {
         }
     }
 
+    getHotSpotList = () => {
+
+    }
+
     addHotSpot = (hot_spot, event) => {
         this.spriteShapeHelper.addHotSpot(hot_spot);
-        if (event != null) {
+        if (event != null && !this.spriteEventList.has(event.key)) {
             this.spriteEventList.set(event.key, event.value);
         }
     }
 
-    removeHotSpot = (hot_spot) => {
-        if (!this.spriteEventList) return;
-
+    removeHotSpot = (hot_spot_key) => {
+        this.spriteShapeHelper.removeHotSpot(hot_spot_key);
     }
 
     /*****************************模型控制相关接口**************************** */

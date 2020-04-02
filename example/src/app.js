@@ -29,7 +29,10 @@ class App extends React.Component {
         ];
 
         this.hot_spot_list = [
-            ['infocard', { phi: -90, theta: -10, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }],
+            ['infocard', {
+                phi: -90, theta: -10, animate: true,
+                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png'
+            }],
             ['image', { phi: 32, theta: 14, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }],
             ['video', { phi: -153, theta: -44, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }],
             ['control', { phi: 67, theta: 19, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }]
@@ -75,21 +78,26 @@ class App extends React.Component {
     }
 
     onAddHotSpot = () => {
-        const key = Math.random()
         this.xrManager.addHotSpot({
-            key: `${key}`,
+            key: `infocard`,
             value: {
-                phi: -(key * 100), theta: -10,
+                phi: - 90, theta: -10,
                 res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png'
             }
         }, {
-            key: `${key}`,
+            key: `infocard`,
             value: {
                 id: 'infocard',
                 type: 'infocard',
                 iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
             }
         })
+        alert(`添加了一个热点标签`)
+    }
+
+    onRemoveHotSpot = () => {
+        this.xrManager.removeHotSpot('infocard')
+        alert(`移除了一个热点标签`);
     }
 
 
@@ -110,6 +118,7 @@ class App extends React.Component {
                 <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
                 <button onClick={this.onChangeSenceRes}>切换场景</button>
                 <button onClick={this.onAddHotSpot}>添加热点</button>
+                <button onClick={this.onRemoveHotSpot}>移除热点</button>
             </div>
         )
     }

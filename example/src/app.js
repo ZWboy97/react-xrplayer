@@ -15,24 +15,27 @@ class App extends React.Component {
 
         this.model_list = [
             ['12332', {
-                objUrl: "SambaDancing.fbx",
+                objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/SambaDancing.fbx",
                 texture: "texture1.png",
                 modeFormat: "fbx",
                 scale: 1
             }],
             ['23433', {
-                objUrl: "model.json",
-                texture: "texture1.png",
+                objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.json",
+                texture: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.png",
                 modeFormat: "obj",
                 scale: 1
             }]
         ];
 
         this.hot_spot_list = [
-            ['infocard', { phi: -90, theta: -10, res_url: 'https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg' }],
-            //['image', { phi: 32, theta: 14, res_url: 'hotspot_video.png' }],
-            // ['video', { phi: -153, theta: -44, res_url: 'hotspot_video.png' }],
-            // ['control', { phi: 67, theta: 19, res_url: 'hotspot_video.png' }]
+            ['infocard', {
+                phi: -90, theta: -10, animate: true,
+                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png'
+            }],
+            ['image', { phi: 32, theta: 14, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }],
+            ['video', { phi: -153, theta: -44, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }],
+            ['control', { phi: 67, theta: 19, res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png' }]
         ];
 
         this.event_list = [
@@ -63,7 +66,7 @@ class App extends React.Component {
         this.xrManager = manager;
         this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
         //this.xrManager.toNormalView(8000, 1000);
-        //this.xrManager.setModels(this.model_list);
+        this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
     }
 
@@ -74,13 +77,35 @@ class App extends React.Component {
         });
     }
 
+    onAddHotSpot = () => {
+        this.xrManager.addHotSpot({
+            key: `infocard`,
+            value: {
+                phi: - 90, theta: -10,
+                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png'
+            }
+        }, {
+            key: `infocard`,
+            value: {
+                id: 'infocard',
+                type: 'infocard',
+                iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+            }
+        })
+        alert(`添加了一个热点标签`)
+    }
+
+    onRemoveHotSpot = () => {
+        this.xrManager.removeHotSpot('infocard')
+        alert(`移除了一个热点标签`);
+    }
+
 
     render() {
         return (
             <div>
-                <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
                 <XRPlayer
-                    width="30vw"
+                    width="100vw"
                     height="80vh"
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
@@ -92,6 +117,8 @@ class App extends React.Component {
                 ></XRPlayer>
                 <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
                 <button onClick={this.onChangeSenceRes}>切换场景</button>
+                <button onClick={this.onAddHotSpot}>添加热点</button>
+                <button onClick={this.onRemoveHotSpot}>移除热点</button>
             </div>
         )
     }

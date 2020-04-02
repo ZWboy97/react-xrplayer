@@ -28,7 +28,7 @@ class XRPlayerManager {
         this.spriteShapeHelper = null;
         this.centerModelHelper = null;
         this.viewConvertHelper = null;
-        this.spriteData = null;
+        this.spriteEventList = null;
         this.init();
     }
 
@@ -62,7 +62,7 @@ class XRPlayerManager {
             axes_helper_display: isAxesHelperDisplay
         } = this.props;
         this.sceneContainer = document.getElementById('video')
-        let geometry = new THREE.SphereGeometry(500, 60, 40); // 球体
+        let geometry = new THREE.SphereGeometry(500, 80, 40); // 球体
         geometry.scale(-1, 1, 1);
         const textureHelper = new TextureHelper(this.sceneContainer);
         let texture = textureHelper.loadTexture(textureResource);
@@ -108,18 +108,43 @@ class XRPlayerManager {
     }
 
     /****************************热点标签相关控制接口************************* */
+    resetHotSpotsData = () => {
+        if (!this.spriteShapeHelper) {
+            this.spriteEventList = new Map();
+            this.spriteShapeHelper = new SpriteShapeHelper(this.scene,
+                this.camera, this.renderer);
+        } else {
+            this.spriteEventList.clear();
+        }
+    }
+
     setHotSpots = (hot_spot_list, event_list) => {
-        this.spriteData = new Map(event_list);
-        this.spriteShapeHelper = new SpriteShapeHelper(this.scene, this.camera, this.renderer);
-        this.spriteShapeHelper.setPointList(hot_spot_list);
+        this.resetHotSpotsData();
+        this.spriteEventList = new Map(event_list);
+        this.spriteShapeHelper.setHotSpotList(hot_spot_list);
         this.spriteShapeHelper.objectClickHandler = (intersects) => {
             const key = intersects[0].object.name;
-            if (this.spriteData.has(key)) {
-                const data = this.spriteData.get(key);
+            if (this.spriteEventList.has(key)) {
+                const data = this.spriteEventList.get(key);
                 this.handler('hot_spot_click', { data })
             }
             console.log(intersects[0].object.name);
         }
+    }
+
+    getHotSpotList = () => {
+
+    }
+
+    addHotSpot = (hot_spot, event) => {
+        this.spriteShapeHelper.addHotSpot(hot_spot);
+        if (event != null && !this.spriteEventList.has(event.key)) {
+            this.spriteEventList.set(event.key, event.value);
+        }
+    }
+
+    removeHotSpot = (hot_spot_key) => {
+        this.spriteShapeHelper.removeHotSpot(hot_spot_key);
     }
 
     /*****************************模型控制相关接口**************************** */

@@ -65,9 +65,13 @@ class App extends React.Component {
     onXRCreated = (manager) => {
         this.xrManager = manager;
         this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
-        //this.xrManager.toNormalView(8000, 1000);
+        this.xrManager.toNormalView(8000, 1000);
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
+    }
+
+    onEventHandler = (name, props) => {
+        console.log('event:', `name=${name},props:${props}`);
     }
 
     onChangeSenceRes = () => {
@@ -114,6 +118,7 @@ class App extends React.Component {
                     }}
                     is_full_screen={this.state.isFullScreen}
                     onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
+                    onEventHandler={this.onEventHandler}
                 ></XRPlayer>
                 <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
                 <button onClick={this.onChangeSenceRes}>切换场景</button>

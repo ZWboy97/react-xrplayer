@@ -42,6 +42,8 @@ class XRPlayer extends Component {
   }
 
   eventHandler = (name, props) => {
+    const result = this.props.onEventHandler(name, props);
+    if (result === true) return; // 为true，外部拦截响应，由外部处理
     switch (name) {
       case 'hot_spot_click':
         this.setState({
@@ -51,8 +53,6 @@ class XRPlayer extends Component {
         break;
       default: break;
     }
-    // 外部补充handler
-
   }
 
   initEvent = () => {
@@ -130,7 +130,8 @@ XRPlayer.protoTypes = {
   is_full_screen: Proptypes.bool,
 
   onCreated: Proptypes.func,
-  onFullScreenChange: Proptypes.func
+  onFullScreenChange: Proptypes.func,
+  onEventHandler: Proptypes.func
 }
 
 XRPlayer.defaultProps = {
@@ -155,6 +156,7 @@ XRPlayer.defaultProps = {
   model_list: [],
   is_full_screen: false,
   onFullScreenChange: (isFull) => { },
+  onEventHandler: (name, prop) => { return false },
 }
 
 export default connect(

@@ -116,7 +116,7 @@ class App extends React.Component {
         return (
             <div>
                 <XRPlayer
-                    width="100vw"
+                    width="30vw"
                     height="80vh"
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{

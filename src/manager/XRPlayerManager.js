@@ -164,6 +164,10 @@ class XRPlayerManager {
         this.centerModelHelper.removeModel(model_key);
     }
 
+    removeAllModel = () => {
+        this.centerModelHelper.removeAllModel();
+    }
+
 
     /**************************相机移动与控制相关接口************************* */
 

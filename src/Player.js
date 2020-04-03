@@ -85,12 +85,12 @@ class XRPlayer extends Component {
           style={{
             width: is_full_screen ? "100vw" : width,
             height: is_full_screen ? "100vh" : height,
-            background: '#888', overflow: "hidden"
+            background: '#fff', overflow: "hidden"
           }}
         >
           <div
             id="canvas"
-            style={{ width: '100%', height: '100%', background: '#888' }}
+            style={{ width: '100%', height: '100%', background: '#fff' }}
             ref={(mount) => { this.mount = mount }}
           >
           </div>
@@ -156,7 +156,7 @@ XRPlayer.defaultProps = {
     y: 0,
     z: 0
   },
-  axes_helper_display: true,
+  axes_helper_display: false,
   hot_spot_list: [],
   event_list: [],
   model_list: [],

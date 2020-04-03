@@ -111,12 +111,16 @@ class App extends React.Component {
         this.xrManager.removeModel('12332');
     }
 
+    onRemoveAllModel = () => {
+        this.xrManager.removeAllModel();
+    }
+
 
     render() {
         return (
             <div>
                 <XRPlayer
-                    width="30vw"
+                    width="100vw"
                     height="80vh"
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
@@ -133,6 +137,7 @@ class App extends React.Component {
                 <button onClick={this.onRemoveHotSpot}>移除热点</button>
                 <button onClick={this.onAddModel}>添加模型</button>
                 <button onClick={this.onRemoveModel}>移除模型</button>
+                <button onClick={this.onRemoveAllModel}>移除所有模型</button>
             </div>
         )
     }

@@ -96,8 +96,8 @@ class InnerViewControls {
             this.camera.lookAt(this.camera.target);
             return;
         }
+        this.camera.lookAt(this.camera.target); // 需要在updateposition之前，否则传感器效果异常
         this.updateCameraPosition();
-        this.camera.lookAt(this.camera.target);
     };
 
     updateGUI = () => {

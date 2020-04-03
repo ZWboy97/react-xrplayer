@@ -137,28 +137,43 @@ class SpriteShapeHelper {
         TWEEN.update();
     }
 
-    bindEvent = () => {
+    getIntersects = (event) => {
         let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2(); // 鼠标的二维设备坐标
+        //将屏幕点击的屏幕坐标转化为三维画面平面的坐标，值的范围为-1到1.
+        const { x: domX, y: domY } = this.renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - domX) / this.renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = - ((event.clientY - domY) / this.renderer.domElement.clientHeight) * 2 + 1;
+        //从相机发射一条射线，经过鼠标点击位置
+        // mouse为鼠标的二维设备坐标，camera为射线起点处的相机
+        raycaster.setFromCamera(mouse, this.camera);
+        // 射线与模型的交点，这里交点会是多个，因为射线是穿过模型的，
+        //与模型的所有mesh都会有交点，但我们选取第一个，也就是intersects[0]。
+        const meshArray = Array.from(this.hotSpotMeshMap.values());
+        return raycaster.intersectObjects(meshArray);
+    }
+
+    bindEvent = () => {
         document.addEventListener('click', (event) => {
             event.preventDefault();
             console.log('检测热点点击');
-            let mouse = new THREE.Vector2(); // 鼠标的二维设备坐标
-            //将屏幕点击的屏幕坐标转化为三维画面平面的坐标，值的范围为-1到1.
-            const { x: domX, y: domY } = this.renderer.domElement.getBoundingClientRect();
-            mouse.x = ((event.clientX - domX) / this.renderer.domElement.clientWidth) * 2 - 1;
-            mouse.y = - ((event.clientY - domY) / this.renderer.domElement.clientHeight) * 2 + 1;
-            //从相机发射一条射线，经过鼠标点击位置
-            // mouse为鼠标的二维设备坐标，camera为射线起点处的相机
-            raycaster.setFromCamera(mouse, this.camera);
-            // 射线与模型的交点，这里交点会是多个，因为射线是穿过模型的，
-            //与模型的所有mesh都会有交点，但我们选取第一个，也就是intersects[0]。
-            const meshArray = Array.from(this.hotSpotMeshMap.values());
-            var intersects = raycaster.intersectObjects(meshArray);
+            var intersects = this.getIntersects(event);
             //如果只需要将第一个触发事件，那就取数组的第一个模型
             if (intersects.length > 0) {
                 if (this.objectClickHandler) {
                     this.objectClickHandler(intersects);
                 }
+            }
+        }, true);
+        document.addEventListener('mousemove', (event) => {
+            event.preventDefault();
+            var intersects = this.getIntersects(event);
+            //如果只需要将第一个触发事件，那就取数组的第一个模型
+            if (intersects.length > 0) {
+                document.getElementById('canvas').style.cursor = 'pointer';
+            }
+            else {
+                document.getElementById('canvas').style.cursor = 'default';
             }
         }, true);
     }

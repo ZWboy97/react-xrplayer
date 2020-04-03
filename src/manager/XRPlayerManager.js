@@ -132,10 +132,6 @@ class XRPlayerManager {
         }
     }
 
-    getHotSpotList = () => {
-
-    }
-
     addHotSpot = (hot_spot, event) => {
         this.spriteShapeHelper.addHotSpot(hot_spot);
         if (event != null && !this.spriteEventList.has(event.key)) {
@@ -148,9 +144,24 @@ class XRPlayerManager {
     }
 
     /*****************************模型控制相关接口**************************** */
+
+    resetModels = () => {
+        if (!this.centerModelHelper) {
+            this.centerModelHelper = new CenterModelHelper(this.scene);
+        }
+    }
+
     setModels = (model_list) => {
-        this.centerModelHelper = new CenterModelHelper(this.scene);
+        this.resetModels();
         this.centerModelHelper.loadModelList(model_list);
+    }
+
+    addModel = (model_key, model) => {
+        this.centerModelHelper.loadModel(model_key, model);
+    }
+
+    removeModel = (model_key) => {
+        this.centerModelHelper.removeModel(model_key);
     }
 
 

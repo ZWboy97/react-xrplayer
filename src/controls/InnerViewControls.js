@@ -96,7 +96,6 @@ class InnerViewControls {
             this.camera.lookAt(this.camera.target);
             return;
         }
-        this.camera.lookAt(this.camera.target); // 需要在updateposition之前，否则传感器效果异常
         this.updateCameraPosition();
     };
 
@@ -111,6 +110,7 @@ class InnerViewControls {
 
     updateCameraPosition = () => {
         if (this.orientationEnable === true) {
+            this.camera.lookAt(this.camera.target); // 需要在updateposition之前，否则传感器效果异常
             this.orientationControls.update(this.distance);
             return;
         }
@@ -139,6 +139,7 @@ class InnerViewControls {
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
+        this.camera.lookAt(this.camera.target);
     };
 
     onDocumentMouseDown = (event) => {

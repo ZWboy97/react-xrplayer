@@ -20,6 +20,7 @@ class XRPlayerManager {
         this.renderer = null;
         this.controls = null;
         this.sceneContainer = null; // 全景背景挂载节点
+        this.sceneTextureHelper = null; //全景场景纹理加载控制器
 
         this.handler = null;
 
@@ -64,8 +65,8 @@ class XRPlayerManager {
         this.sceneContainer = document.getElementById('video')
         let geometry = new THREE.SphereGeometry(500, 80, 40); // 球体
         geometry.scale(-1, 1, 1);
-        const textureHelper = new TextureHelper(this.sceneContainer);
-        let texture = textureHelper.loadTexture(textureResource);
+        this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
+        let texture = this.sceneTextureHelper.loadTexture(textureResource);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh = new THREE.Mesh(geometry, material);
         this.scene = new THREE.Scene();
@@ -101,8 +102,9 @@ class XRPlayerManager {
 
     /****************************全景背景相关控制接口************************* */
     setSenceResource = (res) => {
-        const textureHelper = new TextureHelper(this.sceneContainer);
-        let texture = textureHelper.loadTexture(res);
+        this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();
+        this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
+        let texture = this.sceneTextureHelper.loadTexture(res);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh.material = material;
     }
@@ -162,6 +164,10 @@ class XRPlayerManager {
 
     removeModel = (model_key) => {
         this.centerModelHelper.removeModel(model_key);
+    }
+
+    removeAllModel = () => {
+        this.centerModelHelper.removeAllModel();
     }
 
 

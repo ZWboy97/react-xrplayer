@@ -29,6 +29,14 @@ class CenterModelHelper {
         this.modelLoaderMap.delete(model_key);
     }
 
+    removeAllModel = () => {
+        const loaderArray = Array.from(this.modelLoaderMap.values());
+        loaderArray.forEach(loader => {
+            loader.remove();
+        });
+        this.modelLoaderMap.clear();
+    }
+
     getLoader = (data) => {
         switch (data.modeFormat) {
             case 'fbx':

@@ -65,20 +65,26 @@ class XRPlayer extends Component {
       this.mount.clientHeight);
   }
 
+  onFullScreenChange = (isFull) => {
+    this.props.onFullScreenChange(isFull);
+    this.onWindowResize();
+  }
+
   componentWillUnmount() {
     this.xrManager.distory();
   }
 
   render() {
-    const { width, height } = this.props;
+    let { width, height, is_full_screen = false } = this.props;
     return (
       <FullScreen
         enabled={this.props.is_full_screen}
-        onChange={isFull => this.props.onFullScreenChange(isFull)}
+        onChange={this.onFullScreenChange}
       >
         <div
           style={{
-            width: width, height: height,
+            width: is_full_screen ? "100vw" : width,
+            height: is_full_screen ? "100vh" : height,
             background: '#888', overflow: "hidden"
           }}
         >

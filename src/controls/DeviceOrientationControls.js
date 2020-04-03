@@ -65,10 +65,6 @@ class DeviceOrientationControls {
         this.camera.quaternion.copy(this.camera.quaternion);
     };
 
-    getDataFromDevice = () => {
-
-    }
-
 }
 
 export default DeviceOrientationControls;

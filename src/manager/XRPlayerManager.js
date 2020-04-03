@@ -197,6 +197,18 @@ class XRPlayerManager {
         this.innerViewControls.disConnect();
     }
 
+    getEnableOrientationControls = () => {
+        return this.innerViewControls.getEnableOrientationControls();
+    }
+
+    enableOrientationControls = () => {
+        this.innerViewControls.enableOrientationControls();
+    }
+
+    disableOrientationControls = () => {
+        this.innerViewControls.disableOrientationControls();
+    }
+
 
     /*******************************其他接口********************************** */
     onWindowResize = (mountWidth, mountHeight) => {

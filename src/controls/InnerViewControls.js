@@ -39,13 +39,6 @@ class InnerViewControls {
         //重力交互控件
         this.orientationControls = new DeviceOrientationControls(this.camera);
         this.orientationEnable = false;
-
-        //GUI
-        var gui = new dat.GUI();
-        this.control = new function () {
-            this.orientationControl = 0;
-        }();
-        gui.add(this.control, 'orientationControl', 0, 1).step(1);
     }
 
     /**
@@ -90,8 +83,23 @@ class InnerViewControls {
         }
     };
 
+    getEnableOrientationControls = () => {
+        return this.orientationEnable;
+    }
+
+    enableOrientationControls = () => {
+        if (this.orientationEnable === false) {
+            this.connectOrientationControls();
+        }
+    }
+
+    disableOrientationControls = () => {
+        if (this.orientationEnable === true) {
+            this.disconnectOrientationControls();
+        }
+    }
+
     update = () => {
-        this.updateGUI();
         if (!this.isConnected) {
             this.camera.lookAt(this.camera.target);
             return;

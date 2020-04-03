@@ -268,6 +268,47 @@ Map格式
     目标移除热点的key
 
 #### 模型控制相关
+##### setModels(model_list)
+通过列表一次性设置一组模型加载，先前加载的模型会被清除
+model_list是一个Map结构，结构示例如下
+```js
+[
+    ['12332', {
+        objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/SambaDancing.fbx",
+        texture: "texture1.png",
+        modeFormat: "fbx",
+        scale: 1
+        }
+    ],       
+    ['23433', {
+        objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.json",
+        texture: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.png",
+        modeFormat: "obj",
+        scale: 1
+        }
+    ]            
+]
+```
+##### addModel(model_key, model)
+向场景中添加单个模型，不影响已有的模型
+* model_key：String类型，需要保障唯一性，便于后期的控制与移除
+* model：Object类型，模型相关的数据
+
+举例：
+```js
+addModel('12332', {
+            objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/SambaDancing.fbx",
+            texture: "texture1.png",
+            modeFormat: "fbx",
+            scale: 1
+        })
+```
+##### removeModel(model_key)
+基于模型的key从场景中移除一个已有模型
+举例：
+```js
+removeModel('12332');
+```
 
 #### 相机移动与控制相关
 

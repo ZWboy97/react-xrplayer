@@ -14,12 +14,6 @@ class App extends React.Component {
         this.xrManager = null;
 
         this.model_list = [
-            ['12332', {
-                objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/SambaDancing.fbx",
-                texture: "texture1.png",
-                modeFormat: "fbx",
-                scale: 1
-            }],
             ['23433', {
                 objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.json",
                 texture: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.png",
@@ -104,6 +98,19 @@ class App extends React.Component {
         alert(`移除了一个热点标签`);
     }
 
+    onAddModel = () => {
+        this.xrManager.addModel('12332', {
+            objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/SambaDancing.fbx",
+            texture: "texture1.png",
+            modeFormat: "fbx",
+            scale: 1
+        })
+    }
+
+    onRemoveModel = () => {
+        this.xrManager.removeModel('12332');
+    }
+
 
     render() {
         return (
@@ -124,6 +131,8 @@ class App extends React.Component {
                 <button onClick={this.onChangeSenceRes}>切换场景</button>
                 <button onClick={this.onAddHotSpot}>添加热点</button>
                 <button onClick={this.onRemoveHotSpot}>移除热点</button>
+                <button onClick={this.onAddModel}>添加模型</button>
+                <button onClick={this.onRemoveModel}>移除模型</button>
             </div>
         )
     }

@@ -9,6 +9,7 @@ class MyFBXLoader {
         this.mixer = null;  //混合器
         this.obj = null;
         this.animationAction = null;
+        this.ambient = null;
         this.clock = new THREE.Clock();
     }
 
@@ -32,12 +33,13 @@ class MyFBXLoader {
 
     display = () => {
         this.scene.add(this.obj);
-        var ambient = new THREE.AmbientLight(0xffffff);
-        this.scene.add(ambient);
+        this.ambient = new THREE.AmbientLight(0xffffff);
+        this.scene.add(this.ambient);
     }
 
     remove = () => {
         this.scene.remove(this.obj);
+        this.scene.remove(this.ambient);
         this.mixer = null;
         this.animationAction = null;
     }

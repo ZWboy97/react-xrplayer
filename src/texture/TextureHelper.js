@@ -17,6 +17,7 @@ class TextureHelper {
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
         this.videoLoader = null;
+        this.resType = 'image'
     }
 
     initVideoNode = () => {
@@ -83,6 +84,7 @@ class TextureHelper {
 
     loadTexture = (resource) => {
         const { type, res_url } = resource;
+        this.resType = type;
         switch (type) {
             case 'hls':
                 return this.loadHlsVideo(res_url);
@@ -106,7 +108,26 @@ class TextureHelper {
 
     unloadHlsVideo = () => {
         if (this.videoLoader) {
-            this.videoLoader.destory();
+            this.videoLoader.stopLoad();
+            this.videoLoader.detachMedia();
+            this.videoLoader.destroy();
+        }
+    }
+
+    unloadResource = () => {
+        switch (this.resType) {
+            case 'hls':
+                this.unloadHlsVideo();
+                break;
+            case 'flv':
+                this.unloadFlvVideo();
+                break;
+            case 'mp4':
+            case 'image':
+                // TODO 是否需要释放资源？？
+                break;
+            default:
+                return null;
         }
     }
 }

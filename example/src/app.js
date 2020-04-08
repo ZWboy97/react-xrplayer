@@ -6,7 +6,8 @@ console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
     state = {
-        isFullScreen: false
+        isFullScreen: false,
+        onOrientationControls: false
     }
 
     constructor(props) {
@@ -114,6 +115,14 @@ class App extends React.Component {
         this.xrManager.removeAllModel();
     }
 
+    onOrientationControls = () => {
+        if (this.xrManager.getEnableOrientationControls()) {
+            this.xrManager.disableOrientationControls();
+        } else {
+            this.xrManager.enableOrientationControls();
+        }
+    }
+
 
     render() {
         return (
@@ -131,6 +140,7 @@ class App extends React.Component {
                     onEventHandler={this.onEventHandler}
                 ></XRPlayer>
                 <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
+                <button onClick={this.onOrientationControls}>切换/取消传感器控制</button>
                 <button onClick={this.onChangeSenceRes}>切换场景</button>
                 <button onClick={this.onAddHotSpot}>添加热点</button>
                 <button onClick={this.onRemoveHotSpot}>移除热点</button>

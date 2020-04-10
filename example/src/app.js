@@ -63,6 +63,12 @@ class App extends React.Component {
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(-50, 50);
+        this.xrManager.setParticleEffectRes({
+            url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
+            ,
+            num: 5000, range: 500,
+            color: 0xffffff, sizeAttenuation: true
+        });
     }
 
     onEventHandler = (name, props) => {
@@ -137,6 +143,14 @@ class App extends React.Component {
         this.xrManager.setAutoRotateSpeed(10.0);
     }
 
+    onParticleEffect = () => {
+        if (this.xrManager.getEnableParticleDisplay()) {
+            this.xrManager.enableParticleDisplay(false);
+        } else {
+            this.xrManager.enableParticleDisplay(true)
+        }
+    }
+
 
     render() {
         return (
@@ -164,8 +178,7 @@ class App extends React.Component {
                 <button onClick={this.onAutoRotateEnable}>自动旋转</button>
                 <button onClick={this.onAutoRotateSpeed}>自动旋转速度</button>
                 <button onClick={this.onAutoRotateDirection}>自动旋转方向</button>
-
-
+                <button onClick={this.onParticleEffect}>添加粒子效果</button>
 
             </div>
         )

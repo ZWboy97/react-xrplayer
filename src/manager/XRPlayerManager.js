@@ -9,6 +9,8 @@ import TWEEN from '@tweenjs/tween.js';
 import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 
+import Sprites from '../display/Sprites'
+
 class XRPlayerManager {
 
     constructor(mount, initProps) {
@@ -75,6 +77,12 @@ class XRPlayerManager {
             let axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
             this.scene.add(axisHelper);
         }
+
+        this.sprites = new Sprites(
+            this.scene,
+            'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png',
+            5000, 500, 0xffffff, true
+        );
     }
 
     initRenderer = () => {
@@ -97,6 +105,7 @@ class XRPlayerManager {
             this.centerModelHelper.update();
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
+        this.sprites.update();
         this.renderer.render(this.scene, this.camera);
     }
 

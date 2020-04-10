@@ -123,6 +123,19 @@ class App extends React.Component {
         }
     }
 
+    onAutoRotateEnable = () => {
+        const enable = this.xrManager.getEnableAutoRotate();
+        this.xrManager.setEnableAutoRotate(!enable);
+    }
+
+    onAutoRotateDirection = () => {
+        this.xrManager.setAutoRotateDirection('right');
+    }
+
+    onAutoRotateSpeed = () => {
+        this.xrManager.setAutoRotateSpeed(10.0);
+    }
+
 
     render() {
         return (
@@ -147,6 +160,12 @@ class App extends React.Component {
                 <button onClick={this.onAddModel}>添加模型</button>
                 <button onClick={this.onRemoveModel}>移除模型</button>
                 <button onClick={this.onRemoveAllModel}>移除所有模型</button>
+                <button onClick={this.onAutoRotateEnable}>自动旋转</button>
+                <button onClick={this.onAutoRotateSpeed}>自动旋转速度</button>
+                <button onClick={this.onAutoRotateDirection}>自动旋转方向</button>
+
+
+
             </div>
         )
     }

@@ -4,8 +4,6 @@
  */
 import * as THREE from 'three';
 import DeviceOrientationControls from './DeviceOrientationControls';
-import * as dat from 'dat.gui';
-
 
 class InnerViewControls {
 
@@ -26,6 +24,13 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
+
+        // 视野自动旋转
+        this.enableAutoRotate = true;          // 是否自动旋转
+        this.autoRotateSpeed = 1.0;             // 自动旋转速度,对外
+        this.autoRotateAngle =                  // 内部速度
+            this.getRotateAngle(this.autoRotateSpeed);
+        this.autoRotateDirection = 'left';      // 自动旋转方向，left、right、up、down
 
         //键盘交互控件
         this.onKeyLeft = false;
@@ -51,6 +56,17 @@ class InnerViewControls {
 
     disConnect = () => {
         this.isConnected = false;
+    };
+
+    connectOrientationControls = () => {
+        this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
+        this.orientationEnable = true;
+    };
+
+    disconnectOrientationControls = () => {
+        this.orientationControls.disConnect();
+        this.orientationEnable = false;
+        this.initSphericalData();
     };
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
@@ -107,15 +123,6 @@ class InnerViewControls {
         this.updateCameraPosition();
     };
 
-    updateGUI = () => {
-        if (this.orientationEnable === false && this.control.orientationControl >= 1) {
-            this.connectOrientationControls();
-        }
-        if (this.orientationEnable === true && this.control.orientationControl < 1) {
-            this.disconnectOrientationControls();
-        }
-    };
-
     updateCameraPosition = () => {
         if (this.orientationEnable === true) {
             this.camera.lookAt(this.camera.target); // 需要在updateposition之前，否则传感器效果异常
@@ -143,12 +150,41 @@ class InnerViewControls {
         this.lat = Math.max(- 85, Math.min(85, this.lat));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
+        if (this.enableAutoRotate) {
+            this.autoRotate();
+        }
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
         this.camera.lookAt(this.camera.target);
     };
+
+    autoRotate = () => {
+        switch (this.autoRotateDirection) {
+            case 'left':
+                this.theta += this.autoRotateAngle;
+                this.lon = THREE.Math.radToDeg(this.theta);
+                break;
+            case 'right':
+                this.theta -= this.autoRotateAngle;
+                this.lon = THREE.Math.radToDeg(this.theta);
+                break;
+            case 'up':
+                this.phi += this.autoRotateAngle;
+                this.lat = 90 - THREE.Math.radToDeg(this.phi);
+                break;
+            case 'down':
+                this.phi -= this.autoRotateAngle;
+                this.lat = 90 - THREE.Math.radToDeg(this.phi);
+                break;
+            default: break;
+        }
+    }
+
+    getRotateAngle = (speed) => {
+        return 2 * Math.PI / 60 / 60 * speed;
+    }
 
     onDocumentMouseDown = (event) => {
         if (!!document.pointerLockElement) {
@@ -297,18 +333,6 @@ class InnerViewControls {
 
         }
     };
-
-    connectOrientationControls = () => {
-        this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
-        this.orientationEnable = true;
-    };
-
-    disconnectOrientationControls = () => {
-        this.orientationControls.disConnect();
-        this.orientationEnable = false;
-        this.initSphericalData();
-    };
-
 }
 
 export default InnerViewControls;

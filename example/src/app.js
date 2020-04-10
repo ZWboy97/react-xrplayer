@@ -62,6 +62,12 @@ class App extends React.Component {
         this.xrManager.toNormalView(8000, 1000);
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
+        this.xrManager.setParticleEffectRes({
+            url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
+            ,
+            num: 5000, range: 500,
+            color: 0xffffff, sizeAttenuation: true
+        });
     }
 
     onEventHandler = (name, props) => {
@@ -123,6 +129,14 @@ class App extends React.Component {
         }
     }
 
+    onParticleEffect = () => {
+        if (this.xrManager.getEnableParticleDisplay()) {
+            this.xrManager.enableParticleDisplay(false);
+        } else {
+            this.xrManager.enableParticleDisplay(true)
+        }
+    }
+
 
     render() {
         return (
@@ -147,6 +161,8 @@ class App extends React.Component {
                 <button onClick={this.onAddModel}>添加模型</button>
                 <button onClick={this.onRemoveModel}>移除模型</button>
                 <button onClick={this.onRemoveAllModel}>移除所有模型</button>
+                <button onClick={this.onParticleEffect}>添加粒子效果</button>
+
             </div>
         )
     }

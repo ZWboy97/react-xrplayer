@@ -11,6 +11,7 @@ class InnerViewControls {
         this.camera = camera;
         this.isConnected = false;
         this.isUserInteracting = false;     // 标记用户是否正在交互中
+        this.isPointerInteracting = false;  // 鼠标完全控制模式
         this.onMouseDownMouseX = 0;         // 鼠标点击的初始坐标x
         this.onMouseDownMouseY = 0;         // 鼠标点击的初始坐标y
         this.lon = 0;                       // 经度
@@ -120,47 +121,53 @@ class InnerViewControls {
             this.camera.lookAt(this.camera.target);
             return;
         }
-        this.updateCameraPosition();
+        this.updateCamera();
     };
 
-    updateCameraPosition = () => {
+    updateCamera = () => {
         if (this.orientationEnable === true) {
             this.camera.lookAt(this.camera.target); // 需要在updateposition之前，否则传感器效果异常
             this.orientationControls.update(this.distance);
             return;
         }
-        var dLon = 2;
-        var dLat = 2;
-        if (this.onKeyShift) {
-            dLon = 10;
-            dLat = 10;
+        if (this.isUserInteracting) {
+            var dLon = 2;
+            var dLat = 2;
+            if (this.onKeyShift) {
+                dLon = 10;
+                dLat = 10;
+            }
+            if (this.onKeyLeft) {
+                this.lon -= dLon;
+            }
+            if (this.onKeyRight) {
+                this.lon += dLon;
+            }
+            if (this.onKeyUp) {
+                this.lat -= dLat;
+            }
+            if (this.onKeyDown) {
+                this.lat += dLat;
+            }
+            this.updateCameraPosition();
+        } else if (this.enableAutoRotate) {
+            this.autoRotate();
         }
-        if (this.onKeyLeft) {
-            this.lon -= dLon;
-        }
-        if (this.onKeyRight) {
-            this.lon += dLon;
-        }
-        if (this.onKeyUp) {
-            this.lat -= dLat;
-        }
-        if (this.onKeyDown) {
-            this.lat += dLat;
-        }
+        this.camera.lookAt(this.camera.target);
+    };
+
+    updateCameraPosition = () => {
         this.lat = Math.max(- 85, Math.min(85, this.lat));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
-        if (this.enableAutoRotate) {
-            this.autoRotate();
-        }
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-        this.camera.lookAt(this.camera.target);
-    };
+    }
 
     autoRotate = () => {
+        this.updateCameraPosition(); // 旋转更新，等下次渲染
         switch (this.autoRotateDirection) {
             case 'left':
                 this.theta += this.autoRotateAngle;
@@ -203,15 +210,16 @@ class InnerViewControls {
 
     onDocumentMouseMove = (event) => {
         if (this.isUserInteracting === true) {
-            // 在鼠标Down位置叠加偏移量
-            this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
-            this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
+            if (this.isPointerInteracting) {
+                this.lon = event.movementX * 0.1 + this.lon;
+                this.lat = event.movementY * 0.1 + this.lat;
+            } else {
+                // 在鼠标Down位置叠加偏移量
+                this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
+                this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
+            }
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
-        }
-        if (!!document.pointerLockElement) {
-            this.lon = event.movementX * 0.1 + this.lon;
-            this.lat = event.movementY * 0.1 + this.lat;
         }
     }
 
@@ -274,45 +282,66 @@ class InnerViewControls {
     onDocumentKeyDown = (event) => {
         event.preventDefault();
         var keyCode = event.keyCode || event.which || event.charCode;
+        this.setInteractingIfKeys(keyCode, true);
         switch (keyCode) {
-
             case 65: /*a*/
-            case 37: /*left*/ this.onKeyLeft = true; this.onKeyRight = false; break;
-
+            case 37: /*left*/ this.onKeyLeft = true; this.onKeyRight = false;
+                break;
             case 68: /*d*/
-            case 39: /*right*/ this.onKeyRight = true; this.onKeyLeft = false; break;
-
+            case 39: /*right*/ this.onKeyRight = true; this.onKeyLeft = false;
+                break;
             case 87: /*w*/
-            case 38: /*up*/ this.onKeyUp = true; this.onKeyDown = false; break;
-
+            case 38: /*up*/ this.onKeyUp = true; this.onKeyDown = false;
+                break;
             case 83: /*s*/
-            case 40: /*down*/ this.onKeyDown = true; this.onKeyUp = false; break;
-
-            case 16: /*Shift*/ this.onKeyShift = true; break;
-
+            case 40: /*down*/ this.onKeyDown = true; this.onKeyUp = false;
+                break;
+            case 16: /*Shift*/ this.onKeyShift = true;
+                break;
             case 81: /*q*/
                 if (!!document.pointerLockElement) {
                     document.exitPointerLock();
+                    this.isUserInteracting = false;
+                    this.isPointerInteracting = false;
                 }
                 else {
                     document.body.requestPointerLock();
-                    this.isUserInteracting = false;
+                    this.isUserInteracting = true;
+                    this.isPointerInteracting = true;
                 }
                 break;
-
             case 82: /*r*/
                 console.log('alphaOffset = ' + THREE.MathUtils.radToDeg(this.orientationControls.alphaOffset));
                 console.log('lon = ' + this.lon);
                 console.log('dO.alpha = ' + this.orientationControls.deviceOrientation.alpha);
                 break;
-
             default: break;
+        }
+    }
 
+    setInteractingIfKeys = (keyCode, interacting) => {
+        if (this.isPointerInteracting) {
+            return
+        }
+        switch (keyCode) {
+            case 65: /*a*/
+            case 37: /*left*/
+            case 68: /*d*/
+            case 39: /*right*/
+            case 87: /*w*/
+            case 38: /*up*/
+            case 83: /*s*/
+            case 40: /*down*/
+            case 16: /*Shift*/
+                this.isUserInteracting = interacting;
+                break;
+            default: break;
         }
     }
 
     onDocumentKeyUp = (event) => {
         var keyCode = event.keyCode || event.which || event.charCode;
+        this.setInteractingIfKeys(keyCode, false)
         switch (keyCode) {
 
             case 65: /*a*/
@@ -328,7 +357,6 @@ class InnerViewControls {
             case 40: /*down*/ this.onKeyDown = false; break;
 
             case 16: /*L_Shift*/ this.onKeyShift = false; break;
-
             default: break;
 
         }

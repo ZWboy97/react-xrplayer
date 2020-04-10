@@ -33,6 +33,10 @@ class InnerViewControls {
             this.getRotateAngle();
         this.autoRotateDirection = 'left';      // 自动旋转方向，left、right、up、down
 
+        // 视野范围
+        this.fovTopEdge = 90;
+        this.fovDownEdge = -90;
+
         //键盘交互控件
         this.onKeyLeft = false;
         this.onKeyRight = false;
@@ -86,6 +90,12 @@ class InnerViewControls {
 
     setAutoRotateDirection = (direction) => {
         this.autoRotateDirection = direction;
+    }
+
+    // 设置FOV范围
+    setFovVerticalScope = (bottom, top) => {
+        this.fovTopEdge = top;
+        this.fovDownEdge = bottom;
     }
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
@@ -175,7 +185,7 @@ class InnerViewControls {
     };
 
     updateCameraPosition = () => {
-        this.lat = Math.max(- 85, Math.min(85, this.lat));
+        this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
         // 球坐标系与直角坐标系的转换

@@ -62,6 +62,7 @@ class App extends React.Component {
         this.xrManager.toNormalView(8000, 1000);
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
+        this.xrManager.setFovVerticalScope(-50, 50);
     }
 
     onEventHandler = (name, props) => {

@@ -125,6 +125,10 @@ class XRPlayerManager {
         this.innerViewControls.setAutoRotateDirection(direction);
     }
 
+    setFovVerticalScope = (bottom, top) => {
+        this.innerViewControls.setFovVerticalScope(bottom, top);
+    }
+
     /****************************热点标签相关控制接口************************* */
     resetHotSpotsData = () => {
         if (!this.spriteShapeHelper) {

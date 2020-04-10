@@ -100,13 +100,29 @@ class XRPlayerManager {
         this.renderer.render(this.scene, this.camera);
     }
 
-    /****************************全景背景相关控制接口************************* */
+    /****************************全景场景相关控制接口************************* */
     setSenceResource = (res) => {
         this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
         let texture = this.sceneTextureHelper.loadTexture(res);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh.material = material;
+    }
+
+    getEnableAutoRotate = () => {
+        return this.innerViewControls.getEnableAutoRotate();
+    }
+
+    setEnableAutoRotate = (enable) => {
+        this.innerViewControls.setEnableAutoRotate(enable)
+    }
+
+    setAutoRotateSpeed = (speed) => {
+        this.innerViewControls.setAutoRotateSpeed(speed);
+    }
+
+    setAutoRotateDirection = (direction) => {
+        this.innerViewControls.setAutoRotateDirection(direction);
     }
 
     /****************************热点标签相关控制接口************************* */

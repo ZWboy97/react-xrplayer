@@ -30,7 +30,7 @@ class InnerViewControls {
         this.enableAutoRotate = true;          // 是否自动旋转
         this.autoRotateSpeed = 1.0;             // 自动旋转速度,对外
         this.autoRotateAngle =                  // 内部速度
-            this.getRotateAngle(this.autoRotateSpeed);
+            this.getRotateAngle();
         this.autoRotateDirection = 'left';      // 自动旋转方向，left、right、up、down
 
         //键盘交互控件
@@ -69,6 +69,24 @@ class InnerViewControls {
         this.orientationEnable = false;
         this.initSphericalData();
     };
+
+    // 开启关闭自动旋转
+    getEnableAutoRotate = () => {
+        return this.enableAutoRotate;
+    }
+
+    setEnableAutoRotate = (enable) => {
+        this.enableAutoRotate = enable;
+    }
+
+    setAutoRotateSpeed = (speed) => {
+        this.autoRotateSpeed = speed;
+        this.getRotateAngle();
+    }
+
+    setAutoRotateDirection = (direction) => {
+        this.autoRotateDirection = direction;
+    }
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
     initSphericalData = () => {
@@ -189,8 +207,9 @@ class InnerViewControls {
         }
     }
 
-    getRotateAngle = (speed) => {
-        return 2 * Math.PI / 60 / 60 * speed;
+    getRotateAngle = () => {
+        this.autoRotateAngle = 2 * Math.PI / 60 / 60 * this.autoRotateSpeed;
+        return this.autoRotateAngle;
     }
 
     onDocumentMouseDown = (event) => {

@@ -8,6 +8,7 @@ import CenterModelHelper from '../display/CenterModelHelper';
 import TWEEN from '@tweenjs/tween.js';
 import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
+import SpriteParticleHelper from '../display/SpriteParticleHelper';
 
 class XRPlayerManager {
 
@@ -27,6 +28,7 @@ class XRPlayerManager {
         this.innerView = true;      // 是否是内视角，之后想做多场景切换
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
+        this.spriteParticleHelper = null; // 粒子展示
         this.centerModelHelper = null;
         this.viewConvertHelper = null;
         this.spriteEventList = null;
@@ -95,6 +97,9 @@ class XRPlayerManager {
         }
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
+        }
+        if (this.spriteParticleHelper) {
+            this.spriteParticleHelper.update();
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
         this.renderer.render(this.scene, this.camera);
@@ -227,6 +232,26 @@ class XRPlayerManager {
 
     disableOrientationControls = () => {
         this.innerViewControls.disableOrientationControls();
+    }
+
+    /*******************************粒子特效********************************** */
+    setParticleEffectRes = (res) => {
+        if (!this.spriteParticleHelper) {
+            this.spriteParticleHelper = new SpriteParticleHelper(this.scene);
+        }
+        this.spriteParticleHelper.setResource(res);
+    }
+
+    getEnableParticleDisplay = () => {
+        return this.spriteParticleHelper.getEnableDisplay();
+    }
+
+    enableParticleDisplay = (enable) => {
+        if (enable) {
+            this.spriteParticleHelper.enableDisplay();
+        } else {
+            this.spriteParticleHelper.disableDisplay();
+        }
     }
 
 

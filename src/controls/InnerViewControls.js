@@ -51,52 +51,80 @@ class InnerViewControls {
         this.orientationEnable = false;
     }
 
-    /**
-     * 相机与控制器连接，数据生效
-     */
+    /******************************对外接口************************* */
+
+    // 相机控制器开关
     connect = () => {
         this.isConnected = true;
         this.initSphericalData();
     };
-
     disConnect = () => {
         this.isConnected = false;
     };
 
-    connectOrientationControls = () => {
-        this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
-        this.orientationEnable = true;
-    };
+    // 方向传感器开关
+    getEnableOrientationControls = () => {
+        return this.orientationEnable;
+    }
+    enableOrientationControls = () => {
+        if (this.orientationEnable === false) {
+            this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
+            this.orientationEnable = true;
+        }
+    }
+    disableOrientationControls = () => {
+        if (this.orientationEnable === true) {
+            this.orientationControls.disConnect();
+            this.orientationEnable = false;
+            this.initSphericalData();
+        }
+    }
 
-    disconnectOrientationControls = () => {
-        this.orientationControls.disConnect();
-        this.orientationEnable = false;
-        this.initSphericalData();
-    };
-
-    // 开启关闭自动旋转
+    // 自动旋转接口
     getEnableAutoRotate = () => {
         return this.enableAutoRotate;
     }
-
     setEnableAutoRotate = (enable) => {
         this.enableAutoRotate = enable;
     }
-
     setAutoRotateSpeed = (speed) => {
         this.autoRotateSpeed = speed;
         this.getRotateAngle();
     }
-
     setAutoRotateDirection = (direction) => {
         this.autoRotateDirection = direction;
     }
 
-    // 设置FOV范围
+    // FOV范围接口
     setFovVerticalScope = (bottom, top) => {
         this.fovTopEdge = top;
         this.fovDownEdge = bottom;
     }
+    getFovVerticalScope = () => {
+        return {
+            top: this.fovTopEdge,
+            bottom: this.fovDownEdge
+        }
+    }
+
+    // 相机当前位置接口
+    getCameraPosition = () => {
+        return this.camera.position;
+    }
+    setCameraPosition = (x, y, z) => {
+        this.camera.position.set(x, y, z);
+        this.initSphericalData();
+    }
+
+    // 相机FOV接口
+    getCameraFov = () => {
+        return this.camera.fov;
+    }
+    setCameraFov = (fov) => {
+        this.camera.fov = fov;
+    }
+
+    /*******************************内部方法实现******************************** */
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
     initSphericalData = () => {
@@ -127,22 +155,6 @@ class InnerViewControls {
             document.addEventListener('keyup', this.onDocumentKeyUp, false);
         }
     };
-
-    getEnableOrientationControls = () => {
-        return this.orientationEnable;
-    }
-
-    enableOrientationControls = () => {
-        if (this.orientationEnable === false) {
-            this.connectOrientationControls();
-        }
-    }
-
-    disableOrientationControls = () => {
-        if (this.orientationEnable === true) {
-            this.disconnectOrientationControls();
-        }
-    }
 
     update = () => {
         if (!this.isConnected) {

@@ -162,6 +162,12 @@ class App extends React.Component {
         this.xrManager.setCameraFov(150);
     }
 
+    onStartSenceVideoDisplay = () => {
+        this.xrManager.startDisplaySenceResource();
+    }
+    onPauseSenceVideoDisplay = () => {
+        this.xrManager.pauseDisplaySenceResource();
+    }
 
     render() {
         return (
@@ -178,6 +184,8 @@ class App extends React.Component {
                     onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
                     onEventHandler={this.onEventHandler}
                 ></XRPlayer>
+                <button onClick={this.onStartSenceVideoDisplay}>播放</button>
+                <button onClick={this.onPauseSenceVideoDisplay}>暂停</button>
                 <button onClick={() => { this.setState({ isFullScreen: true }) }}>全屏</button>
                 <button onClick={this.onOrientationControls}>切换/取消传感器控制</button>
                 <button onClick={this.onChangeSenceRes}>切换场景</button>

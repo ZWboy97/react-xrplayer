@@ -39,8 +39,8 @@ class EffectVideoPanel extends Component {
     loadHlsVideo = () => {
         if (Hls.isSupported()) {
             console.log('hls', 'support');
-            this.hls.loadSource(this.props.videoUrl);
             this.hls.attachMedia(this.video);
+            this.hls.loadSource(this.props.videoUrl);
             this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.video.play();
                 console.log('videoplay');

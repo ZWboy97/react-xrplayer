@@ -114,6 +114,7 @@ class XRPlayerManager {
         this.sceneMesh.material = material;
     }
 
+    // 自动旋转相关接口
     getEnableAutoRotate = () => {
         return this.innerViewControls.getEnableAutoRotate();
     }
@@ -128,10 +129,6 @@ class XRPlayerManager {
 
     setAutoRotateDirection = (direction) => {
         this.innerViewControls.setAutoRotateDirection(direction);
-    }
-
-    setFovVerticalScope = (bottom, top) => {
-        this.innerViewControls.setFovVerticalScope(bottom, top);
     }
 
     /****************************热点标签相关控制接口************************* */
@@ -196,7 +193,7 @@ class XRPlayerManager {
     }
 
 
-    /**************************相机移动与控制相关接口************************* */
+    /**************************相机移动相关接口************************* */
 
     toNormalView = (durtime = 8000, delay = 0) => {
         if (!this.viewConvertHelper) {
@@ -205,7 +202,6 @@ class XRPlayerManager {
         this.innerViewControls.disConnect();
         this.viewConvertHelper.toNormalView(durtime, delay);
     }
-
     toPlanetView = (durtime = 8000, delay = 0) => {
         if (!this.viewConvertHelper) {
             this.viewConvertHelper = new ViewConvertHelper(this.camera, this.innerViewControls);
@@ -214,38 +210,60 @@ class XRPlayerManager {
         this.viewConvertHelper.toPlanetView(durtime, delay);
     }
 
+    /**************************相机控制相关接口************************* */
+    // 相机控制器开关
     connectCameraControl = () => {
         this.innerViewControls.connect();
     }
-
     disConnectCameraControl = () => {
         this.innerViewControls.disConnect();
     }
 
+    // 方向传感器控制开关
     getEnableOrientationControls = () => {
         return this.innerViewControls.getEnableOrientationControls();
     }
-
     enableOrientationControls = () => {
         this.innerViewControls.enableOrientationControls();
     }
-
     disableOrientationControls = () => {
         this.innerViewControls.disableOrientationControls();
     }
 
-    /*******************************粒子特效********************************** */
+    // 相机位置接口
+    getCameraPosition = () => {
+        return this.innerViewControls.getCameraPosition();
+    }
+    setCameraPosition = (x, y, z) => {
+        this.innerViewControls.setCameraPosition(x, y, z);
+    }
+
+    // 相机当前fov接口
+    setCameraFov = (fov) => {
+        this.innerViewControls.setCameraFov(fov);
+    }
+    getCameraFov = () => {
+        return this.innerViewControls.getCameraFov();
+    }
+
+    // FOV上下范围设置接口
+    setFovVerticalScope = (bottom, top) => {
+        this.innerViewControls.setFovVerticalScope(bottom, top);
+    }
+    getFovVerticalScope = () => {
+        return this.innerViewControls.getFovVerticalScope();
+    }
+
+    /*******************************粒子特效接口********************************** */
     setParticleEffectRes = (res) => {
         if (!this.spriteParticleHelper) {
             this.spriteParticleHelper = new SpriteParticleHelper(this.scene);
         }
         this.spriteParticleHelper.setResource(res);
     }
-
     getEnableParticleDisplay = () => {
         return this.spriteParticleHelper.getEnableDisplay();
     }
-
     enableParticleDisplay = (enable) => {
         if (enable) {
             this.spriteParticleHelper.enableDisplay();

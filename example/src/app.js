@@ -151,6 +151,17 @@ class App extends React.Component {
         }
     }
 
+    onGetCameraParas = () => {
+        const fov = this.xrManager.getCameraFov();
+        const position = this.xrManager.getCameraPosition();
+        alert(`fov:${fov}\nposition:\nx:${position.x}\ny:${position.y}\nz:${position.z}`)
+    }
+
+    onSetCameraParas = () => {
+        this.xrManager.setCameraPosition(0, 450, 0);
+        this.xrManager.setCameraFov(150);
+    }
+
 
     render() {
         return (
@@ -179,7 +190,8 @@ class App extends React.Component {
                 <button onClick={this.onAutoRotateSpeed}>自动旋转速度</button>
                 <button onClick={this.onAutoRotateDirection}>自动旋转方向</button>
                 <button onClick={this.onParticleEffect}>添加粒子效果</button>
-
+                <button onClick={this.onGetCameraParas}>获取相机参数</button>
+                <button onClick={this.onSetCameraParas}>重置相机初始位置</button>
             </div>
         )
     }

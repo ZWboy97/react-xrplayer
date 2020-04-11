@@ -114,6 +114,18 @@ class XRPlayerManager {
         this.sceneMesh.material = material;
     }
 
+    // 背景全景视频播放控制
+    startDisplaySenceResource = () => {
+        if (this.sceneTextureHelper) {
+            this.sceneTextureHelper.startDisplay();
+        }
+    }
+    pauseDisplaySenceResource = () => {
+        if (this.sceneTextureHelper) {
+            this.sceneTextureHelper.pauseDisplay();
+        }
+    }
+
     // 自动旋转相关接口
     getEnableAutoRotate = () => {
         return this.innerViewControls.getEnableAutoRotate();

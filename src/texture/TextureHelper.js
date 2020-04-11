@@ -25,8 +25,20 @@ class TextureHelper {
         this.containerNode.height = 0;
         this.containerNode.loop = true;
         this.containerNode.muted = true;
-        this.containerNode.crossOrigin = "anonymous"
+        this.containerNode.crossOrigin = "anonymous";
+        this.containerNode.autoplay = true;
+        this.containerNode.allowsInlineMediaPlayback = true;
         this.containerNode.setAttribute('webkit-playsinline', 'webkit-playsinline');
+        this.containerNode.setAttribute('webkit-playsinline', true);
+        this.containerNode.setAttribute('playsinline', true)
+        this.containerNode.setAttribute('preload', 'auto')
+        this.containerNode.setAttribute('x-webkit-airplay', 'allow')
+        this.containerNode.setAttribute('x5-playsinline', true)
+        this.containerNode.setAttribute('x5-video-player-type', 'h5')
+        this.containerNode.setAttribute('x5-video-player-fullscreen', true)
+        this.containerNode.setAttribute('x5-video-orientation', 'portrait')
+        this.containerNode.setAttribute('style', 'object-fit: fill')
+        this.containerNode.setAttribute('loop', "loop")
     }
 
     getTextureFromVideo = (video) => {
@@ -96,6 +108,34 @@ class TextureHelper {
                 return this.loadImage(res_url);
             default:
                 return null;
+        }
+    }
+
+    startDisplay = () => {
+        switch (this.resType) {
+            case 'hls':
+            case 'mp4':
+                this.containerNode && this.containerNode.play();
+                break;
+            case 'flv':
+                this.videoLoader && this.videoLoader.play();
+                break;
+            default:
+                break;
+        }
+    }
+
+    pauseDisplay = () => {
+        switch (this.resType) {
+            case 'hls':
+            case 'mp4':
+                this.containerNode && this.containerNode.pause();
+                break;
+            case 'flv':
+                this.videoLoader && this.videoLoader.pause();
+                break;
+            default:
+                break;
         }
     }
 

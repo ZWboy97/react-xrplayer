@@ -25,7 +25,6 @@ class XRPlayerManager {
 
         this.handler = null;
 
-        this.innerView = true;      // 是否是内视角，之后想做多场景切换
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
         this.spriteParticleHelper = null; // 粒子展示
@@ -90,11 +89,7 @@ class XRPlayerManager {
 
     animate = () => {
         requestAnimationFrame(this.animate);
-        if (this.innerView) {
-            this.innerViewControls && this.innerViewControls.update();
-        } else {
-            //this.controls.update();
-        }
+        this.innerViewControls && this.innerViewControls.update();
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
         }

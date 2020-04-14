@@ -25,7 +25,7 @@ class CenterModelHelper {
 
     removeModel = (model_key) => {
         const modelLoader = this.modelLoaderMap.get(model_key);
-        modelLoader.remove();
+        modelLoader && modelLoader.remove();
         this.modelLoaderMap.delete(model_key);
     }
 

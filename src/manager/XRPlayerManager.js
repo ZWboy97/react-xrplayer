@@ -10,7 +10,6 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import PickHelper from "./PickHelper";
 
 class XRPlayerManager {
 
@@ -36,7 +35,6 @@ class XRPlayerManager {
         this.spriteEventList = null;
 
         this.vrHelper = null;
-        this.pickHelper = null;
         this.init();
     }
 
@@ -96,8 +94,7 @@ class XRPlayerManager {
     }
 
     initVR = () => {
-        this.vrHelper = new VRHelper(this.renderer, this.mount.clientWidth, this.mount.clientHeight);
-        this.pickHelper = new PickHelper(this.camera);
+        this.vrHelper = new VRHelper(this.renderer, this.camera, this.mount.clientWidth, this.mount.clientHeight);
     }
 
     animate = (time) => {
@@ -116,7 +113,7 @@ class XRPlayerManager {
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
         if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup && this.spriteShapeHelper.pointGroup.children) {
-            var pickedObject = this.pickHelper.pick({x: 0, y: 0},
+            var pickedObject = this.vrHelper.pick({x: 0, y: 0},
                 this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
             if (!!pickedObject) {
                 const key = pickedObject.name;

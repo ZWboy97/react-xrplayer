@@ -11,6 +11,7 @@ class InnerViewControls {
         this.camera = camera;
         this.isConnected = false;
         this.isUserInteracting = false;     // 标记用户是否正在交互中
+        this.isFovChange = false;           // 是否缩进FOV视野了
         this.isPointerInteracting = false;  // 鼠标完全控制模式
         this.onMouseDownMouseX = 0;         // 鼠标点击的初始坐标x
         this.onMouseDownMouseY = 0;         // 鼠标点击的初始坐标y
@@ -192,6 +193,9 @@ class InnerViewControls {
             this.updateCameraPosition();
         } else if (this.enableAutoRotate) {
             this.autoRotate();
+        } else if (this.isFovChange) {
+            this.isFovChange = false;
+            this.updateCameraPosition();
         }
         this.camera.lookAt(this.camera.target);
     };
@@ -298,26 +302,18 @@ class InnerViewControls {
     }
 
     onDocumentMouseWheel = (event) => {
-        this.distance += event.deltaY * 0.5;
-        if (this.distance <= 0) {
-            this.distance = 0;
-        } else if (this.distance > 0 && this.distance < 1000) {
-            if (!this.innerView) {
-                console.log('进来', this.camera.position.y)
-                this.innerView = true;
-            }
+        //this.distance += event.deltaY * 0.5;
+        this.isFovChange = true;
+        let fov = this.camera.fov;
+        fov += event.deltaY * 0.03; // 0.03 is a suitable value
+        if (fov >= 160) {
+            fov = 160;
+        } else if (fov <= 10) {
+            fov = 10
         }
-        else if (this.distance >= 1000 && this.distance <= 1500) {
-            if (this.innerView) {
-                console.log('出来')
-                this.innerView = false;
-            }
-        }
-        else if (this.distance >= 1500) {
-            //this.distance = 1500;
-        }
-        console.log('distance', this.distance);
-
+        this.camera.fov = fov;
+        this.camera.updateProjectionMatrix();
+        return;
     }
 
     onDocumentKeyDown = (event) => {

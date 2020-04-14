@@ -10,6 +10,7 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
+import PickHelper from "./PickHelper";
 
 class XRPlayerManager {
 
@@ -35,6 +36,7 @@ class XRPlayerManager {
         this.spriteEventList = null;
 
         this.vrHelper = null;
+        this.pickHelper = null;
         this.init();
     }
 
@@ -43,7 +45,7 @@ class XRPlayerManager {
         this.initScene();
         this.initRenderer();
         this.initVR();
-        this.animate();
+        this.animate(0);
         console.log('domElement', this.renderer.domElement.getBoundingClientRect().y);
     }
 
@@ -81,6 +83,7 @@ class XRPlayerManager {
             let axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
             this.scene.add(axisHelper);
         }
+        this.scene.add(this.camera);
     }
 
     initRenderer = () => {
@@ -94,10 +97,12 @@ class XRPlayerManager {
 
     initVR = () => {
         this.vrHelper = new VRHelper(this.renderer, this.mount.clientWidth, this.mount.clientHeight);
+        this.pickHelper = new PickHelper(this.camera);
     }
 
-    animate = () => {
+    animate = (time) => {
         requestAnimationFrame(this.animate);
+        time *= 0.001;
         if (this.innerView) {
             this.innerViewControls && this.innerViewControls.update();
         } else {
@@ -110,6 +115,17 @@ class XRPlayerManager {
             this.spriteParticleHelper.update();
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
+        if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup && this.spriteShapeHelper.pointGroup.children) {
+            var pickedObject = this.pickHelper.pick({x: 0, y: 0},
+                this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
+            if (!!pickedObject) {
+                const key = pickedObject.name;
+                if (this.spriteEventList.has(key)) {
+                    const data = this.spriteEventList.get(key);
+                    this.handler('hot_spot_click', { data });
+                }
+            }
+        }
         this.vrHelper.render(this.scene, this.camera);
     }
 

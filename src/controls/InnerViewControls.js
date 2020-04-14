@@ -302,27 +302,18 @@ class InnerViewControls {
     }
 
     onDocumentMouseWheel = (event) => {
-        this.distance += event.deltaY * 0.5;
+        //this.distance += event.deltaY * 0.5;
         this.isFovChange = true;
-        if (this.distance <= 0) {
-            this.distance = 0;
-        } else if (this.distance > 0 && this.distance < 1000) {
-            if (!this.innerView) {
-                console.log('进来', this.camera.position.y)
-                this.innerView = true;
-            }
+        let fov = this.camera.fov;
+        fov += event.deltaY * 0.03; // 0.03 is a suitable value
+        if (fov >= 160) {
+            fov = 160;
+        } else if (fov <= 10) {
+            fov = 10
         }
-        else if (this.distance >= 1000 && this.distance <= 1500) {
-            if (this.innerView) {
-                console.log('出来')
-                this.innerView = false;
-            }
-        }
-        else if (this.distance >= 1500) {
-            this.distance = 1500;
-        }
-        console.log('distance', this.distance);
-
+        this.camera.fov = fov;
+        this.camera.updateProjectionMatrix();
+        return;
     }
 
     onDocumentKeyDown = (event) => {

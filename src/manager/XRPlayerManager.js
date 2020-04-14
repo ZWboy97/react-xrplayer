@@ -9,6 +9,7 @@ import TWEEN from '@tweenjs/tween.js';
 import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
+import VRHelper from "./VRHelper";
 
 class XRPlayerManager {
 
@@ -32,6 +33,8 @@ class XRPlayerManager {
         this.centerModelHelper = null;
         this.viewConvertHelper = null;
         this.spriteEventList = null;
+
+        this.vrHelper = null;
         this.init();
     }
 
@@ -39,6 +42,7 @@ class XRPlayerManager {
         this.initCamera();
         this.initScene();
         this.initRenderer();
+        this.initVR();
         this.animate();
         console.log('domElement', this.renderer.domElement.getBoundingClientRect().y);
     }
@@ -88,6 +92,10 @@ class XRPlayerManager {
         this.mount.appendChild(renderer.domElement);
     }
 
+    initVR = () => {
+        this.vrHelper = new VRHelper(this.renderer, this.mount.clientWidth, this.mount.clientHeight);
+    }
+
     animate = () => {
         requestAnimationFrame(this.animate);
         if (this.innerView) {
@@ -102,7 +110,7 @@ class XRPlayerManager {
             this.spriteParticleHelper.update();
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
-        this.renderer.render(this.scene, this.camera);
+        this.vrHelper.render(this.scene, this.camera);
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -284,6 +292,16 @@ class XRPlayerManager {
         }
     }
 
+    /*******************************VR接口********************************** */
+    changeVRStatus = () => {
+        if (this.vrHelper.vrStatus) {
+            this.vrHelper.disable();
+            this.renderer.setViewport(0,0, this.mount.clientWidth, this.mount.clientHeight);
+        }
+        else {
+            this.vrHelper.enable();
+        }
+    }
 
     /*******************************其他接口********************************** */
     onWindowResize = (mountWidth, mountHeight) => {

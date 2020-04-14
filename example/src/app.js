@@ -169,6 +169,11 @@ class App extends React.Component {
         this.xrManager.pauseDisplaySenceResource();
     }
 
+    onVRControls = () => {
+        this.xrManager.changeVRStatus();
+    }
+
+
     render() {
         return (
             <div>
@@ -200,6 +205,7 @@ class App extends React.Component {
                 <button onClick={this.onParticleEffect}>添加粒子效果</button>
                 <button onClick={this.onGetCameraParas}>获取相机参数</button>
                 <button onClick={this.onSetCameraParas}>重置相机初始位置</button>
+                <button onClick={this.onVRControls}>进入/退出VR视角</button>
             </div>
         )
     }

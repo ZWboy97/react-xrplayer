@@ -26,6 +26,14 @@ class SpriteShapeHelper {
         }
     }
 
+    getPointObjects = () => {
+        if (this.pointGroup && this.pointGroup.children) {
+            return this.pointGroup.children;
+        } else {
+            return [];
+        }
+    }
+
     setHotSpotList = (hot_spot_list) => {
         this.resetHotSpotGroup();
         const hotSpotMap = new Map(hot_spot_list);

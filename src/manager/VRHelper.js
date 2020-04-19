@@ -7,7 +7,6 @@ class StereoEffect {
         this.stereoCamera = new THREE.StereoCamera();
         this.stereoCamera.aspect = 0.5;
         this.size = new THREE.Vector2();
-
     }
 
     setEyeSeparation = (eyeSep) => {
@@ -38,11 +37,10 @@ class StereoEffect {
 
 class VRHelper {
 
-    constructor(renderer, camera, width, height) {
+    constructor(renderer, camera) {
         this.renderer = renderer;
         this.camera = camera;
         this.effect = new StereoEffect(renderer);
-        this.effect.setSize(width, height);
         this.vrStatus = false;
         this.cursor = null;
         this.cone = null;
@@ -56,8 +54,16 @@ class VRHelper {
         this.selectTimer = 0;
         this.selectDuration = 2;
         this.lastTime = 0;
+
+        this.objects = []; // 可交互object
+        this.time = 0;  // 热点触发计时器
+
+        this.onObjectInteractionHandler = null;
     }
 
+    setSize = (width, height) => {
+        this.effect && this.effect.setSize(width, height);
+    }
 
     initCursor = () => {
         const cursorColors = new Uint8Array([
@@ -111,7 +117,7 @@ class VRHelper {
         cone.visible = false;
     }
 
-    pick = (normalizedPosition, scene, camera, time, objects) => {
+    pick = (normalizedPosition, camera, time, objects) => {
         if (!!!objects || this.vrStatus === false) {
             this.pickedObject = undefined;
             return undefined;
@@ -163,9 +169,24 @@ class VRHelper {
         return selected ? this.pickedObject : undefined;
     }
 
+    setObjectInteractionHandler = (callback) => {
+        this.onObjectInteractionHandler = callback;
+    }
+
+    updateInteractionObjects = (objs, time) => {
+        this.objects = objs;
+        this.time = time;
+    }
+
     render = (scene, camera) => {
         if (this.vrStatus) {
             this.effect.render(scene, camera);
+            var pickedObject = this.pick({ x: 0, y: 0 },
+                camera, this.time, Array.from(this.objects));
+            if (!!pickedObject) {
+                this.onObjectInteractionHandler &&
+                    this.onObjectInteractionHandler(pickedObject);
+            }
         }
     }
 

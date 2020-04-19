@@ -26,7 +26,6 @@ class XRPlayerManager {
 
         this.handler = null;
 
-        this.innerView = true;      // 是否是内视角，之后想做多场景切换
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
         this.spriteParticleHelper = null; // 粒子展示
@@ -100,11 +99,7 @@ class XRPlayerManager {
     animate = (time) => {
         requestAnimationFrame(this.animate);
         time *= 0.001;
-        if (this.innerView) {
-            this.innerViewControls && this.innerViewControls.update();
-        } else {
-            //this.controls.update();
-        }
+        this.innerViewControls && this.innerViewControls.update();
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
         }
@@ -113,7 +108,7 @@ class XRPlayerManager {
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
         if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup && this.spriteShapeHelper.pointGroup.children) {
-            var pickedObject = this.vrHelper.pick({x: 0, y: 0},
+            var pickedObject = this.vrHelper.pick({ x: 0, y: 0 },
                 this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
             if (!!pickedObject) {
                 const key = pickedObject.name;
@@ -309,7 +304,7 @@ class XRPlayerManager {
     changeVRStatus = () => {
         if (this.vrHelper.vrStatus) {
             this.vrHelper.disable();
-            this.renderer.setViewport(0,0, this.mount.clientWidth, this.mount.clientHeight);
+            this.renderer.setViewport(0, 0, this.mount.clientWidth, this.mount.clientHeight);
         }
         else {
             this.vrHelper.enable();

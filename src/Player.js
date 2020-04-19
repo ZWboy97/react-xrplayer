@@ -78,7 +78,7 @@ class XRPlayer extends Component {
     let { width, height, is_full_screen = false } = this.props;
     return (
       <FullScreen
-        enabled={this.props.is_full_screen}
+        enabled={is_full_screen}
         onChange={this.onFullScreenChange}
       >
         <div
@@ -141,15 +141,15 @@ XRPlayer.protoTypes = {
 }
 
 XRPlayer.defaultProps = {
-  width: '100vw',
-  height: '100vh',
-  camera_fov: 150,
+  width: '100%',
+  height: '100%',
+  camera_fov: 80,
   camera_near: 0.01,
   camera_far: 10000,
   camera_position: {
     x: 0,
-    y: 450,
-    z: 0
+    y: 0,
+    z: 100
   },
   camera_target: {
     x: 0,

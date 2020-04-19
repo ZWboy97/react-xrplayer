@@ -70,7 +70,7 @@ class FullScreen extends Component {
                 //className={className.join(" ")}
                 ref={node => (this.node = node)}
                 style={
-                    this.props.enabled ? { height: "100%", width: "100%" } : undefined
+                    { height: "100%", width: "100%" }
                 }
             >
                 {this.props.children}

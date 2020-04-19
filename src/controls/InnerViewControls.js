@@ -9,9 +9,8 @@ class InnerViewControls {
 
     constructor(camera) {
         this.camera = camera;
-        this.isConnected = false;
+        this.isConnected = true;
         this.isUserInteracting = false;     // 标记用户是否正在交互中
-        this.isFovChange = false;           // 是否缩进FOV视野了
         this.isPointerInteracting = false;  // 鼠标完全控制模式
         this.onMouseDownMouseX = 0;         // 鼠标点击的初始坐标x
         this.onMouseDownMouseY = 0;         // 鼠标点击的初始坐标y
@@ -28,7 +27,7 @@ class InnerViewControls {
         this.onPointerDownLat = 0;
 
         // 视野自动旋转
-        this.enableAutoRotate = true;          // 是否自动旋转
+        this.enableAutoRotate = false;          // 是否自动旋转
         this.autoRotateSpeed = 1.0;             // 自动旋转速度,对外
         this.autoRotateAngle =                  // 内部速度
             this.getRotateAngle();
@@ -193,9 +192,6 @@ class InnerViewControls {
             this.updateCameraPosition();
         } else if (this.enableAutoRotate) {
             this.autoRotate();
-        } else if (this.isFovChange) {
-            this.isFovChange = false;
-            this.updateCameraPosition();
         }
         this.camera.lookAt(this.camera.target);
     };
@@ -303,7 +299,6 @@ class InnerViewControls {
 
     onDocumentMouseWheel = (event) => {
         //this.distance += event.deltaY * 0.5;
-        this.isFovChange = true;
         let fov = this.camera.fov;
         fov += event.deltaY * 0.03; // 0.03 is a suitable value
         if (fov >= 160) {

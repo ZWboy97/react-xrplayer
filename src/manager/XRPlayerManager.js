@@ -43,7 +43,6 @@ class XRPlayerManager {
         this.initRenderer();
         this.initVR();
         this.animate(0);
-        console.log('domElement', this.renderer.domElement.getBoundingClientRect().y);
     }
 
     initCamera = () => {
@@ -93,7 +92,8 @@ class XRPlayerManager {
     }
 
     initVR = () => {
-        this.vrHelper = new VRHelper(this.renderer, this.camera, this.mount.clientWidth, this.mount.clientHeight);
+        this.vrHelper = new VRHelper(this.renderer, this.camera,
+            this.mount.clientWidth, this.mount.clientHeight);
     }
 
     animate = (time) => {
@@ -107,18 +107,23 @@ class XRPlayerManager {
             this.spriteParticleHelper.update();
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
-        if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup && this.spriteShapeHelper.pointGroup.children) {
-            var pickedObject = this.vrHelper.pick({ x: 0, y: 0 },
-                this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
-            if (!!pickedObject) {
-                const key = pickedObject.name;
-                if (this.spriteEventList.has(key)) {
-                    const data = this.spriteEventList.get(key);
-                    this.handler('hot_spot_click', { data });
+        if (this.vrHelper.vrStatus) {
+            this.vrHelper.render(this.scene, this.camera);
+            if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup
+                && this.spriteShapeHelper.pointGroup.children) {
+                var pickedObject = this.vrHelper.pick({ x: 0, y: 0 },
+                    this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
+                if (!!pickedObject) {
+                    const key = pickedObject.name;
+                    if (this.spriteEventList.has(key)) {
+                        const data = this.spriteEventList.get(key);
+                        this.handler('hot_spot_click', { data });
+                    }
                 }
             }
+        } else {
+            this.renderer.render(this.scene, this.camera);
         }
-        this.vrHelper.render(this.scene, this.camera);
     }
 
     /****************************全景场景相关控制接口************************* */

@@ -169,12 +169,22 @@ class App extends React.Component {
         this.xrManager.pauseDisplaySenceResource();
     }
 
+    onVRControls = () => {
+        this.xrManager.changeVRStatus();
+    }
+
+
     render() {
         return (
             <div>
                 <XRPlayer
                     width="100vw"
                     height="90vh"
+                    camera_position={{
+                        x: 0,
+                        y: 450,
+                        z: 0
+                    }}
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
                         type: 'hls',
@@ -200,7 +210,8 @@ class App extends React.Component {
                 <button onClick={this.onParticleEffect}>添加粒子效果</button>
                 <button onClick={this.onGetCameraParas}>获取相机参数</button>
                 <button onClick={this.onSetCameraParas}>重置相机初始位置</button>
-            </div>
+                <button onClick={this.onVRControls}>进入/退出VR视角</button>
+            </div >
         )
     }
 }

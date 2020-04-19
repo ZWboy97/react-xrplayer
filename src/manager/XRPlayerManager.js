@@ -9,6 +9,7 @@ import TWEEN from '@tweenjs/tween.js';
 import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
+import VRHelper from "./VRHelper";
 
 class XRPlayerManager {
 
@@ -31,6 +32,8 @@ class XRPlayerManager {
         this.centerModelHelper = null;
         this.viewConvertHelper = null;
         this.spriteEventList = null;
+
+        this.vrHelper = null;
         this.init();
     }
 
@@ -38,8 +41,8 @@ class XRPlayerManager {
         this.initCamera();
         this.initScene();
         this.initRenderer();
-        this.animate();
-        console.log('domElement', this.renderer.domElement.getBoundingClientRect().y);
+        this.initVR();
+        this.animate(0);
     }
 
     initCamera = () => {
@@ -76,6 +79,7 @@ class XRPlayerManager {
             let axisHelper = new THREE.AxesHelper(1000)//每个轴的长度
             this.scene.add(axisHelper);
         }
+        this.scene.add(this.camera);
     }
 
     initRenderer = () => {
@@ -87,8 +91,14 @@ class XRPlayerManager {
         this.mount.appendChild(renderer.domElement);
     }
 
-    animate = () => {
+    initVR = () => {
+        this.vrHelper = new VRHelper(this.renderer, this.camera,
+            this.mount.clientWidth, this.mount.clientHeight);
+    }
+
+    animate = (time) => {
         requestAnimationFrame(this.animate);
+        time *= 0.001;
         this.innerViewControls && this.innerViewControls.update();
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
@@ -97,7 +107,23 @@ class XRPlayerManager {
             this.spriteParticleHelper.update();
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
-        this.renderer.render(this.scene, this.camera);
+        if (this.vrHelper.vrStatus) {
+            this.vrHelper.render(this.scene, this.camera);
+            if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup
+                && this.spriteShapeHelper.pointGroup.children) {
+                var pickedObject = this.vrHelper.pick({ x: 0, y: 0 },
+                    this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
+                if (!!pickedObject) {
+                    const key = pickedObject.name;
+                    if (this.spriteEventList.has(key)) {
+                        const data = this.spriteEventList.get(key);
+                        this.handler('hot_spot_click', { data });
+                    }
+                }
+            }
+        } else {
+            this.renderer.render(this.scene, this.camera);
+        }
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -279,6 +305,16 @@ class XRPlayerManager {
         }
     }
 
+    /*******************************VR接口********************************** */
+    changeVRStatus = () => {
+        if (this.vrHelper.vrStatus) {
+            this.vrHelper.disable();
+            this.renderer.setViewport(0, 0, this.mount.clientWidth, this.mount.clientHeight);
+        }
+        else {
+            this.vrHelper.enable();
+        }
+    }
 
     /*******************************其他接口********************************** */
     onWindowResize = (mountWidth, mountHeight) => {

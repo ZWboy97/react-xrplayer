@@ -92,13 +92,21 @@ class XRPlayerManager {
     }
 
     initVR = () => {
-        this.vrHelper = new VRHelper(this.renderer, this.camera,
-            this.mount.clientWidth, this.mount.clientHeight);
+        this.vrHelper = new VRHelper(this.renderer, this.camera);
+        this.vrHelper.setObjectInteractionHandler((pickedObject) => {
+            console.log('tag', 'params');
+            if (!!pickedObject) {
+                const key = pickedObject.name;
+                if (this.spriteEventList.has(key)) {
+                    const data = this.spriteEventList.get(key);
+                    this.handler('hot_spot_click', { data });
+                }
+            }
+        })
     }
 
     animate = (time) => {
         requestAnimationFrame(this.animate);
-        time *= 0.001;
         this.innerViewControls && this.innerViewControls.update();
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
@@ -108,19 +116,12 @@ class XRPlayerManager {
         }
         TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
         if (this.vrHelper.vrStatus) {
-            this.vrHelper.render(this.scene, this.camera);
-            if (this.spriteShapeHelper && this.spriteShapeHelper.pointGroup
-                && this.spriteShapeHelper.pointGroup.children) {
-                var pickedObject = this.vrHelper.pick({ x: 0, y: 0 },
-                    this.scene, this.camera, time, Array.from(this.spriteShapeHelper.pointGroup.children));
-                if (!!pickedObject) {
-                    const key = pickedObject.name;
-                    if (this.spriteEventList.has(key)) {
-                        const data = this.spriteEventList.get(key);
-                        this.handler('hot_spot_click', { data });
-                    }
-                }
+            time *= 0.001;
+            if (this.spriteShapeHelper) {
+                let objects = this.spriteShapeHelper.getPointObjects();
+                this.vrHelper.updateInteractionObjects(objects, time);
             }
+            this.vrHelper.render(this.scene, this.camera);
         } else {
             this.renderer.render(this.scene, this.camera);
         }

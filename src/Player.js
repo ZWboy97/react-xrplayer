@@ -71,7 +71,7 @@ class XRPlayer extends Component {
   }
 
   componentWillUnmount() {
-    this.xrManager.distory();
+    this.xrManager && this.xrManager.destroy();
   }
 
   render() {

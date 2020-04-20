@@ -326,6 +326,7 @@ class XRPlayerManager {
 
     destroy = () => {
         this.mount.removeChild(this.renderer.domElement)
+        this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();
     }
 }
 

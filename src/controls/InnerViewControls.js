@@ -148,7 +148,7 @@ class InnerViewControls {
             container.addEventListener('wheel', this.onDocumentMouseWheel, false);
         } else {
             container.addEventListener('mousedown', this.onDocumentMouseDown, false);
-            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
+            document.addEventListener('mousemove', this.onDocumentMouseMove, false);
             container.addEventListener('mouseup', this.onDocumentMouseUp, false);
             container.addEventListener('wheel', this.onDocumentMouseWheel, false);
             //添加键盘监听

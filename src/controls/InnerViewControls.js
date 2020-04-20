@@ -140,16 +140,17 @@ class InnerViewControls {
 
     initControlsListener = () => {
         this.browser = window.navigator.userAgent.toLowerCase();
+        const container = document.getElementById('xr-container')
         if (this.browser.indexOf('mobile') > 0) {
-            document.addEventListener('touchstart', this.onTouchstart, false);
-            document.addEventListener('touchmove', this.onTouchmove, false);
-            document.addEventListener('touchend', this.onTouchend, false);
-            document.addEventListener('wheel', this.onDocumentMouseWheel, false);
+            container.addEventListener('touchstart', this.onTouchstart, false);
+            container.addEventListener('touchmove', this.onTouchmove, false);
+            container.addEventListener('touchend', this.onTouchend, false);
+            container.addEventListener('wheel', this.onDocumentMouseWheel, false);
         } else {
-            document.addEventListener('mousedown', this.onDocumentMouseDown, false);
-            document.addEventListener('mousemove', this.onDocumentMouseMove, false);
-            document.addEventListener('mouseup', this.onDocumentMouseUp, false);
-            document.addEventListener('wheel', this.onDocumentMouseWheel, false);
+            container.addEventListener('mousedown', this.onDocumentMouseDown, false);
+            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
+            container.addEventListener('mouseup', this.onDocumentMouseUp, false);
+            container.addEventListener('wheel', this.onDocumentMouseWheel, false);
             //添加键盘监听
             document.addEventListener('keydown', this.onDocumentKeyDown, false);
             document.addEventListener('keyup', this.onDocumentKeyUp, false);

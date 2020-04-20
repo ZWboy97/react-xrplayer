@@ -82,6 +82,7 @@ class XRPlayer extends Component {
         onChange={this.onFullScreenChange}
       >
         <div
+          id="xr-container"
           style={{
             width: is_full_screen ? "100vw" : width,
             height: is_full_screen ? "100vh" : height,

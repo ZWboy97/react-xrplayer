@@ -173,6 +173,38 @@ class App extends React.Component {
         this.xrManager.changeVRStatus();
     }
 
+    onCreateTextBox = () => {
+        if (!!!this.TextBox) {
+            this.TextBox = this.xrManager.createTextBox({
+                position: {x:0,y:0,z:-500}
+            });
+            this.TextBoxHidden = false;
+        }
+    }
+
+    onChangeTextBox = () => {
+        this.xrManager.changeTextBox(this.TextBox,{
+            message: "Text has changed. 想要输入更长的句子,请同时修改canvasWidth和scaleX，否则会发生这种情况",
+            borderWidth: 1650,
+        });
+    }
+
+    onShowTextBox = () => {
+        if (this.TextBoxHidden) {
+            this.xrManager.showTextBox(this.TextBox);
+            this.TextBoxHidden = false;
+        }
+        else {
+            this.xrManager.hideTextBox(this.TextBox);
+            this.TextBoxHidden = true;
+        }
+    }
+
+    onRemoveTextBox = () => {
+        this.xrManager.removeTextBox(this.TextBox);
+        this.TextBox = null;
+    }
+
 
     render() {
         return (
@@ -211,6 +243,10 @@ class App extends React.Component {
                 <button onClick={this.onGetCameraParas}>获取相机参数</button>
                 <button onClick={this.onSetCameraParas}>重置相机初始位置</button>
                 <button onClick={this.onVRControls}>进入/退出VR视角</button>
+                <button onClick={this.onCreateTextBox}>创建文本框</button>
+                <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
+                <button onClick={this.onChangeTextBox}>修改文本框</button>
+                <button onClick={this.onRemoveTextBox}>移除文本框</button>
             </div >
         )
     }

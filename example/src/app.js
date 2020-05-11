@@ -174,10 +174,12 @@ class App extends React.Component {
     }
 
     onCreateTextBox = () => {
-        this.TextBox = this.xrManager.createTextBox({
-            position: {x:0,y:0,z:-500}
-        });
-        this.TextBoxHidden = false;
+        if (!!!this.TextBox) {
+            this.TextBox = this.xrManager.createTextBox({
+                position: {x:0,y:0,z:-500}
+            });
+            this.TextBoxHidden = false;
+        }
     }
 
     onChangeTextBox = () => {

@@ -10,6 +10,7 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
+import TextHelper from "./content_Insert_Helper/TextHelper";
 
 class XRPlayerManager {
 
@@ -34,6 +35,7 @@ class XRPlayerManager {
         this.spriteEventList = null;
 
         this.vrHelper = null;
+
         this.init();
     }
 
@@ -125,6 +127,7 @@ class XRPlayerManager {
         } else {
             this.renderer.render(this.scene, this.camera);
         }
+
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -315,6 +318,36 @@ class XRPlayerManager {
         else {
             this.vrHelper.enable();
         }
+    }
+
+    /*******************************文本框接口********************************** */
+    createTextBox = (params) => {
+        var TextBox = new TextHelper(params);
+        TextBox.addTo(this.scene);
+        return TextBox;
+    }
+
+    showTextBox = (TextBox) => {
+        if (!!!TextBox) return;
+        TextBox.show();
+    }
+
+    hideTextBox = (TextBox) => {
+        if (!!!TextBox) return;
+        TextBox.hide();
+    }
+
+    changeTextBox = (TextBox, params) => {
+        if (!!!TextBox) return;
+        TextBox.removeFrom(this.scene);
+        TextBox.setMessage(params);
+        TextBox.addTo(this.scene);
+    }
+
+    //使用remove后记得将TextBox设为null，防止内存泄漏
+    removeTextBox = (TextBox) => {
+        if (TextBox === undefined) return;
+        TextBox.removeFrom(this.scene);
     }
 
     /*******************************其他接口********************************** */

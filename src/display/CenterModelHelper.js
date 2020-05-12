@@ -12,9 +12,13 @@ class CenterModelHelper {
     }
 
     loadModel = (model_key, model) => {
-        const loader = this.getLoader(model);
-        this.modelLoaderMap.set(model_key, loader);
-        loader.loadObj(model);
+        const promise = new Promise((resolve, reject) => {
+            const loader = this.getLoader(model);
+            this.modelLoaderMap.set(model_key, loader);
+            loader.loadObj(model);
+            resolve();
+        })
+        promise.then();
     }
 
     loadModelList = (model_list) => {
@@ -50,7 +54,7 @@ class CenterModelHelper {
     update = () => {
         this.modelLoaderMap.forEach(data => {
             const loader = data;
-            loader.update();
+            loader && loader.update();
         })
     }
 }

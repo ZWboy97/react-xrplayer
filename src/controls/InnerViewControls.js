@@ -122,6 +122,7 @@ class InnerViewControls {
     }
     setCameraFov = (fov) => {
         this.camera.fov = fov;
+        this.camera.updateProjectionMatrix();
     }
 
     /*******************************内部方法实现******************************** */

@@ -150,7 +150,7 @@ XRPlayer.defaultProps = {
   camera_position: {
     x: 0,
     y: 0,
-    z: 100
+    z: 10
   },
   camera_target: {
     x: 0,

@@ -12,6 +12,8 @@ import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
 import TextHelper from "./content_Insert_Helper/TextHelper";
 
+import HotSpotHelper from '../display/HotSpotHelper';
+
 class XRPlayerManager {
 
     constructor(mount, initProps) {
@@ -33,6 +35,8 @@ class XRPlayerManager {
         this.centerModelHelper = null;
         this.viewConvertHelper = null;
         this.spriteEventList = null;
+
+        this.hotSpotHelper = null;
 
         this.vrHelper = null;
 
@@ -126,6 +130,10 @@ class XRPlayerManager {
             this.vrHelper.render(this.scene, this.camera);
         } else {
             this.renderer.render(this.scene, this.camera);
+        }
+        if (this.hotSpotHelper) {
+            this.hotSpotHelper.markIconInViews();
+            this.hotSpotHelper.update();
         }
 
     }
@@ -348,6 +356,28 @@ class XRPlayerManager {
     removeTextBox = (TextBox) => {
         if (TextBox === undefined) return;
         TextBox.removeFrom(this.scene);
+    }
+
+
+
+    addIcon = (img, position, name, title, width, height) => {
+        if (!this.hotSpotHelper) {
+            this.hotSpotHelper = new HotSpotHelper(this.scene, this.mount, this.camera);
+        }
+        const { x, y, z } = position;
+        this.hotSpotHelper.markIcon(img, new THREE.Vector3(x, y, z), name, title, width, height);
+    }
+
+    removeIcon = (name) => {
+        this.hotSpotHelper.removeIcon(name);
+    }
+
+    addIcons = (iconList) => {
+        this.hotSpotHelper.addIcons(iconList);
+    }
+
+    removeAllIcons = () => {
+        this.hotSpotHelper.removeAllIcons();
     }
 
     /*******************************其他接口********************************** */

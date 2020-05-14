@@ -40,6 +40,10 @@ class XRPlayerManager {
 
         this.vrHelper = null;
 
+        this.audio = document.createElement("audio");
+        this.audio.preload = "metadata";
+        document.body.appendChild(this.audio);
+
         this.init();
     }
 
@@ -256,7 +260,7 @@ class XRPlayerManager {
     }
 
     /**************************相机控制相关接口************************* */
-    // 相机控制器开关
+        // 相机控制器开关
     connectCameraControl = () => {
         this.innerViewControls.connect();
     }
@@ -378,6 +382,52 @@ class XRPlayerManager {
 
     removeAllIcons = () => {
         this.hotSpotHelper.removeAllIcons();
+    }
+
+    /********************************音频接口************************************/
+
+    setAudioSrc = (src) => {
+        this.audio.setAttribute("src",src);
+    }
+
+    getAudioSrc = () => {
+        return this.audio.currentSrc;
+    }
+
+    setAudioVolume = (volume) => {              // 0 到 1
+        this.audio.volume = volume;
+    }
+
+    getAudioVolume = () => {
+        return this.audio.volume;
+    }
+
+    setAudioMuted = (muted) => {                // true 或 false
+        this.audio.muted = muted;
+    }
+
+    getAudioMuted = () => {
+        return this.audio.muted;
+    }
+
+    getAudioPaused = () => {
+        return this.audio.paused;
+    }
+
+    pauseAudio = () => {
+        this.audio.pause();
+    }
+
+    playAudio = () => {
+        this.audio.play();
+    }
+
+    replayAudio = () => {
+        this.audio.currentTime = 0;
+    }
+
+    endAudio = () => {
+        this.audio.currentTime = this.audio.duration;
     }
 
     /*******************************其他接口********************************** */

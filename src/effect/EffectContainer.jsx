@@ -4,6 +4,7 @@ import EffectInfoCard from './EffectInfoCard';
 import EffectImageCard from './EffectImageCard';
 import EffectVideoPanel from './EffectVideoPanel';
 import EffectControlPanel from './EffectControlPanel';
+import EffectAlphaVideoPanel from './EffectAlphaVideoPanle';
 
 class EffectContainer extends Component {
 
@@ -50,6 +51,24 @@ class EffectContainer extends Component {
                         this.props.onCloseClickHandler && this.props.onCloseClickHandler();
                     }}
                 ></EffectControlPanel>
+            )
+        } else if (data.type === 'alpha_video') {
+            return (
+                <EffectAlphaVideoPanel
+                    videoUrl={data.videoUrl}
+                    videoStyle={{
+                        width: data.width,
+                        height: data.height,
+                        margin: data.margin
+                    }}
+                    enableClose={data.enableClose}
+                    onCloseClickHandler={() => {
+                        this.props.onCloseClickHandler && this.props.onCloseClickHandler();
+                    }}
+                    onDisplayEndedHandler={() => {
+
+                    }}
+                ></EffectAlphaVideoPanel>
             )
         }
         else {

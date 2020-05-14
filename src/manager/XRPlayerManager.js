@@ -40,9 +40,7 @@ class XRPlayerManager {
 
         this.vrHelper = null;
 
-        this.audio = document.createElement("audio");
-        this.audio.preload = "metadata";
-        document.body.appendChild(this.audio);
+        this.audio = null;
 
         this.init();
     }
@@ -260,7 +258,7 @@ class XRPlayerManager {
     }
 
     /**************************相机控制相关接口************************* */
-        // 相机控制器开关
+    // 相机控制器开关
     connectCameraControl = () => {
         this.innerViewControls.connect();
     }
@@ -386,8 +384,19 @@ class XRPlayerManager {
 
     /********************************音频接口************************************/
 
+    initAudio = () => {
+        if (!this.audio) {
+            this.audio = document.createElement("audio");
+            this.audio.preload = "metadata";
+            document.body.appendChild(this.audio);
+            this.audio.onended = () => {
+                console.log('audio', "播放结束");
+            }
+        }
+    }
+
     setAudioSrc = (src) => {
-        this.audio.setAttribute("src",src);
+        this.audio.setAttribute("src", src);
     }
 
     getAudioSrc = () => {
@@ -419,6 +428,11 @@ class XRPlayerManager {
     }
 
     playAudio = () => {
+        this.audio.play();
+    }
+
+    playAudioRes = (src) => {
+        this.setAudioSrc(src);
         this.audio.play();
     }
 

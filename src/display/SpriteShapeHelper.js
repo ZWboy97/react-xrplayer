@@ -7,10 +7,11 @@ import TWEEN from '@tweenjs/tween.js';
 
 class SpriteShapeHelper {
 
-    constructor(scene, camera, renderer) {
+    constructor(scene, camera, renderer, container) {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
+        this.container = container;
         this.hotSpotMeshMap = null; // 热点标签Mesh Map，便于动态缩减
         this.pointGroup = null;     // 场景中的热点组合
 
@@ -54,6 +55,10 @@ class SpriteShapeHelper {
         if (mesh) {
             this.pointGroup.remove(mesh);
         }
+        var tip = document.getElementById(hot_spot_key);
+        if (tip) {
+            this.container.removeChild(tip);
+        }
     }
 
     contertSph2Rect = (phi, theta) => {
@@ -66,7 +71,7 @@ class SpriteShapeHelper {
     }
 
     createPoint(key, value) {
-        const { phi, theta, res_url, opacity = 1, scale = 16, animate = false } = value
+        const { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null } = value
         let position = this.contertSph2Rect(phi, theta);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
@@ -74,10 +79,18 @@ class SpriteShapeHelper {
         let mesh = this.createSpriteShape(res_url, opacity, scale);
         mesh.name = key;
         mesh.position.set(...position);
+        mesh.meshType = 'markIcon';
         this.hotSpotMeshMap.set(key, mesh);
         this.pointGroup.add(mesh);
         if (animate) {
             this.animatePoint(mesh);
+        }
+        if (title) {
+            var div = document.createElement("div");
+            div.id = key;
+            div.style = "padding:10px 10px;background:rgba(0,0,0,.5);color:#fff;display:none;position:absolute;border-radius:6px; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;font-size:0.85rem;";
+            div.innerHTML = title;
+            this.container.appendChild(div);
         }
     }
 
@@ -93,6 +106,41 @@ class SpriteShapeHelper {
         let mesh = new THREE.Sprite(material);
         mesh.scale.set(scale * 2, scale * 2, 1);
         return mesh;
+    }
+
+    markTitleInViews = () => {
+        var camera = this.camera;
+        for (var i = 0; i < this.pointGroup.children.length; i++) {
+            var name = this.pointGroup.children[i].name;
+            var tip = document.getElementById(name);
+            if (tip) {
+                var wpVector = new THREE.Vector3();
+                var pos = this.pointGroup.children[i].getWorldPosition(wpVector)
+                    .applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
+                if ((pos.x >= -0.8 && pos.x <= 0.7) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                    var screenPos = this.objectPosToScreenPos(this.pointGroup.children[i], this.container, this.camera);
+                    tip.style.display = "block";
+                    tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
+                    tip.style.top = screenPos.y - tip.clientHeight * 2 + "px";
+                } else {
+                    tip.style.display = "none";
+                }
+            }
+            this.pointGroup.children[i].lookAt(this.camera.position);
+        }
+    }
+
+    objectPosToScreenPos = (object, container, camera) => {
+        var vector = new THREE.Vector3();
+        vector.setFromMatrixPosition(object.matrixWorld).project(camera);
+        var x2hat = vector.x,
+            y2hat = vector.y;
+        var W = container.clientWidth;
+        var H = container.clientHeight;
+        var pos = new THREE.Vector2();
+        pos.x = (W / 2) * (x2hat + 1);
+        pos.y = (H / 2) * (1 - y2hat);
+        return pos;
     }
 
     getBackgroundTexture = (color, opacity, scale) => {
@@ -142,7 +190,9 @@ class SpriteShapeHelper {
     }
 
     update = () => {
-        TWEEN.update();
+        if (this.pointGroup) {
+            this.markTitleInViews();
+        }
     }
 
     getIntersects = (event) => {

@@ -2,6 +2,7 @@ import React from 'react';
 //import XRPlayer from '../../lib/index';
 import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
+import TWEEN from '@tweenjs/tween.js';
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -69,6 +70,23 @@ class App extends React.Component {
             num: 5000, range: 500,
             color: 0xffffff, sizeAttenuation: true
         });
+
+        this.xrManager.setAudioSrc("http://www.tutorialrepublic.com/examples/audio/sea.mp3");
+        this.cameraTween = this.xrManager.setCameraAnimation({
+            pos0: {lat: 0, lon: 180, fov: 80}, pos1: {lat: 30, lon: 0, fov: 120},
+            duration: 5000, easing: TWEEN.Easing.Sinusoidal.Out,
+            callback: () => {
+                console.log("导览1已结束");
+            }
+        });
+        this.cameraTween2 = this.xrManager.setCameraAnimation({
+            pos0: {x: 86.6, y: 50, z: 0, fov: 120}, pos1: {x: 0, y: 0, z: -100, fov: 80},
+            duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
+            callback: () => {
+                console.log("导览2已结束");
+            }
+        });
+        this.xrManager.chainCameraAnimation(this.cameraTween, this.cameraTween2);
     }
 
     onEventHandler = (name, props) => {
@@ -247,6 +265,15 @@ class App extends React.Component {
                 <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                 <button onClick={this.onChangeTextBox}>修改文本框</button>
                 <button onClick={this.onRemoveTextBox}>移除文本框</button>
+                <button onClick={() => {this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio();}}>播放/暂停音频</button>
+                <button onClick={() => {this.xrManager.getAudioVolume() === 1 ? this.xrManager.setAudioVolume(0.5) : this.xrManager.setAudioVolume(1);}}>减小音量/复原</button>
+                <button onClick={() => {this.xrManager.getAudioMuted() ? this.xrManager.setAudioMuted(false) : this.xrManager.setAudioMuted(true);}}>静音/复原</button>
+                <button onClick={() => {this.xrManager.replayAudio();}}>回到开头</button>
+                <button onClick={() => {this.xrManager.endAudio();}}>到达结尾</button>
+                <button onClick={() => {this.xrManager.startCameraAnimation(this.cameraTween);}}>开始导览</button>
+                {/*<button onClick={() => {this.xrManager.playCameraAnimation(this.cameraTween);}}>播放</button>
+                <button onClick={() => {{this.xrManager.startCameraAnimation(this.cameraTween, 8000)}}}>暂停</button>*/}
+                <button onClick={() => {this.xrManager.stopCameraAnimation(this.cameraTween);}}>停止</button>
             </div >
         )
     }

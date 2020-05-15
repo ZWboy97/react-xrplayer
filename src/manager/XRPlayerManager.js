@@ -13,6 +13,7 @@ import VRHelper from "./VRHelper";
 import TextHelper from "./content_Insert_Helper/TextHelper";
 
 import HotSpotHelper from '../display/HotSpotHelper';
+import CameraTween from "../controls/CameraTween";
 
 class XRPlayerManager {
 
@@ -43,6 +44,11 @@ class XRPlayerManager {
         this.audio = document.createElement("audio");
         this.audio.preload = "metadata";
         document.body.appendChild(this.audio);
+
+        this.cameraTweenStatus = {
+            num: 0,
+            paused: false
+        };
 
         this.init();
     }
@@ -117,14 +123,16 @@ class XRPlayerManager {
 
     animate = (time) => {
         requestAnimationFrame(this.animate);
-        this.innerViewControls && this.innerViewControls.update();
+        if (this.cameraTweenStatus.num === 0)
+            this.innerViewControls && this.innerViewControls.update();
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
         }
         if (this.spriteParticleHelper) {
             this.spriteParticleHelper.update();
         }
-        TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
+        if (this.cameraTweenStatus.paused === false)
+            TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
         if (this.vrHelper.vrStatus) {
             time *= 0.001;
             if (this.spriteShapeHelper) {
@@ -428,6 +436,48 @@ class XRPlayerManager {
 
     endAudio = () => {
         this.audio.currentTime = this.audio.duration;
+    }
+
+    /****************************相机动画接口***********************************/
+    /*
+    params的格式:
+    {
+        pos0, pos1, duration,           必需
+        easing, callback                非必需（easing是速度变化的方式，详见https://www.createjs.com/docs/tweenjs/classes/Ease.html）
+    }
+    pos0、pos1的格式
+    {
+        lat, lon,                       必需
+        fov                             非必需
+    }或
+    {
+        x, y, z,                        必需
+        fov                             非必需
+    }
+    */
+    setCameraAnimation = (params) => {                      //因为存在入场动画，导致设置相机动画时distance是450，这里直接改为100
+        var cameraTween = new CameraTween(params, this.camera, 100, this.innerViewControls.fovDownEdge, this.innerViewControls.fovTopEdge, this.innerViewControls.initSphericalData, this.cameraTweenStatus);
+        return cameraTween;
+    }
+
+    startCameraAnimation = (cameraTween, time) => {
+        cameraTween.start(time);
+    }
+
+    stopCameraAnimation = (cameraTween) => {
+        cameraTween.stop();
+    }
+
+    playCameraAnimation = (cameraTween) => {
+        this.cameraTweenStatus.paused = false;
+    }
+
+    pauseCameraAnimation = (cameraTween) => {
+        this.cameraTweenStatus.paused = true;
+    }
+
+    chainCameraAnimation = (firstCameraTween, secondCameraTween) => {
+        firstCameraTween.chain(secondCameraTween);
     }
 
     /*******************************其他接口********************************** */

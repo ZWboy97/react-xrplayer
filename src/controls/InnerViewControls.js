@@ -137,6 +137,7 @@ class InnerViewControls {
         this.distance = spherical.radius;
         this.lon = 90 - THREE.Math.radToDeg(this.theta);
         this.lat = 90 - THREE.Math.radToDeg(this.phi);
+        return {lat: this.lat, lon: this.lon};
     };
 
     initControlsListener = () => {
@@ -241,7 +242,6 @@ class InnerViewControls {
             return;
         }
         event.preventDefault();
-        console.log('鼠标点击Down')
         this.isUserInteracting = true;
         // 记录鼠标点击屏幕坐标
         this.onPointerDownPointerX = event.clientX;
@@ -343,11 +343,6 @@ class InnerViewControls {
                     this.isUserInteracting = true;
                     this.isPointerInteracting = true;
                 }
-                break;
-            case 82: /*r*/
-                console.log('alphaOffset = ' + THREE.MathUtils.radToDeg(this.orientationControls.alphaOffset));
-                console.log('lon = ' + this.lon);
-                console.log('dO.alpha = ' + this.orientationControls.deviceOrientation.alpha);
                 break;
             default: break;
         }

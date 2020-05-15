@@ -13,7 +13,7 @@ import VRHelper from "./VRHelper";
 import TextHelper from "./content_Insert_Helper/TextHelper";
 
 import HotSpotHelper from '../display/HotSpotHelper';
-import CameraTween from "../controls/CameraTween";
+import {CameraTween, CameraTweenGroup} from "../controls/CameraTween";
 
 class XRPlayerManager {
 
@@ -440,6 +440,12 @@ class XRPlayerManager {
 
     /****************************相机动画接口***********************************/
     /*
+    设置动画流程（示例见app.js）：
+        1.  通过setCameraAnimation获取动画各部分的cameraTween
+        2.  通过setCameraAnimationGroup连接各动画
+    为防止不必要的bug，请遵循以下播放注意事项：（可以在以后设计UI时通过隐藏button或使button失效防止这一类问题产生）
+        1.  startCameraAnimationGroup后才可调用stop，pause，play等功能
+        2.  stop或自动结束之后再调用start重播
     params的格式:
     {
         pos0, pos1, duration,           必需
@@ -460,24 +466,29 @@ class XRPlayerManager {
         return cameraTween;
     }
 
-    startCameraAnimation = (cameraTween, time) => {
-        cameraTween.start(time);
+    setCameraAnimationGroup = (cameraTweens, loop) => {
+        if (!!!loop) {
+            loop = false;
+        }
+        var cameraTweenGroup = new CameraTweenGroup(cameraTweens, loop, this.camera, 100, this.innerViewControls.fovDownEdge, this.innerViewControls.fovTopEdge, this.innerViewControls.initSphericalData, this.cameraTweenStatus);
+        return cameraTweenGroup;
     }
 
-    stopCameraAnimation = (cameraTween) => {
-        cameraTween.stop();
+    startCameraAnimationGroup = (cameraAnimationGroup, time) => {
+        if(!!!time) cameraAnimationGroup.start();
+        else cameraAnimationGroup.start(time);
     }
 
-    playCameraAnimation = (cameraTween) => {
-        this.cameraTweenStatus.paused = false;
+    stopCameraAnimationGroup = (cameraAnimationGroup) => {
+        cameraAnimationGroup.stop();
     }
 
-    pauseCameraAnimation = (cameraTween) => {
-        this.cameraTweenStatus.paused = true;
+    pauseCameraAnimationGroup = (cameraAnimationGroup) => {
+        cameraAnimationGroup.pause();
     }
 
-    chainCameraAnimation = (firstCameraTween, secondCameraTween) => {
-        firstCameraTween.chain(secondCameraTween);
+    playCameraAnimationGroup = (cameraAnimationGroup) => {
+        cameraAnimationGroup.play();
     }
 
     /*******************************其他接口********************************** */

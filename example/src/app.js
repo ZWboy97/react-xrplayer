@@ -71,7 +71,12 @@ class App extends React.Component {
             color: 0xffffff, sizeAttenuation: true
         });
 
+        this.onCameraAnimationSet();
+    }
+
+    onCameraAnimationSet = () => {
         this.xrManager.setAudioSrc("http://www.tutorialrepublic.com/examples/audio/sea.mp3");
+
         this.cameraTween = this.xrManager.setCameraAnimation({
             pos0: {lat: 0, lon: 180, fov: 80}, pos1: {lat: 30, lon: 0, fov: 120},
             duration: 5000, easing: TWEEN.Easing.Sinusoidal.Out,
@@ -86,7 +91,7 @@ class App extends React.Component {
                 console.log("导览2已结束");
             }
         });
-        this.xrManager.chainCameraAnimation(this.cameraTween, this.cameraTween2);
+        this.cameraTweenGroup = this.xrManager.setCameraAnimationGroup([this.cameraTween, this.cameraTween2]);
     }
 
     onEventHandler = (name, props) => {
@@ -270,10 +275,10 @@ class App extends React.Component {
                 <button onClick={() => {this.xrManager.getAudioMuted() ? this.xrManager.setAudioMuted(false) : this.xrManager.setAudioMuted(true);}}>静音/复原</button>
                 <button onClick={() => {this.xrManager.replayAudio();}}>回到开头</button>
                 <button onClick={() => {this.xrManager.endAudio();}}>到达结尾</button>
-                <button onClick={() => {this.xrManager.startCameraAnimation(this.cameraTween);}}>开始导览</button>
-                {/*<button onClick={() => {this.xrManager.playCameraAnimation(this.cameraTween);}}>播放</button>
-                <button onClick={() => {{this.xrManager.startCameraAnimation(this.cameraTween, 8000)}}}>暂停</button>*/}
-                <button onClick={() => {this.xrManager.stopCameraAnimation(this.cameraTween);}}>停止</button>
+                <button onClick={() => {this.xrManager.startCameraAnimationGroup(this.cameraTweenGroup);}}>开始导览</button>
+                <button onClick={() => {this.xrManager.playCameraAnimationGroup(this.cameraTweenGroup);}}>播放</button>
+                <button onClick={() => {this.xrManager.pauseCameraAnimationGroup(this.cameraTweenGroup)}}>暂停</button>
+                <button onClick={() => {this.xrManager.stopCameraAnimationGroup(this.cameraTweenGroup);}}>停止</button>
             </div >
         )
     }

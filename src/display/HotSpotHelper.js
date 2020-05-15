@@ -65,7 +65,9 @@ class HotSpotHelper {
         var camera = this.camera;
         for (var i = 0; i < this.markIconGroup.children.length; i++) {
             var wpVector = new THREE.Vector3();
-            var pos = this.markIconGroup.children[i].getWorldPosition(wpVector).applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
+            var pos = this.markIconGroup.children[i]
+                .getWorldPosition(wpVector).applyMatrix4(camera.matrixWorldInverse)
+                .applyMatrix4(camera.projectionMatrix);
             var name = this.markIconGroup.children[i].name;
             if ((pos.x >= -1 && pos.x <= 1) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
                 var screenPos = this.objectPosToScreenPos(this.markIconGroup.children[i], this.container, this.camera);
@@ -100,6 +102,7 @@ class HotSpotHelper {
 
     update = () => {
         if (this.markIconGroup) {
+            this.markIconInViews();
             for (var i = 0; i < this.markIconGroup.children.length; i++) {
                 this.markIconGroup.children[i].lookAt(this.camera.position);
             }

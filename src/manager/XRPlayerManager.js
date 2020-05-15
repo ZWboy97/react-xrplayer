@@ -134,8 +134,10 @@ class XRPlayerManager {
             this.renderer.render(this.scene, this.camera);
         }
         if (this.hotSpotHelper) {
-            this.hotSpotHelper.markIconInViews();
             this.hotSpotHelper.update();
+        }
+        if (this.spriteShapeHelper) {
+            this.spriteShapeHelper.update();
         }
 
     }
@@ -183,7 +185,7 @@ class XRPlayerManager {
         if (!this.spriteShapeHelper) {
             this.spriteEventList = new Map();
             this.spriteShapeHelper = new SpriteShapeHelper(this.scene,
-                this.camera, this.renderer);
+                this.camera, this.renderer, this.mount);
         } else {
             this.spriteEventList.clear();
         }

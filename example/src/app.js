@@ -75,6 +75,7 @@ class App extends React.Component {
     }
 
     onCameraAnimationSet = () => {
+        this.xrManager.initAudio();
         this.xrManager.setAudioSrc("http://www.tutorialrepublic.com/examples/audio/sea.mp3");
 
         let animateList = [

@@ -150,8 +150,10 @@ class XRPlayerManager {
             this.renderer.render(this.scene, this.camera);
         }
         if (this.hotSpotHelper) {
-            this.hotSpotHelper.markIconInViews();
             this.hotSpotHelper.update();
+        }
+        if (this.spriteShapeHelper) {
+            this.spriteShapeHelper.update();
         }
 
     }
@@ -199,7 +201,7 @@ class XRPlayerManager {
         if (!this.spriteShapeHelper) {
             this.spriteEventList = new Map();
             this.spriteShapeHelper = new SpriteShapeHelper(this.scene,
-                this.camera, this.renderer);
+                this.camera, this.renderer, this.mount);
         } else {
             this.spriteEventList.clear();
         }
@@ -400,6 +402,17 @@ class XRPlayerManager {
 
     /********************************音频接口************************************/
 
+    initAudio = () => {
+        if (!this.audio) {
+            this.audio = document.createElement("audio");
+            this.audio.preload = "metadata";
+            document.body.appendChild(this.audio);
+            this.audio.onended = () => {
+                console.log('audio', "播放结束");
+            }
+        }
+    }
+
     setAudioSrc = (src) => {
         this.audio.setAttribute("src", src);
     }
@@ -433,6 +446,11 @@ class XRPlayerManager {
     }
 
     playAudio = () => {
+        this.audio.play();
+    }
+
+    playAudioRes = (src) => {
+        this.setAudioSrc(src);
         this.audio.play();
     }
 

@@ -13,7 +13,7 @@ import VRHelper from "./VRHelper";
 import TextHelper from "./content_Insert_Helper/TextHelper";
 
 import HotSpotHelper from '../display/HotSpotHelper';
-import {CameraTween, CameraTweenGroup} from "../controls/CameraTween";
+import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 
 class XRPlayerManager {
 
@@ -41,14 +41,20 @@ class XRPlayerManager {
 
         this.vrHelper = null;
 
+        // audio related
         this.audio = document.createElement("audio");
         this.audio.preload = "metadata";
         document.body.appendChild(this.audio);
 
+        // camera animation related
         this.cameraTweenStatus = {
             num: 0,
             paused: false
         };
+        this.cameraTweenGroup = null;
+
+        this.onCameraAnimationEnded = null;
+
 
         this.init();
     }
@@ -268,7 +274,7 @@ class XRPlayerManager {
     }
 
     /**************************相机控制相关接口************************* */
-        // 相机控制器开关
+    // 相机控制器开关
     connectCameraControl = () => {
         this.innerViewControls.connect();
     }
@@ -395,7 +401,7 @@ class XRPlayerManager {
     /********************************音频接口************************************/
 
     setAudioSrc = (src) => {
-        this.audio.setAttribute("src",src);
+        this.audio.setAttribute("src", src);
     }
 
     getAudioSrc = () => {
@@ -441,7 +447,7 @@ class XRPlayerManager {
     /****************************相机动画接口***********************************/
     /*
     设置动画流程（示例见app.js）：
-        1.  通过setCameraAnimation获取动画各部分的cameraTween
+        1.  通过createCameraAnimation获取动画各部分的cameraTween
         2.  通过setCameraAnimationGroup连接各动画
     为防止不必要的bug，请遵循以下播放注意事项：（可以在以后设计UI时通过隐藏button或使button失效防止这一类问题产生）
         1.  startCameraAnimationGroup后才可调用stop，pause，play等功能
@@ -461,34 +467,69 @@ class XRPlayerManager {
         fov                             非必需
     }
     */
-    setCameraAnimation = (params) => {                      //因为存在入场动画，导致设置相机动画时distance是450，这里直接改为100
-        var cameraTween = new CameraTween(params, this.camera, 100, this.innerViewControls.fovDownEdge, this.innerViewControls.fovTopEdge, this.innerViewControls.initSphericalData, this.cameraTweenStatus);
-        return cameraTween;
-    }
-
-    setCameraAnimationGroup = (cameraTweens, loop) => {
+    createCameraTweenGroup = (animationList, loop) => {
         if (!!!loop) {
             loop = false;
         }
-        var cameraTweenGroup = new CameraTweenGroup(cameraTweens, loop, this.camera, 100, this.innerViewControls.fovDownEdge, this.innerViewControls.fovTopEdge, this.innerViewControls.initSphericalData, this.cameraTweenStatus);
+        let cameraTweens = [];
+        animationList.forEach((item, index) => {
+            var animation = this.createCameraAnimation(item);
+            cameraTweens.push(animation);
+        });
+        var cameraTweenGroup = new CameraTweenGroup(cameraTweens,
+            100, this.innerViewControls);
+        cameraTweenGroup.onCameraAnimationEnded = (index) => {
+            this.onCameraAnimationEnded &&
+                this.onCameraAnimationEnded(index);
+        }
+        cameraTweenGroup.onCameraAnimationStart = (index) => {
+            this.onCameraAnimationStart &&
+                this.onCameraAnimationStart(index);
+        }
+        cameraTweenGroup.onCameraAnimationStop = (index) => {
+            this.onCameraAnimationStop &&
+                this.onCameraAnimationStop(index);
+        }
+        this.cameraTweenGroup = cameraTweenGroup;
         return cameraTweenGroup;
     }
 
-    startCameraAnimationGroup = (cameraAnimationGroup, time) => {
-        if(!!!time) cameraAnimationGroup.start();
-        else cameraAnimationGroup.start(time);
+    createCameraAnimation = (params) => {  //因为存在入场动画，导致设置相机动画时distance是450，这里直接改为100
+        var cameraTween = new CameraTween(params, this.camera, 100,
+            this.innerViewControls, this.cameraTweenStatus);
+        return cameraTween;
     }
 
-    stopCameraAnimationGroup = (cameraAnimationGroup) => {
-        cameraAnimationGroup.stop();
+    setCameraTweenGroup = (cameraTweenGroup) => {
+        this.cameraTweenGroup = cameraTweenGroup;
     }
 
-    pauseCameraAnimationGroup = (cameraAnimationGroup) => {
-        cameraAnimationGroup.pause();
+    getCameraTweenGroup = () => {
+        return this.cameraTweenGroup;
     }
 
-    playCameraAnimationGroup = (cameraAnimationGroup) => {
-        cameraAnimationGroup.play();
+    startCameraTweenGroup = (time) => {
+        if (!this.cameraTweenGroup) {
+            return;
+        }
+        if (!!!time) {
+            this.cameraTweenGroup.start();
+        }
+        else {
+            this.cameraTweenGroup.start(time);
+        }
+    }
+
+    stopCameraTweenGroup = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.stop();
+    }
+
+    pauseCameraTweenGroup = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.pause();
+    }
+
+    playCameraTweenGroup = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.play();
     }
 
     /*******************************其他接口********************************** */

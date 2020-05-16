@@ -2,24 +2,33 @@ import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
 class CameraTween {
-    constructor(params, camera, distance, fovDownEdge, fovTopEdge, resetCameraPos, status) {
+    constructor(tweenParams, camera, cameraDistance, cameraControl) {
+
+        this.index = 0;
         this.pos0 = null;
         this.pos1 = null;
         this.duration = null;
         this.callback = null;
         this.easing = null;
         this.tween = null;
+
         this.camera = camera;
-        this.distance = distance;
-        this.posType = 0;                   // 0 采用经纬度， 1 采用xyz
-        this.fovChange = false;             //是否涉及fov的改变
-        this.fovDownEdge = fovDownEdge;
-        this.fovTopEdge = fovTopEdge;
-        this.status = status;
-        this.reset = resetCameraPos;        //动画结束后视角停在结束的位置，不会回到之前的位置
+        this.distance = cameraDistance;
+        this.fovDownEdge = cameraControl.fovDownEdge;
+        this.fovTopEdge = cameraControl.fovTopEdge;
+        this.reset = cameraControl.initSphericalData;        //动画结束后视角停在结束的位置，不会回到之前的位置
         this.started = false;               //在start之后stop之前调用start会导致不会调用onStop，无法使用相机控制
 
-        this.init(params);
+        this.startTime = 0;
+        this.endTime = 0;
+
+        this.posType = 0;                   // 0 采用经纬度， 1 采用xyz
+        this.fovChange = false;             //是否涉及fov的改变
+
+        this.onCameraAnimationEnded = null; // 动画结束后回调
+        this.onCameraAnimationStop = null;
+        this.onCameraAnimationStart = null;
+        this.init(tweenParams);
     }
 
     init = (params) => {
@@ -30,30 +39,29 @@ class CameraTween {
         Object.assign(this.pos0, params.pos0);
         Object.assign(this.pos1, params.pos1);
         this.tween = new TWEEN.Tween(this.pos0).to(this.pos1, params.duration);
-        this.tween.onStart(() => {this.status.num++;this.started = true;});
-        var newCallBack = null;
-        if (params.hasOwnProperty("callback")) {
-            this.callback = params.callback;
-            newCallBack = () => {
-                params.callback();
-                this.status.num--;
+        this.tween.onStart(() => {
+            this.started = true;
+            this.startTime = new Date().getTime();
+            this.onCameraAnimationStart &&
+                this.onCameraAnimationStart(this.key);
+        });
+        this.tween.onComplete(() => {
+            this.onCameraAnimationEnded &&
+                this.onCameraAnimationEnded(this.key);
+            if (this.posType === 1) {
                 this.reset();
-                this.started = false;
             }
-        }
-        else {
-            newCallBack = () => {
-                this.status.num--;
-                this.reset();
-                this.started = false;
-            }
-        }
-        this.tween.onComplete(newCallBack);         //只有完成动画才会触发传入的callback，中途停止不会
+            this.started = false;
+        });         //只有完成动画才会触发传入的callback，中途停止不会
         this.tween.onStop(() => {
-            this.status.num--;
-            this.reset();
+            this.onCameraAnimationStop &&
+                this.onCameraAnimationStop(this.key);
+            if (this.posType === 1) {
+                this.reset();
+            }
             this.started = false;
         });
+
         if (params.hasOwnProperty("easing")) {
             this.tween.easing(params.easing);
         }
@@ -63,6 +71,7 @@ class CameraTween {
         if (this.pos0.hasOwnProperty("fov")) {
             this.fovChange = true;
         }
+
         var cameraTween = this;
         this.tween.onUpdate((pos) => {
             if (cameraTween.posType === 0) {
@@ -86,7 +95,7 @@ class CameraTween {
 
     //经纬度到xyz的转换
     spherical2Cartesian = (lat, lon) => {
-        var pos = {x: 0, y: 0, z: 0};
+        var pos = { x: 0, y: 0, z: 0 };
         lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
         var phi = THREE.Math.degToRad(90 - lat);
         var theta = THREE.Math.degToRad(lon);
@@ -98,14 +107,13 @@ class CameraTween {
 
     start = (time) => {
         if (this.started) {
-            this.tween.stop();
+            return;
         }
         if (!!!time)
             this.tween.start();
         else {
             this.tween.start(time);
         }
-
     }
 
     stop = () => {
@@ -118,135 +126,223 @@ class CameraTween {
 }
 
 class CameraTweenGroup {
-    constructor(cameraTweens, loop, camera, distance, fovDownEdge, fovTopEdge, resetCameraPos, status) {
-        this.cameraTweens = cameraTweens;
-        this.len = cameraTweens.length;
-        this.loop = loop;
-        this.paused = false;
-        this.startTime = 0;
-        this.stopTime = 0;
-        this.playTween = null;
-        this.outOfPlayTween = true;
 
-        this.params = {
-            camera: camera, distance: distance, fovDownEdge: fovDownEdge, fovTopEdge: fovTopEdge, resetCameraPos: resetCameraPos, status: status
-        };
+    constructor(cameraTweens, distance, cameraControl) {
+        this.cameraTweens = cameraTweens;
+        this.cameraControl = cameraControl;
+        this.distance = distance;
+
+        this.autoNext = false;
+
+        this.playTween = null;
+
+        this.loop = false;
+
+        this.len = cameraTweens.length;
+
+        this.state = 'ready';       // ready, running, stop, paused
+
+        this.currentIndex = 0;
+
+        this.onCameraAnimationEnded = null;
+        this.onCameraAnimationStart = null;
+        this.onCameraAnimationStop = null;
 
         this.init();
     }
 
     init = () => {
+        if (this.autoNext) {
+            this.initAutoNext();
+        }
+        this.enableLoop(false);
+        this.initCallback();
+    }
+
+    initAutoNext = () => {
         for (let i = 0; i < this.len - 1; i++) {
             this.cameraTweens[i].chain(this.cameraTweens[i + 1]);
         }
-        if (this.loop) {
-            this.cameraTweens[this.len - 1].chain(this.cameraTweens[0]);
-        }
-        else {
-            var endTween = new TWEEN.Tween({}).to({},0).onStop(() => {this.stop();}).onComplete(() => {this.stop()});
-            this.cameraTweens[this.len - 1].tween.chain(endTween);
+    }
+
+    initCallback = () => {
+        this.cameraTweens.forEach((item, itemIndex) => {
+            item.onCameraAnimationEnded = () => {
+                this.state = 'ready';
+                this.onCameraAnimationEnded &&
+                    this.onCameraAnimationEnded(itemIndex);
+            }
+            item.onCameraAnimationStart = () => {
+                this.currentIndex = itemIndex;
+                this.state = 'running';
+                this.onCameraAnimationStart &&
+                    this.onCameraAnimationStart(itemIndex);
+            }
+            item.onCameraAnimationStop = () => {
+                if (this.state === 'stoped') {
+                    this.resetState();
+                } else {
+                    this.state = 'paused';
+                }
+                this.onCameraAnimationStop &&
+                    this.onCameraAnimationStop(itemIndex);
+            }
+        })
+    }
+
+    cancleAutoNext = () => {
+        if (this.cameraTweens) {
+            this.cameraTweens.forEach((item) => {
+                item.stopChainedTweens();
+                item.chain([]);
+            })
         }
     }
 
-    //获取当前时间对应的Tween序号和剩余时间
-    getTweenNum = (time) => {
-        let i = 0;
-        while (time >= this.cameraTweens[i].duration) {
-            time -= this.cameraTweens[i].duration;
-            i++;
-            i %= this.len;
+    enableAutoNext = (enable) => {
+        if (enable) {
+            this.initAutoNext();
+        } else {
+            this.cancleAutoNext();
         }
-        return [i, time];
     }
 
-    start = (time) => {
-        this.cameraTweens[0].start();
-        this.startTime = new Date().getTime();
+    enableLoop = (enable) => {
+        this.loop = enable;
+        if (enable) {
+            this.initLoop()
+        } else {
+            this.cancleLoop();
+        }
+    }
+
+    initLoop = () => {
+        this.cameraTweens[this.len - 1].chain(this.cameraTweens[0]);
+    }
+
+    cancleLoop = () => {
+        var endTween = new TWEEN.Tween({})
+            .to({}, 0)
+            .onStop(() => { this.stop(); })
+            .onComplete(() => { this.stop() });
+        this.cameraTweens[this.len - 1].tween.chain(endTween);
+    }
+
+    start = (index = 0) => {
+        this.stop();
+        this.currentIndex = index;
+        this.cameraTweens[this.currentIndex].start();
     }
 
     stop = () => {
-        this.outOfPlayTween = true;
-        if (this.paused) {
-            this.stopTime = this.startTime;
-            this.paused = false;
-        }
-        else {
-            let deltaTime = new Date().getTime() - this.startTime;
-            var TweenNum = this.getTweenNum(deltaTime);
-            this.cameraTweens[TweenNum[0]].stop();
-            this.stopTime = this.startTime;
+        if (this.state === 'running') {
+            this.state = 'stoped';
+            this.cameraTweens[this.currentIndex].stop();
+        } else {
+            this.resetState();
         }
     }
 
-    createPlayTween = (Tween, TweenNum) => {
-        //记录断点信息
-        var nowTween = Tween;
-        var pos0 = null;
-        if (nowTween.posType === 0) {                   //暂停的是经纬度
-            pos0 = this.params.resetCameraPos();
-            if (nowTween.fovChange) {
-                pos0.fov = this.params.camera.fov;
-            }
-        }
-        else {                                          //xyz
-            pos0 = {
-                x: this.params.camera.position.x, y: this.params.camera.position.y,
-                z: this.params.camera.position.z
-            };
-            if (nowTween.fovChange) {
-                pos0.fov = this.params.camera.fov;
-            }
-        }
-
-        //设置新的callback
-        var newCallback = () => {
-            nowTween.callback();
-            this.outOfPlayTween = true;
-        };
-
-        //创建新tween
-        this.playTween = new CameraTween({pos0: pos0, pos1: nowTween.pos1,
-                duration: this.cameraTweens[TweenNum[0]].duration - TweenNum[1], easing: nowTween.easing, callback: newCallback},
-            this.params.camera, this.params.distance, this.params.fovDownEdge, this.params.fovTopEdge, this.params.resetCameraPos, this.params.status
-        );
+    resetState = () => {
+        this.currentIndex = 0;
+        this.state = 'ready';
+        this.playTween = null;
     }
 
-    pause = () => {                                     //暂停的思路为创建新的tween记录断点，下次play从断点继续，不考虑easing不同带来的影响
-        if (this.paused) return;
-        this.paused = true;
-        this.stopTime = new Date().getTime();
-        let deltaTime = this.stopTime - this.startTime;
-        var TweenNum = this.getTweenNum(deltaTime);
-        var nowTween = this.cameraTweens[TweenNum[0]];  //当前tween
+    //暂停的思路为创建新的tween记录断点，下次play从断点继续，不考虑easing不同带来的影响
+    pause = () => {
+        if (this.state !== 'running') return;
+        let duration = this.cameraTweens[this.currentIndex].duration;
+        var nowTween = this.cameraTweens[this.currentIndex];  //当前tween
 
-        if (this.outOfPlayTween === false) {            //仍然在原来的PlayTween里面
+        if (this.playTween) {  //仍然在原来的PlayTween里面
             var oldPlayTween = this.playTween;
-            this.createPlayTween(oldPlayTween, TweenNum);
+            this.createPlayTween(oldPlayTween, duration);
             oldPlayTween.stop();
-        }
-        else {
-            this.createPlayTween(this.cameraTweens[TweenNum[0]], TweenNum);
+        } else {
+            this.createPlayTween(this.cameraTweens[this.currentIndex], duration);
             this.outOfPlayTween = false;
             nowTween.stop();
         }
 
         //连接后继tween
-        if (TweenNum[0] + 1 < this.len) {
-            this.playTween.chain(this.cameraTweens[TweenNum[0] + 1]);
-        }
-        else if (this.loop) {
+        if (this.currentIndex + 1 < this.len) {
+            this.playTween.chain(this.cameraTweens[this.currentIndex + 1]);
+        } else if (this.loop) {
             this.playTween.chain(this.cameraTweens[0]);
         }
     }
 
+    createPlayTween = (Tween, duration) => {
+        //记录断点信息
+        var nowTween = Tween;
+        var pos0 = null;
+        if (nowTween.posType === 0) {                   //暂停的是经纬度
+            pos0 = this.cameraControl.initSphericalData();
+            if (nowTween.fovChange) {
+                pos0.fov = this.cameraControl.camera.fov;
+            }
+        }
+        else {                                          //xyz
+            pos0 = {
+                x: this.cameraControl.camera.position.x, y: this.cameraControl.camera.position.y,
+                z: this.cameraControl.camera.position.z
+            };
+            if (nowTween.fovChange) {
+                pos0.fov = this.cameraControl.camera.fov;
+            }
+        }
+
+        //创建新tween
+        this.playTween = new CameraTween({
+            pos0: pos0, pos1: nowTween.pos1,
+            duration: duration,
+            easing: nowTween.easing
+        },
+            this.cameraControl.camera,
+            100,
+            this.cameraControl
+        );
+        this.playTween.onCameraAnimationEnded = () => {
+            nowTween.onCameraAnimationEnded();
+            this.playTween = null;
+        }
+        this.playTween.onCameraAnimationStart = nowTween.onCameraAnimationStart;
+        this.playTween.onCameraAnimationStop = () => {
+            nowTween.onCameraAnimationStop();
+        }
+    }
+
     play = () => {
-        if (this.paused === false) return;
-        this.paused = false;
-        let deltaTime = this.stopTime - this.startTime;
-        this.startTime = new Date().getTime() - deltaTime;
-        this.playTween.start();
+        if (this.state === 'paused') {
+            this.playTween && this.playTween.start();
+        }
+    }
+
+    next = () => {
+        this.currentIndex++;
+        if (this.currentIndex >= this.cameraTweens.length) {
+            if (this.loop) {
+                this.currentIndex = 0;
+            } else {
+                return;
+            }
+        }
+        this.start(this.currentIndex)
+    }
+
+    prev = () => {
+        this.currentIndex--;
+        if (this.currentIndex < 0) {
+            if (this.loop) {
+                this.currentIndex = this.cameraTweens.length - 1;
+            } else {
+                return;
+            }
+        }
+        this.start(this.currentIndex)
     }
 
 }
 
-export {CameraTween, CameraTweenGroup};
+export { CameraTween, CameraTweenGroup };

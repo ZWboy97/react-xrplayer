@@ -86,10 +86,16 @@ class XRPlayerManager {
     initScene = () => {
         const {
             scene_texture_resource: textureResource,
-            axes_helper_display: isAxesHelperDisplay
+            axes_helper_display: isAxesHelperDisplay,
         } = this.props;
-        this.sceneContainer = document.getElementById('video')
-        let geometry = new THREE.SphereGeometry(500, 80, 40); // 球体
+        const { panoramic_type = '360', radius = 500, height = 1000 } = textureResource;
+        this.sceneContainer = document.getElementById('video');
+        let geometry;
+        if (panoramic_type === '180') {
+            geometry = new THREE.CylinderGeometry(radius, radius, height, 40, 40, true); // 球体
+        } else {
+            geometry = new THREE.SphereBufferGeometry(radius, 80, 40); // 球体
+        }
         geometry.scale(-1, 1, 1);
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
         let texture = this.sceneTextureHelper.loadTexture(textureResource);
@@ -311,12 +317,24 @@ class XRPlayerManager {
         return this.innerViewControls.getCameraFov();
     }
 
+    enableChangeFov = (enable) => {
+        this.innerViewControls.enableChangeFov(enable);
+    }
+
     // FOV上下范围设置接口
     setFovVerticalScope = (bottom, top) => {
         this.innerViewControls.setFovVerticalScope(bottom, top);
     }
     getFovVerticalScope = () => {
         return this.innerViewControls.getFovVerticalScope();
+    }
+
+    // FOV左右范围设置接口
+    setFovHorizontalScope = (left, right) => {
+        this.innerViewControls.setFovHorizontalScope(left, right);
+    }
+    getFovHorizontalScope = () => {
+        return this.innerViewControls.getFovHorizontalScope();
     }
 
     /*******************************粒子特效接口********************************** */

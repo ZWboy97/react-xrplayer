@@ -37,6 +37,11 @@ class InnerViewControls {
         this.fovTopEdge = 90;
         this.fovDownEdge = -90;
 
+        this.fovLeftEdge = -90;
+        this.fovRightEdge = 270;
+
+        this.enableFovChange = true;        // 是否允许用户调整fov大小
+
         //键盘交互控件
         this.onKeyLeft = false;
         this.onKeyRight = false;
@@ -107,6 +112,17 @@ class InnerViewControls {
         }
     }
 
+    setFovHorizontalScope = (left, right) => {
+        this.fovLeftEdge = left;
+        this.fovRightEdge = right;
+    }
+    getFovHorizontalScope = () => {
+        return {
+            left: this.fovLeftEdge,
+            right: this.fovRightEdge
+        }
+    }
+
     // 相机当前位置接口
     getCameraPosition = () => {
         return this.camera.position;
@@ -125,6 +141,10 @@ class InnerViewControls {
         this.camera.updateProjectionMatrix();
     }
 
+    enableChangeFov = (enable) => {
+        this.enableFovChange = enable;
+    }
+
     /*******************************内部方法实现******************************** */
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
@@ -137,7 +157,7 @@ class InnerViewControls {
         this.distance = spherical.radius;
         this.lon = 90 - THREE.Math.radToDeg(this.theta);
         this.lat = 90 - THREE.Math.radToDeg(this.phi);
-        return {lat: this.lat, lon: this.lon};
+        return { lat: this.lat, lon: this.lon };
     };
 
     initControlsListener = () => {
@@ -150,7 +170,7 @@ class InnerViewControls {
             container.addEventListener('wheel', this.onDocumentMouseWheel, false);
         } else {
             container.addEventListener('mousedown', this.onDocumentMouseDown, false);
-            document.addEventListener('mousemove', this.onDocumentMouseMove, false);
+            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
             container.addEventListener('mouseup', this.onDocumentMouseUp, false);
             container.addEventListener('wheel', this.onDocumentMouseWheel, false);
             //添加键盘监听
@@ -201,6 +221,9 @@ class InnerViewControls {
 
     updateCameraPosition = () => {
         this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
+        if (this.lon >= 270) this.lon = 270 - 360;
+        else if (this.lon <= -90) this.lon = -90 + 360;
+        this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
         // 球坐标系与直角坐标系的转换
@@ -301,6 +324,7 @@ class InnerViewControls {
 
     onDocumentMouseWheel = (event) => {
         //this.distance += event.deltaY * 0.5;
+        if (!this.enableFovChange) return;
         let fov = this.camera.fov;
         fov += event.deltaY * 0.03; // 0.03 is a suitable value
         if (fov >= 160) {

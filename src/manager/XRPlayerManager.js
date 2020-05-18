@@ -317,12 +317,24 @@ class XRPlayerManager {
         return this.innerViewControls.getCameraFov();
     }
 
+    enableChangeFov = (enable) => {
+        this.innerViewControls.enableChangeFov(enable);
+    }
+
     // FOV上下范围设置接口
     setFovVerticalScope = (bottom, top) => {
         this.innerViewControls.setFovVerticalScope(bottom, top);
     }
     getFovVerticalScope = () => {
         return this.innerViewControls.getFovVerticalScope();
+    }
+
+    // FOV左右范围设置接口
+    setFovHorizontalScope = (left, right) => {
+        this.innerViewControls.setFovHorizontalScope(left, right);
+    }
+    getFovHorizontalScope = () => {
+        return this.innerViewControls.getFovHorizontalScope();
     }
 
     /*******************************粒子特效接口********************************** */

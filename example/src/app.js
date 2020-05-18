@@ -3,6 +3,7 @@ import React from 'react';
 import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
+import * as THREE from 'three';
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -64,6 +65,7 @@ class App extends React.Component {
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(-50, 50);
+        this.xrManager.enableChangeFov(false);
         this.xrManager.setParticleEffectRes({
             url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
             ,
@@ -179,7 +181,14 @@ class App extends React.Component {
     onGetCameraParas = () => {
         const fov = this.xrManager.getCameraFov();
         const position = this.xrManager.getCameraPosition();
-        alert(`fov:${fov}\nposition:\nx:${position.x}\ny:${position.y}\nz:${position.z}`)
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        var phi = spherical.phi;
+        var theta = spherical.theta;
+        var lon = 90 - THREE.Math.radToDeg(theta);
+        var lat = 90 - THREE.Math.radToDeg(phi);
+        alert(`fov:${fov}\nposition:\nx:${position.x}\ny:${position.y}\nz:${position.z}
+             \nlon:${lon},lat:${lat}`)
     }
 
     onSetCameraParas = () => {

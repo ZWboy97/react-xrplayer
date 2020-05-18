@@ -219,9 +219,13 @@ class App extends React.Component {
                     }}
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
-                        type: 'hls',
-                        res_url: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8'
+                        type: 'flv',
+                        res_url: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/fuzhou_video.flv',
+                        panoramic_type: "180",
+                        radius: 500,
+                        height: 1377
                     }}
+                    axes_helper_display={true}
                     is_full_screen={this.state.isFullScreen}
                     onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
                     onEventHandler={this.onEventHandler}

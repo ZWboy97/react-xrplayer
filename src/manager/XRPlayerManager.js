@@ -13,6 +13,7 @@ import VRHelper from "./VRHelper";
 import TextHelper from "./content_Insert_Helper/TextHelper";
 
 import HotSpotHelper from '../display/HotSpotHelper';
+import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 
 class XRPlayerManager {
 
@@ -40,7 +41,20 @@ class XRPlayerManager {
 
         this.vrHelper = null;
 
-        this.audio = null;
+        // audio related
+        this.audio = document.createElement("audio");
+        this.audio.preload = "metadata";
+        document.body.appendChild(this.audio);
+
+        // camera animation related
+        this.cameraTweenStatus = {
+            num: 0,
+            paused: false
+        };
+        this.cameraTweenGroup = null;
+
+        this.onCameraAnimationEnded = null;
+
 
         this.init();
     }
@@ -121,14 +135,16 @@ class XRPlayerManager {
 
     animate = (time) => {
         requestAnimationFrame(this.animate);
-        this.innerViewControls && this.innerViewControls.update();
+        if (this.cameraTweenStatus.num === 0)
+            this.innerViewControls && this.innerViewControls.update();
         if (this.centerModelHelper) {
             this.centerModelHelper.update();
         }
         if (this.spriteParticleHelper) {
             this.spriteParticleHelper.update();
         }
-        TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
+        if (this.cameraTweenStatus.paused === false)
+            TWEEN.update(); // 不要轻易去掉，渐变动画依赖该库
         if (this.vrHelper.vrStatus) {
             time *= 0.001;
             if (this.spriteShapeHelper) {
@@ -450,6 +466,94 @@ class XRPlayerManager {
 
     endAudio = () => {
         this.audio.currentTime = this.audio.duration;
+    }
+
+    /****************************相机动画接口***********************************/
+    /*
+    设置动画流程（示例见app.js）：
+        1.  通过createCameraAnimation获取动画各部分的cameraTween
+        2.  通过setCameraAnimationGroup连接各动画
+    为防止不必要的bug，请遵循以下播放注意事项：（可以在以后设计UI时通过隐藏button或使button失效防止这一类问题产生）
+        1.  startCameraAnimationGroup后才可调用stop，pause，play等功能
+        2.  stop或自动结束之后再调用start重播
+    params的格式:
+    {
+        pos0, pos1, duration,           必需
+        easing, callback                非必需（easing是速度变化的方式，详见https://www.createjs.com/docs/tweenjs/classes/Ease.html）
+    }
+    pos0、pos1的格式
+    {
+        lat, lon,                       必需
+        fov                             非必需
+    }或
+    {
+        x, y, z,                        必需
+        fov                             非必需
+    }
+    */
+    createCameraTweenGroup = (animationList, loop) => {
+        if (!!!loop) {
+            loop = false;
+        }
+        let cameraTweens = [];
+        animationList.forEach((item, index) => {
+            var animation = this.createCameraAnimation(item);
+            cameraTweens.push(animation);
+        });
+        var cameraTweenGroup = new CameraTweenGroup(cameraTweens,
+            100, this.innerViewControls);
+        cameraTweenGroup.onCameraAnimationEnded = (index) => {
+            this.onCameraAnimationEnded &&
+                this.onCameraAnimationEnded(index);
+        }
+        cameraTweenGroup.onCameraAnimationStart = (index) => {
+            this.onCameraAnimationStart &&
+                this.onCameraAnimationStart(index);
+        }
+        cameraTweenGroup.onCameraAnimationStop = (index) => {
+            this.onCameraAnimationStop &&
+                this.onCameraAnimationStop(index);
+        }
+        this.cameraTweenGroup = cameraTweenGroup;
+        return cameraTweenGroup;
+    }
+
+    createCameraAnimation = (params) => {  //因为存在入场动画，导致设置相机动画时distance是450，这里直接改为100
+        var cameraTween = new CameraTween(params, this.camera, 100,
+            this.innerViewControls, this.cameraTweenStatus);
+        return cameraTween;
+    }
+
+    setCameraTweenGroup = (cameraTweenGroup) => {
+        this.cameraTweenGroup = cameraTweenGroup;
+    }
+
+    getCameraTweenGroup = () => {
+        return this.cameraTweenGroup;
+    }
+
+    startCameraTweenGroup = (time) => {
+        if (!this.cameraTweenGroup) {
+            return;
+        }
+        if (!!!time) {
+            this.cameraTweenGroup.start();
+        }
+        else {
+            this.cameraTweenGroup.start(time);
+        }
+    }
+
+    stopCameraTweenGroup = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.stop();
+    }
+
+    pauseCameraTweenGroup = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.pause();
+    }
+
+    playCameraTweenGroup = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.play();
     }
 
     /*******************************其他接口********************************** */

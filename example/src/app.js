@@ -2,6 +2,7 @@ import React from 'react';
 //import XRPlayer from '../../lib/index';
 import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
+import TWEEN from '@tweenjs/tween.js';
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -59,7 +60,7 @@ class App extends React.Component {
     onXRCreated = (manager) => {
         this.xrManager = manager;
         this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
-        this.xrManager.toNormalView(8000, 1000);
+        this.xrManager.toNormalView(1000, 1000);
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(-50, 50);
@@ -69,6 +70,30 @@ class App extends React.Component {
             num: 5000, range: 500,
             color: 0xffffff, sizeAttenuation: true
         });
+
+        this.onCameraAnimationSet();
+    }
+
+    onCameraAnimationSet = () => {
+        this.xrManager.initAudio();
+        this.xrManager.setAudioSrc("http://www.tutorialrepublic.com/examples/audio/sea.mp3");
+
+        let animateList = [
+            {
+                pos0: { lat: 0, lon: 180, fov: 80 }, pos1: { lat: 0, lon: 0, fov: 80 },
+                duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
+            },
+            {
+                pos0: { lat: 0, lon: 0, fov: 80 }, pos1: { lat: 0, lon: -180, fov: 80 },
+                duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
+            }
+        ]
+        var cameraTweenGroup = this.xrManager.createCameraTweenGroup(animateList, true);
+        //cameraTweenGroup.enableAutoNext(true);
+        this.xrManager.setCameraTweenGroup(cameraTweenGroup);
+        this.xrManager.onCameraAnimationEnded = (index) => {
+            cameraTweenGroup.next();
+        }
     }
 
     onEventHandler = (name, props) => {
@@ -176,14 +201,14 @@ class App extends React.Component {
     onCreateTextBox = () => {
         if (!!!this.TextBox) {
             this.TextBox = this.xrManager.createTextBox({
-                position: {x:0,y:0,z:-500}
+                position: { x: 0, y: 0, z: -500 }
             });
             this.TextBoxHidden = false;
         }
     }
 
     onChangeTextBox = () => {
-        this.xrManager.changeTextBox(this.TextBox,{
+        this.xrManager.changeTextBox(this.TextBox, {
             message: "Text has changed. 想要输入更长的句子,请同时修改canvasWidth和scaleX，否则会发生这种情况",
             borderWidth: 1650,
         });
@@ -251,6 +276,15 @@ class App extends React.Component {
                 <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                 <button onClick={this.onChangeTextBox}>修改文本框</button>
                 <button onClick={this.onRemoveTextBox}>移除文本框</button>
+                <button onClick={() => { this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio(); }}>播放/暂停音频</button>
+                <button onClick={() => { this.xrManager.getAudioVolume() === 1 ? this.xrManager.setAudioVolume(0.5) : this.xrManager.setAudioVolume(1); }}>减小音量/复原</button>
+                <button onClick={() => { this.xrManager.getAudioMuted() ? this.xrManager.setAudioMuted(false) : this.xrManager.setAudioMuted(true); }}>静音/复原</button>
+                <button onClick={() => { this.xrManager.replayAudio(); }}>回到开头</button>
+                <button onClick={() => { this.xrManager.endAudio(); }}>到达结尾</button>
+                <button onClick={() => { this.xrManager.startCameraTweenGroup(); }}>开始导览</button>
+                <button onClick={() => { this.xrManager.playCameraTweenGroup(); }}>播放</button>
+                <button onClick={() => { this.xrManager.pauseCameraTweenGroup() }}>暂停</button>
+                <button onClick={() => { this.xrManager.stopCameraTweenGroup(); }}>停止</button>
             </div >
         )
     }

@@ -24,6 +24,7 @@ class XRPlayer extends Component {
     this.sceneContainer = null;
 
     this.xrManager = null;
+    this.effectCallback = null;
 
     this.innerView = true; // 是否是内视角
     this.innerViewControls = null;
@@ -41,7 +42,7 @@ class XRPlayer extends Component {
     this.initEvent();
   }
 
-  eventHandler = (name, props) => {
+  eventHandler = (name, props, callback = () => { }) => {
     const result = this.props.onEventHandler(name, props);
     if (result === true) return; // 为true，外部拦截响应，由外部处理
     switch (name) {
@@ -50,6 +51,17 @@ class XRPlayer extends Component {
           showingEffect: true,
           effectData: props.data
         });
+        break;
+      case 'video':
+      case 'alpha_video':
+        this.effectCallback = callback;
+        this.setState({
+          showingEffect: true,
+          effectData: props.data
+        });
+        break;
+      case 'close_effect_container':
+        this.onCloseEffectContainer();
         break;
       default: break;
     }
@@ -72,6 +84,13 @@ class XRPlayer extends Component {
 
   componentWillUnmount() {
     this.xrManager && this.xrManager.destroy();
+  }
+
+  onCloseEffectContainer = () => {
+    this.setState({
+      showingEffect: false,
+      effectData: null
+    })
   }
 
   render() {
@@ -100,10 +119,9 @@ class XRPlayer extends Component {
               <EffectContainer
                 data={this.state.effectData}
                 onCloseClickHandler={() => {
-                  this.setState({
-                    effectData: null
-                  })
+                  this.onCloseEffectContainer()
                 }}
+                onCallback={this.effectCallback}
               ></EffectContainer>
               :
               ""

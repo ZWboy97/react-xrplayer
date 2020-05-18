@@ -4,7 +4,7 @@ import TWEEN from '@tweenjs/tween.js';
 class CameraTween {
     constructor(tweenParams, camera, cameraDistance, cameraControl) {
 
-        this.index = 0;
+        this.key = 0;
         this.pos0 = null;
         this.pos1 = null;
         this.duration = null;
@@ -48,22 +48,19 @@ class CameraTween {
         this.tween.onComplete(() => {
             this.onCameraAnimationEnded &&
                 this.onCameraAnimationEnded(this.key);
-            if (this.posType === 1) {
-                this.reset();
-            }
+            this.reset();
             this.started = false;
         });         //只有完成动画才会触发传入的callback，中途停止不会
         this.tween.onStop(() => {
             this.onCameraAnimationStop &&
                 this.onCameraAnimationStop(this.key);
-            if (this.posType === 1) {
-                this.reset();
-            }
+            this.reset();
             this.started = false;
         });
 
         if (params.hasOwnProperty("easing")) {
-            this.tween.easing(params.easing);
+            let easing = this.getEasingFunc(params.easing);
+            this.tween.easing(easing);
         }
         if (this.pos0.hasOwnProperty("x")) {
             this.posType = 1
@@ -91,6 +88,18 @@ class CameraTween {
             }
             cameraTween.camera.lookAt(cameraTween.camera.target);
         });
+    }
+
+    getEasingFunc = (name) => {
+        switch (name) {
+            case 'InOut':
+                return TWEEN.Easing.Sinusoidal.InOut;
+            case 'In':
+                return TWEEN.Easing.Sinusoidal.In;
+            case 'Out':
+                return TWEEN.Easing.Sinusoidal.Out;
+            default: return TWEEN.Easing.Sinusoidal.InOut;
+        }
     }
 
     //经纬度到xyz的转换
@@ -152,10 +161,6 @@ class CameraTweenGroup {
     }
 
     init = () => {
-        if (this.autoNext) {
-            this.initAutoNext();
-        }
-        this.enableLoop(false);
         this.initCallback();
     }
 
@@ -167,25 +172,25 @@ class CameraTweenGroup {
 
     initCallback = () => {
         this.cameraTweens.forEach((item, itemIndex) => {
-            item.onCameraAnimationEnded = () => {
+            item.onCameraAnimationEnded = (key) => {
                 this.state = 'ready';
                 this.onCameraAnimationEnded &&
-                    this.onCameraAnimationEnded(itemIndex);
+                    this.onCameraAnimationEnded(key);
             }
-            item.onCameraAnimationStart = () => {
+            item.onCameraAnimationStart = (key) => {
                 this.currentIndex = itemIndex;
                 this.state = 'running';
                 this.onCameraAnimationStart &&
-                    this.onCameraAnimationStart(itemIndex);
+                    this.onCameraAnimationStart(key);
             }
-            item.onCameraAnimationStop = () => {
+            item.onCameraAnimationStop = (key) => {
                 if (this.state === 'stoped') {
                     this.resetState();
                 } else {
                     this.state = 'paused';
                 }
                 this.onCameraAnimationStop &&
-                    this.onCameraAnimationStop(itemIndex);
+                    this.onCameraAnimationStop(key);
             }
         })
     }
@@ -193,39 +198,39 @@ class CameraTweenGroup {
     cancleAutoNext = () => {
         if (this.cameraTweens) {
             this.cameraTweens.forEach((item) => {
-                item.stopChainedTweens();
                 item.chain([]);
             })
         }
     }
 
     enableAutoNext = (enable) => {
-        if (enable) {
+        if (enable && !this.autoNext) {
             this.initAutoNext();
-        } else {
+        } else if (this.autoNext && !enable) {
             this.cancleAutoNext();
         }
     }
 
     enableLoop = (enable) => {
-        this.loop = enable;
-        if (enable) {
+
+        if (enable && !this.loop) {
+            this.loop = enable;
             this.initLoop()
-        } else {
+        } else if (this.loop && !enable) {
             this.cancleLoop();
         }
     }
 
     initLoop = () => {
-        this.cameraTweens[this.len - 1].chain(this.cameraTweens[0]);
+        if (this.autoNext) {
+            this.cameraTweens[this.len - 1].chain(this.cameraTweens[0]);
+        }
     }
 
     cancleLoop = () => {
-        var endTween = new TWEEN.Tween({})
-            .to({}, 0)
-            .onStop(() => { this.stop(); })
-            .onComplete(() => { this.stop() });
-        this.cameraTweens[this.len - 1].tween.chain(endTween);
+        if (this.autoNext) {
+            this.cameraTweens[this.len - 1].chain([]);
+        }
     }
 
     start = (index = 0) => {
@@ -322,11 +327,7 @@ class CameraTweenGroup {
     next = () => {
         this.currentIndex++;
         if (this.currentIndex >= this.cameraTweens.length) {
-            if (this.loop) {
-                this.currentIndex = 0;
-            } else {
-                return;
-            }
+            this.currentIndex = 0;
         }
         this.start(this.currentIndex)
     }
@@ -334,11 +335,7 @@ class CameraTweenGroup {
     prev = () => {
         this.currentIndex--;
         if (this.currentIndex < 0) {
-            if (this.loop) {
-                this.currentIndex = this.cameraTweens.length - 1;
-            } else {
-                return;
-            }
+            this.currentIndex = this.cameraTweens.length - 1;
         }
         this.start(this.currentIndex)
     }

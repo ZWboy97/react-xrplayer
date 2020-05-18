@@ -66,7 +66,7 @@ class EffectContainer extends Component {
                         this.props.onCloseClickHandler && this.props.onCloseClickHandler();
                     }}
                     onDisplayEndedHandler={() => {
-
+                        this.props.onCallback && this.props.onCallback();
                     }}
                 ></EffectAlphaVideoPanel>
             )

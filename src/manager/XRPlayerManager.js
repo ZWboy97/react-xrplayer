@@ -514,17 +514,18 @@ class XRPlayerManager {
         });
         var cameraTweenGroup = new CameraTweenGroup(cameraTweens,
             100, this.innerViewControls);
-        cameraTweenGroup.onCameraAnimationEnded = (index) => {
+        cameraTweenGroup.onCameraAnimationEnded = (key) => {
             this.onCameraAnimationEnded &&
-                this.onCameraAnimationEnded(index);
+                this.onCameraAnimationEnded(key);
+
         }
-        cameraTweenGroup.onCameraAnimationStart = (index) => {
+        cameraTweenGroup.onCameraAnimationStart = (key) => {
             this.onCameraAnimationStart &&
-                this.onCameraAnimationStart(index);
+                this.onCameraAnimationStart(key);
         }
-        cameraTweenGroup.onCameraAnimationStop = (index) => {
+        cameraTweenGroup.onCameraAnimationStop = (key) => {
             this.onCameraAnimationStop &&
-                this.onCameraAnimationStop(index);
+                this.onCameraAnimationStop(key);
         }
         this.cameraTweenGroup = cameraTweenGroup;
         return cameraTweenGroup;
@@ -533,6 +534,7 @@ class XRPlayerManager {
     createCameraAnimation = (params) => {  //因为存在入场动画，导致设置相机动画时distance是450，这里直接改为100
         var cameraTween = new CameraTween(params, this.camera, 100,
             this.innerViewControls, this.cameraTweenStatus);
+        cameraTween.key = params.key;
         return cameraTween;
     }
 
@@ -567,6 +569,34 @@ class XRPlayerManager {
     playCameraTweenGroup = () => {
         this.cameraTweenGroup && this.cameraTweenGroup.play();
     }
+
+    nextCameraTween = () => {
+        this.cameraTweenGroup && this.cameraTweenGroup.next();
+    }
+
+    enableCameraTweenGroupAutoNext = (enable) => {
+        this.cameraTweenGroup.enableAutoNext(enable);
+    }
+
+    enableCameraTweenGroupLoop = (enable) => {
+        this.cameraTweenGroup.enableLoop(enable);
+    }
+
+    emitEvent = (eventKey, callback = () => { }) => {
+        if (this.spriteEventList && this.spriteEventList.has(eventKey)) {
+            const data = this.spriteEventList.get(eventKey);
+            this.handler(data.type, { data }, () => {
+                callback();
+            })
+        } else {
+            callback();
+        }
+    }
+
+    closeEffectContainer = () => {
+        this.handler('close_effect_container');
+    }
+
 
     /*******************************其他接口********************************** */
     onWindowResize = (mountWidth, mountHeight) => {

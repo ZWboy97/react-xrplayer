@@ -284,6 +284,11 @@ class InnerViewControls {
                 this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
                 this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
             }
+            if (this.lon > this.fovRightEdge) {
+                this.lon = this.fovRightEdge;
+            } else if (this.lon < this.fovLeftEdge) {
+                this.lon = this.fovLeftEdge;
+            }
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
         }
@@ -311,10 +316,15 @@ class InnerViewControls {
         if (this.isUserInteracting === true) {
             var touch = event.targetTouches[0];
             console.log('touching', touch.pageX);
-            this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.1 + this.onPointerDownLon;
-            this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.1 + this.onPointerDownLat;
+            this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.2 + this.onPointerDownLon;
+            this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.2 + this.onPointerDownLat;
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
+            if (this.lon > this.fovRightEdge) {
+                this.lon = this.fovRightEdge;
+            } else if (this.lon < this.fovLeftEdge) {
+                this.lon = this.fovLeftEdge;
+            }
         }
     }
 

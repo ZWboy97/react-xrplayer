@@ -33,7 +33,7 @@ export function fetchLiveConfigure(channel_id) {
             if (data.code === 200) {
                 dispatch(liveConfigureAction(data.data))
             }
-        })
+        }).catch()
     }
 }
 

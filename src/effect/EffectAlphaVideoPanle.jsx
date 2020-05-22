@@ -14,6 +14,7 @@ class EffectAlphaVideoPanel extends Component {
         this.bufferCtx = null;
         this.image = null;
         this.alphaData = null;
+        this.isPlaying = false;
     }
 
     componentDidMount() {
@@ -38,6 +39,7 @@ class EffectAlphaVideoPanel extends Component {
         this.video.play();
 
         this.video.addEventListener('play', () => {
+            this.isPlaying = true;
             this.processFrame();
             if (this.props.onStartPlayHandler) {
                 this.props.onStartPlayHandler();
@@ -45,6 +47,7 @@ class EffectAlphaVideoPanel extends Component {
         }, false);
 
         this.video.addEventListener('ended', () => {
+            this.isPlaying = false;
             if (this.props.onDisplayEndedHandler) {
                 this.props.onDisplayEndedHandler();
             }
@@ -69,6 +72,7 @@ class EffectAlphaVideoPanel extends Component {
     }
 
     processFrame = () => {
+        if (this.isPlaying === false) return;
         this.bufferCtx.drawImage(this.video, 0, 0, this.width, this.height * 2);
         this.image = this.bufferCtx.getImageData(0, 0, this.width, this.height);
         this.image.crossOrigin = "Anonymous";

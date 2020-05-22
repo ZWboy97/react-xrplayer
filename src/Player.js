@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { fetchLiveConfigure } from './redux/basic.redux';
+import { enableEffectContainer, setEffectData } from './redux/player.redux';
 import EffectContainer from './effect/EffectContainer';
 import FullScreen from './utils/fullscreen';
 import Proptypes from 'prop-types';
@@ -8,11 +8,6 @@ import XRPlayerManager from './manager/XRPlayerManager';
 import './App.css';
 
 class XRPlayer extends Component {
-
-  state = {
-    showingEffect: false,
-    effectData: null,
-  }
 
   constructor(props) {
     super(props);
@@ -47,18 +42,15 @@ class XRPlayer extends Component {
     if (result === true) return; // 为true，外部拦截响应，由外部处理
     switch (name) {
       case 'hot_spot_click':
-        this.setState({
-          showingEffect: true,
-          effectData: props.data
-        });
+        this.props.enableEffectContainer(true);
+        this.props.setEffectData(props.data);
         break;
       case 'video':
       case 'alpha_video':
         this.effectCallback = callback;
-        this.setState({
-          showingEffect: true,
-          effectData: props.data
-        });
+        this.props.enableEffectContainer(true);
+        console.log('data', props.data);
+        this.props.setEffectData(props.data);
         break;
       case 'close_effect_container':
         this.onCloseEffectContainer();
@@ -87,14 +79,13 @@ class XRPlayer extends Component {
   }
 
   onCloseEffectContainer = () => {
-    this.setState({
-      showingEffect: false,
-      effectData: null
-    })
+    this.props.enableEffectContainer(false);
+    this.props.setEffectData({});
   }
 
   render() {
-    let { width, height, is_full_screen = false } = this.props;
+    let { width, height, is_full_screen = false,
+      is_effect_displaying, effect_data } = this.props;
     return (
       <FullScreen
         enabled={is_full_screen}
@@ -115,9 +106,9 @@ class XRPlayer extends Component {
           >
           </div>
           {
-            this.state.showingEffect ?
+            is_effect_displaying ?
               <EffectContainer
-                data={this.state.effectData}
+                data={effect_data}
                 onCloseClickHandler={() => {
                   this.onCloseEffectContainer()
                 }}
@@ -185,6 +176,6 @@ XRPlayer.defaultProps = {
 }
 
 export default connect(
-  state => state.basic,
-  { fetchLiveConfigure }
+  state => state.player,
+  { enableEffectContainer, setEffectData }
 )(XRPlayer);

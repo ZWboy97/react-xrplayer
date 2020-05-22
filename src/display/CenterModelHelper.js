@@ -17,6 +17,7 @@ class CenterModelHelper {
             this.modelLoaderMap.set(model_key, loader);
             loader.loadObj(model);
             resolve();
+        }).catch((reason) => {
         })
         promise.then();
     }

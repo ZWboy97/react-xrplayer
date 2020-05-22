@@ -61,7 +61,10 @@ class EffectContainer extends Component {
                         height: data.height,
                         margin: data.margin
                     }}
+                    enableMask={data.enableMask}
                     enableClose={data.enableClose}
+                    videoMuted={data.videoMuted}
+
                     onCloseClickHandler={() => {
                         this.props.onCloseClickHandler && this.props.onCloseClickHandler();
                     }}

@@ -82,7 +82,7 @@ class App extends React.Component {
 
         let animateList = [
             {
-                pos0: { lat: 0, lon: 180, fov: 80 }, pos1: { lat: 0, lon: 0, fov: 80 },
+                pos0: { lat: 0, lon: 180, fov: 80, distance: 450 }, pos1: { lat: 0, lon: 0, fov: 80, distance: 100 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             },
             {

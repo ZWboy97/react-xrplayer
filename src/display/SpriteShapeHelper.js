@@ -71,7 +71,7 @@ class SpriteShapeHelper {
     }
 
     createPoint(key, value) {
-        const { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null } = value
+        let { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null, img_url = null, img_height = 100, img_width = 100, title_width} = value;
         let position = this.contertSph2Rect(phi, theta);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
@@ -85,13 +85,28 @@ class SpriteShapeHelper {
         if (animate) {
             this.animatePoint(mesh);
         }
-        if (title) {
+        if (img_url || title) {
             var div = document.createElement("div");
             div.id = key;
             div.style = "padding:10px 10px;background:rgba(0,0,0,.5);color:#fff;display:none;position:absolute;border-radius:6px; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;font-size:0.85rem;";
-            div.innerHTML = title;
+            if (title_width) div.style.width = title_width + 'px';
+        }
+        if (img_url) {
+            let img = document.createElement("img");
+            img.src = img_url;
+            img.alt = "image";
+            img.height = img_height;
+            img.width = img_width;
+            img.align = "left";
+            div.appendChild(img);
             this.container.appendChild(div);
         }
+        if (title) {
+            let text = document.createElement("font");
+            text.innerText = title;
+            div.appendChild(text);
+        }
+        if (img_url || title) this.container.appendChild(div);
     }
 
     createSpriteShape = (url, opacity = 1, scale = 16) => {
@@ -121,7 +136,7 @@ class SpriteShapeHelper {
                     var screenPos = this.objectPosToScreenPos(this.pointGroup.children[i], this.container, this.camera);
                     tip.style.display = "block";
                     tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
-                    tip.style.top = screenPos.y - tip.clientHeight * 2 + "px";
+                    tip.style.top = screenPos.y - tip.clientHeight - 30 + "px";
                 } else {
                     tip.style.display = "none";
                 }

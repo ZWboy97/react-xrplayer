@@ -72,7 +72,10 @@ class CameraTween {
         var cameraTween = this;
         this.tween.onUpdate((pos) => {
             if (cameraTween.posType === 0) {
-                var newPos = cameraTween.spherical2Cartesian(pos.lat, pos.lon);
+                if (!pos.hasOwnProperty("distance")) {
+                    pos.distance = this.distance;
+                }
+                var newPos = cameraTween.spherical2Cartesian(pos.lat, pos.lon, pos.distance);
                 cameraTween.camera.position.x = newPos.x;
                 cameraTween.camera.position.y = newPos.y;
                 cameraTween.camera.position.z = newPos.z;
@@ -103,14 +106,14 @@ class CameraTween {
     }
 
     //经纬度到xyz的转换
-    spherical2Cartesian = (lat, lon) => {
+    spherical2Cartesian = (lat, lon, distance) => {
         var pos = { x: 0, y: 0, z: 0 };
         lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
         var phi = THREE.Math.degToRad(90 - lat);
         var theta = THREE.Math.degToRad(lon);
-        pos.x = this.distance * Math.sin(phi) * Math.cos(theta);
-        pos.y = this.distance * Math.cos(phi);
-        pos.z = this.distance * Math.sin(phi) * Math.sin(theta);
+        pos.x = distance * Math.sin(phi) * Math.cos(theta);
+        pos.y = distance * Math.cos(phi);
+        pos.z = distance * Math.sin(phi) * Math.sin(theta);
         return pos;
     }
 

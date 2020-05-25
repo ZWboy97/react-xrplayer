@@ -122,13 +122,11 @@ class XRPlayerManager {
     initVR = () => {
         this.vrHelper = new VRHelper(this.renderer, this.camera);
         this.vrHelper.setObjectInteractionHandler((pickedObject) => {
-            console.log('tag', 'params');
             if (!!pickedObject) {
                 const key = pickedObject.name;
-                if (this.spriteEventList.has(key)) {
-                    const data = this.spriteEventList.get(key);
-                    this.handler('hot_spot_click', { data });
-                }
+                this.emitEvent(key, () => {
+                    this.closeEffectContainer();
+                });
             }
         })
     }
@@ -219,11 +217,9 @@ class XRPlayerManager {
         this.spriteShapeHelper.setHotSpotList(hot_spot_list);
         this.spriteShapeHelper.objectClickHandler = (intersects) => {
             const key = intersects[0].object.name;
-            if (this.spriteEventList.has(key)) {
-                const data = this.spriteEventList.get(key);
-                this.handler('hot_spot_click', { data })
-            }
-            console.log(intersects[0].object.name);
+            this.emitEvent(key, () => {
+                this.closeEffectContainer();
+            })
         }
     }
 

@@ -41,7 +41,9 @@ class XRPlayer extends Component {
     const result = this.props.onEventHandler(name, props);
     if (result === true) return; // 为true，外部拦截响应，由外部处理
     switch (name) {
-      case 'hot_spot_click':
+      case 'infocard':
+      case 'image':
+      case 'control':
         this.props.enableEffectContainer(true);
         this.props.setEffectData(props.data);
         break;

@@ -11,6 +11,7 @@ import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
 import TextHelper from "./content_Insert_Helper/TextHelper";
+import CameraMoveAction from "../action/CameraMoveAction";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
@@ -283,6 +284,19 @@ class XRPlayerManager {
         }
         this.innerViewControls.disConnect();
         this.viewConvertHelper.toPlanetView(durtime, delay);
+    }
+
+    moveCameraTo = (descPos, onStart, onEnd) => {
+        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, 5000, 0);
+        cameraMoveAction.onStartHandler = () => {
+            this.innerViewControls && this.innerViewControls.disConnect();
+            onStart && onStart();
+        }
+        cameraMoveAction.onCompleteHandler = () => {
+            this.innerViewControls && this.innerViewControls.connect();
+            onEnd && onEnd();
+        }
+        cameraMoveAction.start();
     }
 
     /**************************相机控制相关接口************************* */

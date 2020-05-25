@@ -29,7 +29,7 @@ class CameraMoveAction {
                 fov: endState.fov
             }, duration)
             .delay(delay)
-            .easing(TWEEN.Easing.Quadratic.Out)
+            .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(() => {
                 this.camera.position.x = coords.x;
                 this.camera.position.y = coords.y;

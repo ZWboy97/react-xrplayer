@@ -24,7 +24,6 @@ class TextureHelper {
         this.containerNode.width = 0;
         this.containerNode.height = 0;
         this.containerNode.loop = true;
-        this.containerNode.muted = true;
         this.containerNode.crossOrigin = "anonymous";
         this.containerNode.autoplay = true;
         this.containerNode.allowsInlineMediaPlayback = true;

@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './style/EffectAlphaVideoPanel.less';
+import { connect } from 'react-redux';
 
 
 class EffectAlphaVideoPanel extends Component {
@@ -18,9 +19,10 @@ class EffectAlphaVideoPanel extends Component {
     }
 
     componentDidMount() {
-        const { videoMuted } = this.props;
+        const { muted, volume, videoMuted } = this.props;
         this.video = this.videoNode;
-        this.video.muted = videoMuted;
+        this.video.volume = volume;
+        this.video.muted = videoMuted || muted;
         this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
         this.loadMp4Video();
     }
@@ -95,8 +97,7 @@ class EffectAlphaVideoPanel extends Component {
     }
 
     render() {
-        const { enableClose, videoStyle,
-            enableMask } = this.props;
+        const { enableClose, videoStyle, enableMask } = this.props;
         let overlayClassName = "alpha_video_overlay";
         if (enableMask) {
             overlayClassName += " grep_overlay";
@@ -149,5 +150,7 @@ EffectAlphaVideoPanel.defaultProps = {
     videoStyle: { width: 400, height: 400 }
 }
 
-export default EffectAlphaVideoPanel;
-
+export default connect(
+    state => state.player,
+    {}
+)(EffectAlphaVideoPanel);

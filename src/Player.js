@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { enableEffectContainer, setEffectData } from './redux/player.redux';
+import { enableEffectContainer, setEffectData, setGlobalVolume, setGlobalMuted } from './redux/player.redux';
 import EffectContainer from './effect/EffectContainer';
 import FullScreen from './utils/fullscreen';
 import Proptypes from 'prop-types';
@@ -33,8 +33,13 @@ class XRPlayer extends Component {
     this.xrManager = new XRPlayerManager(this.mount, this.props);
     this.xrManager.handler = this.eventHandler;
     this.props.onCreated && this.props.onCreated(this.xrManager);
-
+    this.initState();
     this.initEvent();
+  }
+
+  initState = () => {
+    this.sceneContainer.volume = this.props.volume;
+    this.sceneContainer.muted = this.props.muted;
   }
 
   eventHandler = (name, props, callback = () => { }) => {
@@ -56,6 +61,12 @@ class XRPlayer extends Component {
         break;
       case 'close_effect_container':
         this.onCloseEffectContainer();
+        break;
+      case 'global_muted':
+        this.props.setGlobalMuted(props.muted);
+        break;
+      case 'global_volume':
+        this.props.setGlobalVolume(props.volume);
         break;
       default: break;
     }
@@ -179,5 +190,5 @@ XRPlayer.defaultProps = {
 
 export default connect(
   state => state.player,
-  { enableEffectContainer, setEffectData }
+  { enableEffectContainer, setEffectData, setGlobalVolume, setGlobalMuted }
 )(XRPlayer);

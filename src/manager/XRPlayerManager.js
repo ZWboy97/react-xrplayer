@@ -162,6 +162,14 @@ class XRPlayerManager {
 
     }
 
+    /*****************************全局接口************************************ */
+    setGlobalMuted = (muted) => {
+        this.handler('global_muted', { muted: muted });
+    }
+    setGlobalVolume = (volume) => {
+        this.handler('global_volume', { volume: volume });
+    }
+
     /****************************全景场景相关控制接口************************* */
     setSenceResource = (res) => {
         this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();

@@ -8,7 +8,6 @@ class CameraTween {
         this.pos0 = null;
         this.pos1 = null;
         this.duration = null;
-        this.callback = null;
         this.easing = null;
         this.tween = null;
 
@@ -24,6 +23,7 @@ class CameraTween {
 
         this.posType = 0;                   // 0 采用经纬度， 1 采用xyz
         this.fovChange = false;             //是否涉及fov的改变
+        this.disChange = false;             //是否涉及distance的改变
 
         this.onCameraAnimationEnded = null; // 动画结束后回调
         this.onCameraAnimationStop = null;
@@ -50,7 +50,7 @@ class CameraTween {
                 this.onCameraAnimationEnded(this.key);
             this.reset();
             this.started = false;
-        });         //只有完成动画才会触发传入的callback，中途停止不会
+        });
         this.tween.onStop(() => {
             this.onCameraAnimationStop &&
                 this.onCameraAnimationStop(this.key);
@@ -68,11 +68,17 @@ class CameraTween {
         if (this.pos0.hasOwnProperty("fov")) {
             this.fovChange = true;
         }
+        if(this.pos0.hasOwnProperty("distance")) {
+            this.disChange = true;
+        }
 
-        var cameraTween = this;
+        const cameraTween = this;
         this.tween.onUpdate((pos) => {
             if (cameraTween.posType === 0) {
-                var newPos = cameraTween.spherical2Cartesian(pos.lat, pos.lon);
+                if (!this.disChange) {
+                    pos.distance = this.distance;
+                }
+                const newPos = cameraTween.spherical2Cartesian(pos.lat, pos.lon, pos.distance);
                 cameraTween.camera.position.x = newPos.x;
                 cameraTween.camera.position.y = newPos.y;
                 cameraTween.camera.position.z = newPos.z;
@@ -103,14 +109,14 @@ class CameraTween {
     }
 
     //经纬度到xyz的转换
-    spherical2Cartesian = (lat, lon) => {
-        var pos = { x: 0, y: 0, z: 0 };
+    spherical2Cartesian = (lat, lon, distance) => {
+        const pos = {x: 0, y: 0, z: 0};
         lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
-        var phi = THREE.Math.degToRad(90 - lat);
-        var theta = THREE.Math.degToRad(lon);
-        pos.x = this.distance * Math.sin(phi) * Math.cos(theta);
-        pos.y = this.distance * Math.cos(phi);
-        pos.z = this.distance * Math.sin(phi) * Math.sin(theta);
+        const phi = THREE.Math.degToRad(90 - lat);
+        const theta = THREE.Math.degToRad(lon);
+        pos.x = distance * Math.sin(phi) * Math.cos(theta);
+        pos.y = distance * Math.cos(phi);
+        pos.z = distance * Math.sin(phi) * Math.sin(theta);
         return pos;
     }
 
@@ -156,6 +162,9 @@ class CameraTweenGroup {
         this.onCameraAnimationEnded = null;
         this.onCameraAnimationStart = null;
         this.onCameraAnimationStop = null;
+
+        this.startTime = 0;
+        this.pauseTime = 0;
 
         this.init();
     }
@@ -237,6 +246,7 @@ class CameraTweenGroup {
         this.stop();
         this.currentIndex = index;
         this.cameraTweens[this.currentIndex].start();
+        this.startTime = new Date().getTime();
     }
 
     stop = () => {
@@ -257,11 +267,12 @@ class CameraTweenGroup {
     //暂停的思路为创建新的tween记录断点，下次play从断点继续，不考虑easing不同带来的影响
     pause = () => {
         if (this.state !== 'running') return;
-        let duration = this.cameraTweens[this.currentIndex].duration;
-        var nowTween = this.cameraTweens[this.currentIndex];  //当前tween
+        this.pauseTime = new Date().getTime();
+        let duration = this.cameraTweens[this.currentIndex].duration + this.startTime - this.pauseTime;
+        const nowTween = this.cameraTweens[this.currentIndex];  //当前tween
 
         if (this.playTween) {  //仍然在原来的PlayTween里面
-            var oldPlayTween = this.playTween;
+            const oldPlayTween = this.playTween;
             this.createPlayTween(oldPlayTween, duration);
             oldPlayTween.stop();
         } else {
@@ -280,12 +291,17 @@ class CameraTweenGroup {
 
     createPlayTween = (Tween, duration) => {
         //记录断点信息
-        var nowTween = Tween;
-        var pos0 = null;
+        const nowTween = Tween;
+        let pos0 = null;
         if (nowTween.posType === 0) {                   //暂停的是经纬度
             pos0 = this.cameraControl.initSphericalData();
+            while (pos0.lon > 180) pos0.lon -= 360;
+            while (pos0.lon < -180) pos0.lon += 360;
             if (nowTween.fovChange) {
                 pos0.fov = this.cameraControl.camera.fov;
+            }
+            if (nowTween.disChange) {
+                pos0.distance = this.cameraControl.distance;
             }
         }
         else {                                          //xyz
@@ -295,6 +311,9 @@ class CameraTweenGroup {
             };
             if (nowTween.fovChange) {
                 pos0.fov = this.cameraControl.camera.fov;
+            }
+            if (nowTween.disChange) {
+                pos0.distance = this.cameraControl.distance;
             }
         }
 
@@ -321,6 +340,7 @@ class CameraTweenGroup {
     play = () => {
         if (this.state === 'paused') {
             this.playTween && this.playTween.start();
+            this.startTime = new Date().getTime() + this.startTime - this.pauseTime;
         }
     }
 

@@ -96,6 +96,10 @@ class EffectAlphaVideoPanel extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.isPlaying = false;
+    }
+
     render() {
         const { muted, volume, videoMuted } = this.props;
         if (this.video) {

@@ -64,6 +64,11 @@ class EffectVideoPanel extends Component {
     }
 
     render() {
+        const { muted, volume } = this.props;
+        if (this.video) {
+            this.video.muted = muted;
+            this.video.volume = volume;
+        }
         return (
             <div className="overlay">
 

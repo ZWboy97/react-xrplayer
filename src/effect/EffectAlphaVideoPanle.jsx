@@ -97,6 +97,11 @@ class EffectAlphaVideoPanel extends Component {
     }
 
     render() {
+        const { muted, volume, videoMuted } = this.props;
+        if (this.video) {
+            this.video.volume = volume;
+            this.video.muted = videoMuted || muted;
+        }
         const { enableClose, videoStyle, enableMask } = this.props;
         let overlayClassName = "alpha_video_overlay";
         if (enableMask) {

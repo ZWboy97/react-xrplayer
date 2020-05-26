@@ -40,22 +40,26 @@ class EffectAlphaVideoPanel extends Component {
 
         this.video.play();
 
-        this.video.addEventListener('play', () => {
-            this.isPlaying = true;
-            this.processFrame();
-            if (this.props.onStartPlayHandler) {
-                this.props.onStartPlayHandler();
-            }
-        }, false);
+        this.video.addEventListener('play', this.startPlay, false);
 
-        this.video.addEventListener('ended', () => {
-            this.isPlaying = false;
-            if (this.props.onDisplayEndedHandler) {
-                this.props.onDisplayEndedHandler();
-            }
-        }, false);
+        this.video.addEventListener('ended', this.endPlay, false);
 
         window.addEventListener('resize', this.updateCanvasSize, false);
+    }
+
+    startPlay = () => {
+        this.isPlaying = true;
+        this.processFrame();
+        if (this.props.onStartPlayHandler) {
+            this.props.onStartPlayHandler();
+        }
+    }
+
+    endPlay = () => {
+        this.isPlaying = false;
+        if (this.props.onDisplayEndedHandler) {
+            this.props.onDisplayEndedHandler();
+        }
     }
 
     updateCanvasSize = () => {
@@ -98,6 +102,17 @@ class EffectAlphaVideoPanel extends Component {
 
     componentWillUnmount() {
         this.isPlaying = false;
+        this.video.removeEventListener('play', this.startPlay);
+        this.video.removeEventListener('ended', this.endPlay);
+        window.removeEventListener('resize', this.updateCanvasSize);
+        this.video = null;
+        this.bufferCtx = null;
+        this.image = null;
+        this.alphaData = null;
+        this.showCanvas = null;
+        this.showCtx = null;
+        this.bufferCanvas = null;
+        this.bufferCtx = null;
     }
 
     render() {

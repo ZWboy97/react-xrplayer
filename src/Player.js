@@ -89,6 +89,7 @@ class XRPlayer extends Component {
 
   componentWillUnmount() {
     this.xrManager && this.xrManager.destroy();
+    window.removeEventListener('resize', this.onWindowResize);
   }
 
   onCloseEffectContainer = () => {

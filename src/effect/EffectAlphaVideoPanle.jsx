@@ -96,6 +96,10 @@ class EffectAlphaVideoPanel extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.isPlaying = false;
+    }
+
     render() {
         const { enableClose, videoStyle, enableMask } = this.props;
         let overlayClassName = "alpha_video_overlay";

@@ -16,8 +16,10 @@ class TextureHelper {
         this.containerNode = containerNode;
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
+        this.onCanPlayHandler = null;
         this.videoLoader = null;
         this.resType = 'image'
+        this.resUrl = '';
     }
 
     initVideoNode = () => {
@@ -38,6 +40,11 @@ class TextureHelper {
         this.containerNode.setAttribute('x5-video-orientation', 'portrait')
         this.containerNode.setAttribute('style', 'object-fit: fill')
         this.containerNode.setAttribute('loop', "loop")
+        this.containerNode.addEventListener('canplay', this.onVideoStarted, false);
+    }
+
+    onVideoStarted = () => {
+        this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
     }
 
     getTextureFromVideo = (video) => {
@@ -48,6 +55,7 @@ class TextureHelper {
     }
 
     loadFlvVideo = (resUrl) => {
+        this.resUrl = resUrl;
         this.initVideoNode();
         if (flvjs.isSupported()) {
             let flvPlayer = flvjs.createPlayer({ type: 'flv', url: resUrl });
@@ -63,6 +71,7 @@ class TextureHelper {
     }
 
     loadHlsVideo = (resUrl) => {
+        this.resUrl = resUrl;
         this.initVideoNode();
         if (Hls.isSupported()) {
             var hls = new Hls();
@@ -81,6 +90,7 @@ class TextureHelper {
     }
 
     loadMp4Video = (resUrl) => {
+        this.resUrl = resUrl;
         this.initVideoNode();
         this.containerNode.src = resUrl;
         this.containerNode.load();
@@ -89,13 +99,16 @@ class TextureHelper {
     }
 
     loadImage = (resUrl) => {
+        this.resUrl = resUrl;
         var texture = new THREE.TextureLoader().load(resUrl);
+        this.onCanPlayHandler && this.onCanPlayHandler();
         return texture;
     }
 
     loadTexture = (resource) => {
         const { type, res_url } = resource;
         this.resType = type;
+        this.resUrl = res_url;
         switch (type) {
             case 'hls':
                 return this.loadHlsVideo(res_url);
@@ -168,6 +181,7 @@ class TextureHelper {
             default:
                 return null;
         }
+        this.containerNode.removeEventListener('canplay', this.onVideoStarted);
     }
 }
 

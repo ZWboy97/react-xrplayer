@@ -30,8 +30,7 @@ class XRPlayer extends Component {
   }
 
   componentDidMount() {
-    this.xrManager = new XRPlayerManager(this.mount, this.props);
-    this.xrManager.handler = this.eventHandler;
+    this.xrManager = new XRPlayerManager(this.mount, this.props, this.eventHandler);
     this.props.onCreated && this.props.onCreated(this.xrManager);
     this.initState();
     this.initEvent();
@@ -67,6 +66,8 @@ class XRPlayer extends Component {
         break;
       case 'global_volume':
         this.props.setGlobalVolume(props.volume);
+        break;
+      case 'sence_res_ready':
         break;
       default: break;
     }

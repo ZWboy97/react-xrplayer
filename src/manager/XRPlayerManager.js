@@ -18,9 +18,11 @@ import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 
 class XRPlayerManager {
 
-    constructor(mount, initProps) {
+    constructor(mount, initProps, handler) {
         this.mount = mount;         // Threejs渲染挂载节点
         this.props = initProps;     // 初始化参数
+        this.handler = handler;
+
         this.scene = null;
         this.sceneMesh = null;
         this.camera = null;
@@ -29,7 +31,6 @@ class XRPlayerManager {
         this.sceneContainer = null; // 全景背景挂载节点
         this.sceneTextureHelper = null; //全景场景纹理加载控制器
 
-        this.handler = null;
 
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
@@ -99,6 +100,7 @@ class XRPlayerManager {
         }
         geometry.scale(-1, 1, 1);
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
+        this.sceneTextureHelper.onCanPlayHandler = (resUrl) => this.handler('sence_res_ready', { resUrl: resUrl });
         let texture = this.sceneTextureHelper.loadTexture(textureResource);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh = new THREE.Mesh(geometry, material);

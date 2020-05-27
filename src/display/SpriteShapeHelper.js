@@ -71,7 +71,7 @@ class SpriteShapeHelper {
     }
 
     createPoint(key, value) {
-        let { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null, img_url = null, img_height = 100, img_width = 100, title_width} = value;
+        let { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null, img_url = null, img_height = 100, img_width = 100, title_width } = value;
         let position = this.contertSph2Rect(phi, theta);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
@@ -102,8 +102,9 @@ class SpriteShapeHelper {
             this.container.appendChild(div);
         }
         if (title) {
-            let text = document.createElement("font");
+            let text = document.createElement("div");
             text.innerText = title;
+            text.style = "text-align:center;"
             div.appendChild(text);
         }
         if (img_url || title) this.container.appendChild(div);
@@ -132,7 +133,7 @@ class SpriteShapeHelper {
                 var wpVector = new THREE.Vector3();
                 var pos = this.pointGroup.children[i].getWorldPosition(wpVector)
                     .applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
-                if ((pos.x >= -0.8 && pos.x <= 0.7) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                if ((pos.x >= -0.8 && pos.x <= 0.5) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
                     var screenPos = this.objectPosToScreenPos(this.pointGroup.children[i], this.container, this.camera);
                     tip.style.display = "block";
                     tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";

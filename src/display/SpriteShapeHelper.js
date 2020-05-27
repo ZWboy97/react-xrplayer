@@ -61,18 +61,20 @@ class SpriteShapeHelper {
         }
     }
 
-    contertSph2Rect = (phi, theta) => {
+    contertSph2Rect = (lat, lon) => {
         let r = Radius;
+        const phi = THREE.Math.degToRad(90 - lat);
+        const theta = THREE.Math.degToRad(lon);
         return [
-            r * Math.sin(THREE.Math.degToRad(phi)) * Math.cos(THREE.Math.degToRad(theta)),
-            r * Math.sin(THREE.Math.degToRad(phi)) * Math.sin(THREE.Math.degToRad(theta)),
-            r * Math.cos(THREE.Math.degToRad(phi))
+            r * Math.sin(phi) * Math.cos(theta),
+            r * Math.sin(phi) * Math.sin(theta),
+            r * Math.cos(phi)
         ];
     }
 
     createPoint(key, value) {
-        let { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null, img_url = null, img_height = 100, img_width = 100, title_width } = value;
-        let position = this.contertSph2Rect(phi, theta);
+        let { lat, lon, res_url, opacity = 1, scale = 16, animate = false, title = null, img_url = null, img_height = 100, img_width = 100, title_width } = value;
+        let position = this.contertSph2Rect(lat, lon);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
         meshGroup.position.set(...position);

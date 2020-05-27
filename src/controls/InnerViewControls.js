@@ -221,11 +221,12 @@ class InnerViewControls {
 
     updateCameraPosition = () => {
         this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
-        if (this.lon >= 270) this.lon = 270 - 360;
-        else if (this.lon <= -90) this.lon = -90 + 360;
         this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
+        if (this.lon >= 270.0) this.lon = this.lon - 355;
+        else if (this.lon <= -90.0) this.lon = this.lon + 365;
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
+        console.log('lat:', this.lat, ',lon:', this.lon, "phi:", this.phi, ",theta:", this.theta);
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
@@ -300,7 +301,6 @@ class InnerViewControls {
 
     onTouchstart = (event) => {
         if (event.targetTouches.length === 1) {
-            console.log('touch', 'start');
             this.isUserInteracting = true;
             // 记录滑动开始的坐标
             var touch = event.targetTouches[0];
@@ -315,7 +315,6 @@ class InnerViewControls {
     onTouchmove = (event) => {
         if (this.isUserInteracting === true) {
             var touch = event.targetTouches[0];
-            console.log('touching', touch.pageX);
             this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.2 + this.onPointerDownLon;
             this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.2 + this.onPointerDownLat;
             // 用于立体场景音效

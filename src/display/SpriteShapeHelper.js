@@ -12,6 +12,7 @@ class SpriteShapeHelper {
         this.camera = camera;
         this.renderer = renderer;
         this.container = container;
+        this.hotSpotMap = null;     // 热点标签数据
         this.hotSpotMeshMap = null; // 热点标签Mesh Map，便于动态缩减
         this.pointGroup = null;     // 场景中的热点组合
 
@@ -37,8 +38,8 @@ class SpriteShapeHelper {
 
     setHotSpotList = (hot_spot_list) => {
         this.resetHotSpotGroup();
-        const hotSpotMap = new Map(hot_spot_list);
-        hotSpotMap.forEach((value, key) => {
+        this.hotSpotMap = new Map(hot_spot_list);
+        this.hotSpotMap.forEach((value, key) => {
             this.createPoint(key, value)
         });
     }
@@ -65,6 +66,7 @@ class SpriteShapeHelper {
         let r = Radius;
         const phi = THREE.Math.degToRad(90 - lat);
         const theta = THREE.Math.degToRad(lon);
+        console.log('phi:', phi, ", theta:", theta);
         return [
             r * Math.sin(phi) * Math.cos(theta),
             r * Math.sin(phi) * Math.sin(theta),
@@ -135,11 +137,34 @@ class SpriteShapeHelper {
                 var wpVector = new THREE.Vector3();
                 var pos = this.pointGroup.children[i].getWorldPosition(wpVector)
                     .applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
-                if ((pos.x >= -0.8 && pos.x <= 0.5) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                if ((pos.x >= -1 && pos.x <= 0.5) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                    var hotSpot = this.hotSpotMap.get(name);
+                    let position = "top";
+                    if (hotSpot != null && hotSpot.hasOwnProperty("position")) {
+                        position = hotSpot.position;
+                    }
                     var screenPos = this.objectPosToScreenPos(this.pointGroup.children[i], this.container, this.camera);
-                    tip.style.display = "block";
-                    tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
-                    tip.style.top = screenPos.y - tip.clientHeight - 30 + "px";
+                    if (position === 'top') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
+                        tip.style.top = screenPos.y - tip.clientHeight - 30 + "px";
+                    } else if (position === 'bottom') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
+                        tip.style.top = screenPos.y + 30 + "px";
+                    } else if (position === 'left') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth - 30 + "px";
+                        tip.style.top = screenPos.y - tip.clientWidth / 2 + 30 + "px";
+                    } else if (position === 'right') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x + 30 + "px";
+                        tip.style.top = screenPos.y - tip.clientWidth / 2 + 30 + "px";
+                    }
+                    else {
+                        tip.style.display = "none";
+                    }
+
                 } else {
                     tip.style.display = "none";
                 }

@@ -288,8 +288,8 @@ class XRPlayerManager {
         this.viewConvertHelper.toPlanetView(durtime, delay);
     }
 
-    moveCameraTo = (descPos, onStart, onEnd) => {
-        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, 5000, 0);
+    moveCameraTo = (descPos, onStart, onEnd, duration = 5000) => {
+        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, duration, 0);
         cameraMoveAction.onStartHandler = () => {
             this.innerViewControls && this.innerViewControls.disConnect();
             onStart && onStart();

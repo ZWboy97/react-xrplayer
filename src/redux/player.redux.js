@@ -7,8 +7,8 @@ const MUTED = "MUTED";
 const initialState = {
     is_effect_displaying: false,
     effect_data: {},
-    volume: 0.1,
-    muted: false
+    volume: 0.9,
+    muted: true
 }
 
 //reducer, 根据action对state进行处理，返回新的state

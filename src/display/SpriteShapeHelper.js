@@ -66,7 +66,6 @@ class SpriteShapeHelper {
         let r = Radius;
         const phi = THREE.Math.degToRad(90 - lat);
         const theta = THREE.Math.degToRad(lon);
-        console.log('phi:', phi, ", theta:", theta);
         return [
             r * Math.sin(phi) * Math.cos(theta),
             r * Math.sin(phi) * Math.sin(theta),

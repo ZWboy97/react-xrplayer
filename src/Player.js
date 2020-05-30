@@ -101,6 +101,11 @@ class XRPlayer extends Component {
   render() {
     let { width, height, is_full_screen = false,
       is_effect_displaying, effect_data } = this.props;
+    const { muted, volume } = this.props;
+    if (this.sceneContainer) {
+      this.sceneContainer.volume = volume;
+      this.sceneContainer.muted = muted;
+    }
     return (
       <FullScreen
         enabled={is_full_screen}
@@ -134,6 +139,7 @@ class XRPlayer extends Component {
           }
           <video id="video"
             style={{ display: "none" }}
+            muted={muted}
             ref={(mount) => { this.sceneContainer = mount }} >
           </video>
           <div

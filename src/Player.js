@@ -39,6 +39,7 @@ class XRPlayer extends Component {
   initState = () => {
     this.sceneContainer.volume = this.props.volume;
     this.sceneContainer.muted = this.props.muted;
+    this.sceneContainer.crossOrigin = 'anonymous';
   }
 
   eventHandler = (name, props, callback = () => { }) => {

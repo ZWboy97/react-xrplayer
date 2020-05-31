@@ -5,6 +5,7 @@
 import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
+//import { OS } from '../utils/osuitls';
 
 class TextureHelper {
 
@@ -58,7 +59,9 @@ class TextureHelper {
         this.resUrl = resUrl;
         this.initVideoNode();
         if (flvjs.isSupported()) {
-            let flvPlayer = flvjs.createPlayer({ type: 'flv', url: resUrl });
+            let flvPlayer = flvjs.createPlayer({
+                type: 'flv', url: resUrl, isLive: true,
+            });
             this.videoLoader = flvPlayer;
             flvPlayer.attachMediaElement(this.containerNode);
             flvPlayer.load();
@@ -87,6 +90,21 @@ class TextureHelper {
             this.onLoadErrorHandler('设备不支持HLS');
         }
         return this.getTextureFromVideo(this.containerNode);
+    }
+
+    createTag = (tag, attr, objs) => {
+        var oMeta = document.createElement(tag);
+        if (attr && typeof attr === "object") {
+            for (var k in attr) {
+                oMeta.setAttribute(k, attr[k]);
+            }
+        }
+        if (objs && typeof objs === "object") {
+            for (var i in objs) {
+                oMeta[i] = objs[i];
+            }
+        }
+        return oMeta;
     }
 
     loadMp4Video = (resUrl) => {

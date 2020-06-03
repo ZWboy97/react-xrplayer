@@ -232,6 +232,11 @@ class XRPlayerManager {
                 this.closeEffectContainer();
             })
         }
+        this.spriteShapeHelper.tagClickHandler = (key) => {
+            this.emitEvent(key, () => {
+                this.closeEffectContainer();
+            })
+        }
     }
 
     addHotSpot = (hot_spot, event) => {
@@ -243,6 +248,10 @@ class XRPlayerManager {
 
     removeHotSpot = (hot_spot_key) => {
         this.spriteShapeHelper.removeHotSpot(hot_spot_key);
+    }
+
+    setIsTipVisible = (enable) => {
+        this.spriteShapeHelper.setIsTipVisible(enable);
     }
 
     /*****************************模型控制相关接口**************************** */

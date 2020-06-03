@@ -131,7 +131,7 @@ class XRPlayer extends Component {
               <EffectContainer
                 data={effect_data}
                 onCloseClickHandler={() => {
-                  this.onCloseEffectContainer()
+                  this.eventHandler("close_effect_container")
                 }}
                 onCallback={this.effectCallback}
               ></EffectContainer>

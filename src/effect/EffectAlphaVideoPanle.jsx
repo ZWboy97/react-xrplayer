@@ -140,7 +140,7 @@ class EffectAlphaVideoPanel extends Component {
                     className="alpha_video_overlay"
                     style={videoStyle}
                 >
-                    <canvas id="show"></canvas>
+                    <canvas id="show" ></canvas>
                     <canvas id="buffer" style={{ display: "none" }}></canvas>
                 </div>
                 {

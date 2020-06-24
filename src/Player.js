@@ -56,8 +56,18 @@ class XRPlayer extends Component {
       case 'alpha_video':
         this.effectCallback = callback;
         this.props.enableEffectContainer(true);
-        console.log('data', props.data);
-        this.props.setEffectData(props.data);
+        var tip = document.getElementById(props.data.id);
+        let margin = props.data.margin;
+        // if (tip && props.data.width === "40vw") { // 只对大屏做调整
+        //   console.log('tip', tip, ' top', tip.getBoundingClientRect().top, ' height', tip.clientHeight);
+        //   let top = tip.getBoundingClientRect().top - tip.clientHeight;
+        //   let left = tip.getBoundingClientRect().left - tip.clientWidth;
+        //   console.log('top', top, ' left', left);
+        //   margin = `${top}px ${left}px`
+        // }
+        const data = { ...props.data, margin: margin }
+        this.props.setEffectData(data);
+        this.xrManager.setIsTipVisible(false);
         break;
       case 'close_effect_container':
         this.onCloseEffectContainer();

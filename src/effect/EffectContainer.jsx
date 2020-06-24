@@ -55,6 +55,7 @@ class EffectContainer extends Component {
         } else if (data.type === 'alpha_video') {
             return (
                 <EffectAlphaVideoPanel
+                    key={data.id}
                     videoUrl={data.videoUrl}
                     videoStyle={{
                         width: data.width,

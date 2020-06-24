@@ -115,6 +115,12 @@ class EffectAlphaVideoPanel extends Component {
         this.bufferCtx = null;
     }
 
+    getPosition = () => {
+        var tip = document.getElementById(this.props.id);
+
+
+    }
+
     render() {
         const { muted, volume, videoMuted } = this.props;
         if (this.video) {
@@ -140,7 +146,7 @@ class EffectAlphaVideoPanel extends Component {
                     className="alpha_video_overlay"
                     style={videoStyle}
                 >
-                    <canvas id="show"></canvas>
+                    <canvas id="show" ></canvas>
                     <canvas id="buffer" style={{ display: "none" }}></canvas>
                 </div>
                 {

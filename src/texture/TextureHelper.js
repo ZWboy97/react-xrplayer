@@ -5,7 +5,7 @@
 import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
-//import { OS } from '../utils/osuitls';
+import { OS } from '../utils/osuitls';
 
 class TextureHelper {
 
@@ -68,7 +68,7 @@ class TextureHelper {
             flvPlayer.play();
         } else {
             console.error('Your browser does not support flvjs')
-            this.onLoadErrorHandler('设备不支持FLV');
+            this.onLoadErrorHandler && this.onLoadErrorHandler('设备不支持FLV');
         }
         return this.getTextureFromVideo(this.containerNode);
     }
@@ -76,7 +76,13 @@ class TextureHelper {
     loadHlsVideo = (resUrl) => {
         this.resUrl = resUrl;
         this.initVideoNode();
-        if (Hls.isSupported()) {
+        if (OS.isAndroid() && OS.isWeixin()) {
+            var source = this.createTag("source", {
+                src: resUrl,
+                type: 'application/x-mpegURL'
+            }, null);
+            this.containerNode.appendChild(source);
+        } else if (Hls.isSupported()) {
             var hls = new Hls();
             this.videoLoader = hls;
             hls.loadSource(resUrl);
@@ -87,7 +93,11 @@ class TextureHelper {
             });
         } else {
             console.log('设备不支持HLS')
-            this.onLoadErrorHandler('设备不支持HLS');
+            var source = this.createTag("source", {
+                src: resUrl,
+                type: 'application/x-mpegURL'
+            }, null);
+            this.containerNode.appendChild(source);
         }
         return this.getTextureFromVideo(this.containerNode);
     }

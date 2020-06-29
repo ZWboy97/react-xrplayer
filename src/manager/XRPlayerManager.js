@@ -228,13 +228,17 @@ class XRPlayerManager {
         this.spriteShapeHelper.setHotSpotList(hot_spot_list);
         this.spriteShapeHelper.objectClickHandler = (intersects) => {
             const key = intersects[0].object.name;
+            this.disConnectCameraControl();
             this.emitEvent(key, () => {
                 this.closeEffectContainer();
-            })
+                this.connectCameraControl();
+            });
         }
         this.spriteShapeHelper.tagClickHandler = (key) => {
+            this.disConnectCameraControl();
             this.emitEvent(key, () => {
                 this.closeEffectContainer();
+                this.connectCameraControl();
             })
         }
     }

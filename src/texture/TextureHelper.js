@@ -30,6 +30,7 @@ class TextureHelper {
         this.containerNode.crossOrigin = "anonymous";
         this.containerNode.autoplay = true;
         this.containerNode.allowsInlineMediaPlayback = true;
+        this.containerNode.poster = "/xrapp/shengyin.png";
         this.containerNode.setAttribute('webkit-playsinline', 'webkit-playsinline');
         this.containerNode.setAttribute('webkit-playsinline', true);
         this.containerNode.setAttribute('playsinline', true)
@@ -46,6 +47,7 @@ class TextureHelper {
 
     onVideoStarted = () => {
         this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
+        console.log('视频开始播放');
     }
 
     getTextureFromVideo = (video) => {
@@ -77,12 +79,11 @@ class TextureHelper {
         this.resUrl = resUrl;
         this.initVideoNode();
         if (OS.isAndroid() && OS.isWeixin()) {
-            var source = this.createTag("source", {
-                src: resUrl,
-                type: 'application/x-mpegURL'
-            }, null);
-            this.containerNode.appendChild(source);
+            // TODO
+            console.log('安卓', "微信");
+            this.loadFlvVideo(resUrl.replace(".m3u8", ".flv"));
         } else if (Hls.isSupported()) {
+            console.log("HLS开始加载")
             var hls = new Hls();
             this.videoLoader = hls;
             hls.loadSource(resUrl);
@@ -90,14 +91,29 @@ class TextureHelper {
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.containerNode.play();
                 this.onLoadSuccessHandler();
+                console.log('HLS', '加载成功');
             });
         } else {
             console.log('设备不支持HLS')
-            var source = this.createTag("source", {
-                src: resUrl,
-                type: 'application/x-mpegURL'
-            }, null);
-            this.containerNode.appendChild(source);
+            if (OS.isiOS()) {
+                console.log('IOS设备', '尝试IOS原生播放');
+                var source = this.createTag("source", {
+                    src: resUrl,
+                    type: 'application/x-mpegURL'
+                }, null);
+                this.containerNode.appendChild(source);
+            } else if (flvjs.isSupported()) {
+                console.log("尝试FLV播放")
+                return this.loadFlvVideo(resUrl.replace(".m3u8", ".flv"));
+            } else {
+                console.log("尝试原生Video播放")
+                var source = this.createTag("source", {
+                    src: resUrl,
+                    type: 'application/x-mpegURL'
+                }, null);
+                this.containerNode.appendChild(source);
+            }
+
         }
         return this.getTextureFromVideo(this.containerNode);
     }

@@ -68,6 +68,7 @@ class EffectContainer extends Component {
 
                     onCloseClickHandler={() => {
                         this.props.onCloseClickHandler && this.props.onCloseClickHandler();
+                        this.props.onCallback && this.props.onCallback();
                     }}
                     onDisplayEndedHandler={() => {
                         this.props.onCallback && this.props.onCallback();

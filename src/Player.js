@@ -38,7 +38,7 @@ class XRPlayer extends Component {
 
   initState = () => {
     this.sceneContainer.volume = this.props.volume;
-    this.sceneContainer.muted = this.props.muted;
+    //this.sceneContainer.muted = this.props.muted;
     this.sceneContainer.crossOrigin = 'anonymous';
   }
 
@@ -115,7 +115,7 @@ class XRPlayer extends Component {
     const { muted, volume } = this.props;
     if (this.sceneContainer) {
       this.sceneContainer.volume = volume;
-      this.sceneContainer.muted = muted;
+      //this.sceneContainer.muted = muted;
     }
     return (
       <FullScreen
@@ -150,7 +150,7 @@ class XRPlayer extends Component {
           }
           <video id="video"
             style={{ display: "none" }}
-            muted={muted}
+            muted={true}
             ref={(mount) => { this.sceneContainer = mount }} >
           </video>
           <div

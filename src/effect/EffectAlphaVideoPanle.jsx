@@ -30,7 +30,7 @@ class EffectAlphaVideoPanel extends Component {
     loadMp4Video = () => {
         this.video = document.getElementById("alpha-video");
         this.video.src = this.props.videoUrl;
-        this.video.crossOrigin = "anonymous";
+        this.video.crossOrigin = "Anonymous";
         this.showCanvas = document.getElementById("show");
         this.showCtx = this.showCanvas.getContext("2d");
         this.bufferCanvas = document.getElementById("buffer");
@@ -78,18 +78,27 @@ class EffectAlphaVideoPanel extends Component {
     }
 
     processFrame = () => {
-        if (this.isPlaying === false) return;
+        if (this.isPlaying === false) {
+            //console.log('isPlaying', false);
+            return;
+        }
+        //console.log('buffer 绘制图像');
+        //console.log('width', this.width);
         this.bufferCtx.drawImage(this.video, 0, 0, this.width, this.height * 2);
+
         this.image = this.bufferCtx.getImageData(0, 0, this.width, this.height);
+        //console.log('从buffer读取原视image', this.image.data);
         this.image.crossOrigin = "Anonymous";
 
         this.alphaData = this.bufferCtx.getImageData(0, this.height, this.width,
             this.height).data;
+        //console.log('从buffer读取 alpha通道数据', this.alphaData);
 
         for (var i = 3, len = this.image.data.length; i < len; i = i + 4) {
             this.image.data[i] = this.alphaData[i - 1];
         }
         this.showCtx.putImageData(this.image, 0, 0, 0, 0, this.width, this.height);
+        //console.log('put image data to show');
         requestAnimationFrame(this.processFrame);
     }
 
@@ -139,6 +148,8 @@ class EffectAlphaVideoPanel extends Component {
                     className="video"
                     style={{ display: "none" }}
                     playsInline
+                    //poster="/xrapp/shengyin.png"
+                    x5-video-player-type="h5-page"
                     ref={(mount) => { this.videoNode = mount }}
                 >
                 </video>

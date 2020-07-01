@@ -5,6 +5,7 @@ import EffectImageCard from './EffectImageCard';
 import EffectVideoPanel from './EffectVideoPanel';
 import EffectControlPanel from './EffectControlPanel';
 import EffectAlphaVideoPanel from './EffectAlphaVideoPanle';
+import NewEffectAlphaVideoPanel from './NewEffectAlphaVideoPanle';
 
 class EffectContainer extends Component {
 
@@ -54,7 +55,7 @@ class EffectContainer extends Component {
             )
         } else if (data.type === 'alpha_video') {
             return (
-                <EffectAlphaVideoPanel
+                <NewEffectAlphaVideoPanel
                     key={data.id}
                     videoUrl={data.videoUrl}
                     videoStyle={{
@@ -73,7 +74,7 @@ class EffectContainer extends Component {
                     onDisplayEndedHandler={() => {
                         this.props.onCallback && this.props.onCallback();
                     }}
-                ></EffectAlphaVideoPanel>
+                ></NewEffectAlphaVideoPanel>
             )
         }
         else {

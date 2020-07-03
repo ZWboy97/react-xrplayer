@@ -61,7 +61,17 @@ class XRPlayer extends Component {
         if (tip && props.data.width === "40vw") { // 只对大屏做调整
           console.log('tip', tip, ' top', tip.getBoundingClientRect().top, ' height', tip.clientHeight);
           let top = tip.getBoundingClientRect().top - tip.clientHeight;
+          if (top < -tip.clientHeight / 3) {
+            top = -tip.clientHeight / 3;
+          }
           let left = tip.getBoundingClientRect().left - tip.clientWidth;
+          var container = document.getElementById('xr-container');
+          if (container) {
+            let maxTop = container.getBoundingClientRect() - tip.clientHeight;
+            if (top > maxTop) {
+              top = maxTop - 30;
+            }
+          }
           console.log('top', top, ' left', left);
           margin = `${top}px ${left}px`
         }
@@ -112,7 +122,7 @@ class XRPlayer extends Component {
   render() {
     let { width, height, is_full_screen = false,
       is_effect_displaying, effect_data } = this.props;
-    const { muted, volume } = this.props;
+    const { volume } = this.props;
     if (this.sceneContainer) {
       this.sceneContainer.volume = volume;
       //this.sceneContainer.muted = muted;

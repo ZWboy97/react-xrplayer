@@ -4,7 +4,7 @@ import EffectInfoCard from './EffectInfoCard';
 import EffectImageCard from './EffectImageCard';
 import EffectVideoPanel from './EffectVideoPanel';
 import EffectControlPanel from './EffectControlPanel';
-import EffectAlphaVideoPanel from './EffectAlphaVideoPanle';
+//import EffectAlphaVideoPanel from './EffectAlphaVideoPanle';
 import NewEffectAlphaVideoPanel from './NewEffectAlphaVideoPanle';
 
 class EffectContainer extends Component {

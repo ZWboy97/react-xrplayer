@@ -124,12 +124,6 @@ class EffectAlphaVideoPanel extends Component {
         this.bufferCtx = null;
     }
 
-    getPosition = () => {
-        var tip = document.getElementById(this.props.id);
-
-
-    }
-
     render() {
         const { muted, volume, videoMuted } = this.props;
         if (this.video) {

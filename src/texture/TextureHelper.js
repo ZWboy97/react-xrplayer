@@ -107,7 +107,7 @@ class TextureHelper {
                 return this.loadFlvVideo(resUrl.replace(".m3u8", ".flv"));
             } else {
                 console.log("尝试原生Video播放")
-                var source = this.createTag("source", {
+                source = this.createTag("source", {
                     src: resUrl,
                     type: 'application/x-mpegURL'
                 }, null);

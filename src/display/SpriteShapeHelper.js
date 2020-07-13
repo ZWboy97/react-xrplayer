@@ -19,6 +19,8 @@ class SpriteShapeHelper {
         this.objectClickHandler = null;
         this.tagClickHandler = null;
         this.isTipVisible = true;
+
+        this.hotSpotClickable = true;
     }
 
     setIsTipVisible = (enable) => {
@@ -115,6 +117,7 @@ class SpriteShapeHelper {
             var div = document.createElement("div");
             div.id = key;
             div.addEventListener('click', () => {
+                if (!this.hotSpotClickable) return;
                 this.tagClickHandler && this.tagClickHandler(key);
             }, false)
             div.style = "padding:10px 10px;cursor:pointer;background-size: 100% 100%;background-image:url('https://live360.oss-cn-beijing.aliyuncs.com/xr/fuzhou/fz_di.png');color:#fff;display:none;position:absolute;border-radius:6px; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;font-size:0.85rem;";
@@ -283,10 +286,15 @@ class SpriteShapeHelper {
         return raycaster.intersectObjects(meshArray);
     }
 
+    setHotSpotClickable = (enable) => {
+        this.hotSpotClickable = enable;
+    }
+
     bindEvent = () => {
         document.addEventListener('click', (event) => {
             event.preventDefault();
             console.log('检测热点点击');
+            if (!this.hotSpotClickable) return;
             var intersects = this.getIntersects(event);
             //如果只需要将第一个触发事件，那就取数组的第一个模型
             if (intersects.length > 0) {

@@ -146,6 +146,16 @@ class XRPlayer extends Component {
             ref={(mount) => { this.mount = mount }}
           >
           </div>
+
+          <video id="video"
+            style={{ display: "none" }}
+            muted={true}
+            ref={(mount) => { this.sceneContainer = mount }} >
+          </video>
+          <div
+            id="display"
+            style={{ display: "none" }}>
+          </div>
           {
             is_effect_displaying ?
               <EffectContainer
@@ -158,15 +168,6 @@ class XRPlayer extends Component {
               :
               ""
           }
-          <video id="video"
-            style={{ display: "none" }}
-            muted={true}
-            ref={(mount) => { this.sceneContainer = mount }} >
-          </video>
-          <div
-            id="display"
-            style={{ display: "none" }}>
-          </div>
         </div>
       </FullScreen >
     );

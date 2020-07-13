@@ -6,6 +6,7 @@ import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
 import { OS } from '../utils/osuitls';
+import videojs from 'video.js';
 
 class TextureHelper {
 
@@ -30,7 +31,6 @@ class TextureHelper {
         this.containerNode.crossOrigin = "anonymous";
         this.containerNode.autoplay = true;
         this.containerNode.allowsInlineMediaPlayback = true;
-        this.containerNode.poster = "/xrapp/shengyin.png";
         this.containerNode.setAttribute('webkit-playsinline', 'webkit-playsinline');
         this.containerNode.setAttribute('webkit-playsinline', true);
         this.containerNode.setAttribute('playsinline', true)
@@ -96,22 +96,35 @@ class TextureHelper {
         } else {
             console.log('设备不支持HLS')
             if (OS.isiOS()) {
-                console.log('IOS设备', '尝试IOS原生播放');
-                var source = this.createTag("source", {
-                    src: resUrl,
-                    type: 'application/x-mpegURL'
-                }, null);
-                this.containerNode.appendChild(source);
+                if (OS.isSafari()) {
+                    console.log('IOS设备', '尝试IOS原生播放');
+                    var source = this.createTag("source", {
+                        src: resUrl,
+                        type: 'application/x-mpegURL'
+                    }, null);
+                    this.containerNode.appendChild(source);
+                } else {
+                    const options = {
+                        sources: [{
+                            src: resUrl,
+                            type: 'application/x-mpegURL'
+                        }]
+                    };
+                    this.player = videojs(this.containerNode, options,);
+                    this.player.play();
+                }
             } else if (flvjs.isSupported()) {
                 console.log("尝试FLV播放")
                 return this.loadFlvVideo(resUrl.replace(".m3u8", ".flv"));
             } else {
-                console.log("尝试原生Video播放")
-                source = this.createTag("source", {
-                    src: resUrl,
-                    type: 'application/x-mpegURL'
-                }, null);
-                this.containerNode.appendChild(source);
+                const options = {
+                    sources: [{
+                        src: resUrl,
+                        type: 'application/x-mpegURL'
+                    }]
+                };
+                this.player = videojs(this.containerNode, options,);
+                this.player.play();
             }
 
         }

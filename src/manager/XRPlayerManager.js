@@ -258,6 +258,10 @@ class XRPlayerManager {
         this.spriteShapeHelper.setIsTipVisible(enable);
     }
 
+    setHotSpotClickable = (enable) => {
+        this.spriteShapeHelper.setHotSpotClickable(enable);
+    }
+
     /*****************************模型控制相关接口**************************** */
 
     resetModels = () => {

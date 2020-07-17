@@ -1,0 +1,13 @@
+# .npmignore 
+src
+.babelrc
+.gitignore
+deploy
+.vscode
+build
+config
+node_modules
+public
+scripts
+Dockerfile
+yarn.lock

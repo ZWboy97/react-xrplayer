@@ -1,0 +1,146 @@
+{
+    // Place your react-admin workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+    // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+    // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+    // used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+    // Placeholders with the same ids are connected.
+    // Example:
+    // "Print to console": {
+    // 	"scope": "javascript,typescript",
+    // 	"prefix": "log",
+    // 	"body": [
+    // 		"console.log('$1');",
+    // 		"$2"
+    // 	],
+    // 	"description": "Log output to console"
+    // }
+    "new-component": {
+        "prefix": "newcomp",
+        "scope": "javascriptreact",
+        "body": [
+            "import React, { Component } from 'react';",
+            "import { connectAlita } from 'redux-alita';",
+            "import { withRouter } from 'react-router-dom';",
+            "import { VCloudAPI } from 'myaxios/api';",
+            "",
+            "class ${1:NewComponent} extends Component {",
+            "",
+            "    constructor(props) {",
+            "        super(props);",
+            "    }",
+            "",
+            "    // if you don't need it, delete it,",
+            "    state = {",
+            "        state: 1",
+            "    }",
+            "",
+            "    componentDidMount() {",
+            "        // demo!, delete it if you don't need.",
+            "        this.setValueToAlitaState();",
+            "        // you can use snippet newapi to create api caller.",
+            "    }",
+            "",
+            "    // delete or modify this function",
+            "    setValueToAlitaState() {",
+            "        this.setAlitaState({",
+            "            stateName: \"state_name\",",
+            "            data: {",
+            "                key: \"This is value in state\"",
+            "            }",
+            "        });",
+            "    }",
+            "",
+            "    render() {",
+            "        const { data = {} } = this.props.${2:state_name} || {};",
+            "        const { value } = data || {};",
+            "",
+            "        return (",
+            "            <div>",
+            "                {",
+            "                    value ?",
+            "                        <div>{value}</div>",
+            "                        : \"\"",
+            "                }",
+            "            </div>",
+            "        );",
+            "    }",
+            "}",
+            "",
+            "export default withRouter(connectAlita(['${2:state_name}'])(${1:NewComponent}));"
+        ],
+        "description": "create a new component"
+    },
+    "new-get-api": {
+        "prefix": "newgetapi",
+        "body": [
+            "VCloudAPI.get('${1:/PATH}' + '?queryParam=value')",
+            "    .then(response => {",
+            "        if (response.status === 200) {",
+            "            const { code = 0, data = {}, msg = {} } = response.data || {};",
+            "            if (code === 200) {",
+            "                // handl result or save into state",
+            "                this.props.setAlitaState({",
+            "                    stateName: '${2:your_state_name}',",
+            "                    data: data",
+            "                });",
+            "            } else {",
+            "                // handle error code define by backend",
+            "                console.log('error code：',code);",
+            "            }",
+            "        } else {",
+            "            // handle request error",
+            "            console.log('error http status:',response.status);",
+            "        }",
+            "    });",
+        ],
+        "description": "create a new api caller and handler",
+    },
+    "new-post-api": {
+        "prefix": "newpostapi",
+        "body": [
+            "VCloudAPI.post('${1:/PATH}' + '?queryParam=value',",
+            "    {",
+            "        ${2:param1: \"value\"}",
+            "    })",
+            "    .then(response => {",
+            "        if (response.status === 200) {",
+            "            const { code = 0, data = {}, msg = {} } = response.data || {};",
+            "            if (code === 200) {",
+            "                // handl result or save into state",
+            "                this.props.setAlitaState({",
+            "                    stateName: '${3:your_state_name}',",
+            "                    data: data",
+            "                });",
+            "            } else {",
+            "                // handle error code define by backend",
+            "                console.log('error code：', code);",
+            "            }",
+            "        } else {",
+            "            // handle request error",
+            "            console.log('error http status:', response.status);",
+            "        }",
+            "    });",
+        ],
+        "description": "create a new api caller and handler",
+    },
+    "new-set-alita": {
+        "prefix": "newalita",
+        "body": [
+            "this.setAlitaState({",
+            "    stateName: '${1:state_name}',",
+            "    data: {",
+            "        ${2:key}: '${3:value}'",
+            "    }",
+            "});",
+        ],
+        "description": "create a alita state setter"
+    },
+    "new-log": {
+        "prefix": "newlog",
+        "body": [
+            "console.log('${1:tag}', ${2:'params'});"
+        ],
+        "description": "create a log with params"
+    }
+}

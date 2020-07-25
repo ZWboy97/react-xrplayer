@@ -232,11 +232,12 @@ class App extends React.Component {
 
     onChangeTextBox = () => {
         this.xrManager.changeTextBox(this.TextBox, {
-            message: "Text has changed",
-            borderWidth: 370,
-            position: new THREE.Vector3(250, 250, -250 * Math.sqrt(2)),
+            message: "景点4",
+            borderWidth: 110,
+            position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
             backgroundColor: {r:255, g:176, b:79, a:0.7},
             borderColor: {r:245, g:128, b:0, a:0.9},
+            draggable: true,
         });
     }
 

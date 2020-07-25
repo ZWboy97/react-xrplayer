@@ -244,7 +244,8 @@ class SpriteShapeHelper {
     }
 
     bindEvent = () => {
-        document.addEventListener('click', (event) => {
+        const container = document.getElementById('xr-container')
+        container.addEventListener('click', (event) => {
             event.preventDefault();
             console.log('检测热点点击');
             var intersects = this.getIntersects(event);
@@ -255,7 +256,7 @@ class SpriteShapeHelper {
                 }
             }
         }, true);
-        document.addEventListener('mousemove', (event) => {
+        container.addEventListener('mousemove', (event) => {
             event.preventDefault();
             var intersects = this.getIntersects(event);
             //如果只需要将第一个触发事件，那就取数组的第一个模型

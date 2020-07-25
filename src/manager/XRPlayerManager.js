@@ -10,7 +10,7 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import TextHelper from "./content_Insert_Helper/TextHelper";
+import {TextHelper} from "./content_Insert_Helper/TextHelper";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
@@ -55,6 +55,7 @@ class XRPlayerManager {
 
         this.onCameraAnimationEnded = null;
 
+        this.textHelper = null;
         this.textBoxes = new Set();
 
         this.init();
@@ -65,6 +66,7 @@ class XRPlayerManager {
         this.initScene();
         this.initRenderer();
         this.initVR();
+        this.initTextHelper();
         this.animate(0);
     }
 
@@ -134,6 +136,10 @@ class XRPlayerManager {
         })
     }
 
+    initTextHelper = () => {
+        this.textHelper = new TextHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
+    }
+
     animate = (time) => {
         requestAnimationFrame(this.animate);
         if (this.cameraTweenStatus.num === 0)
@@ -162,12 +168,7 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
-        if (this.textBoxes) {
-            const x = this.innerViewControls.camera.position.x, z = this.innerViewControls.camera.position.z;
-            this.textBoxes.forEach(textBox => {
-                textBox.planeMesh.lookAt(x, textBox.planeMesh.position.y, z);
-            })
-        }
+        this.textHelper && this.textHelper.update();
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -374,37 +375,25 @@ class XRPlayerManager {
 
     /*******************************文本框接口********************************** */
     createTextBox = (params) => {
-        var TextBox = new TextHelper(params);
-        TextBox.addTo(this.scene);
-        this.textBoxes.add(TextBox);
-        return TextBox;
+        return this.textHelper.createTextBox(params, this.scene);
     }
 
-    showTextBox = (TextBox) => {
-        if (!!!TextBox) return;
-        TextBox.show();
+    showTextBox = (textBox) => {
+        this.textHelper.showTextBox(textBox);
     }
 
-    hideTextBox = (TextBox) => {
-        if (!!!TextBox) return;
-        TextBox.hide();
+    hideTextBox = (textBox) => {
+        this.textHelper.hideTextBox(textBox);
     }
 
-    changeTextBox = (TextBox, params) => {
-        if (!!!TextBox) return;
-        TextBox.removeFrom(this.scene);
-        TextBox.setMessage(params);
-        TextBox.addTo(this.scene);
+    changeTextBox = (textBox, params) => {
+        this.textHelper.changeTextBox(textBox, params, this.scene);
     }
 
     //使用remove后记得将TextBox设为null，防止内存泄漏
-    removeTextBox = (TextBox) => {
-        if (TextBox === undefined) return;
-        TextBox.removeFrom(this.scene);
-        this.textBoxes.delete(TextBox);
+    removeTextBox = (textBox) => {
+        this.textHelper.removeTextBox(textBox, this.scene);
     }
-
-
 
     addIcon = (img, position, name, title, width, height) => {
         if (!this.hotSpotHelper) {

@@ -25,6 +25,7 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
+        this.disabledd = false;
 
         // 视野自动旋转
         this.enableAutoRotate = false;          // 是否自动旋转
@@ -180,6 +181,9 @@ class InnerViewControls {
     };
 
     update = () => {
+        if (this.disabledd) {
+            return;
+        }
         if (!this.isConnected) {
             this.camera.lookAt(this.camera.target);
             return;
@@ -261,7 +265,7 @@ class InnerViewControls {
     }
 
     onDocumentMouseDown = (event) => {
-        if (!!document.pointerLockElement) {
+        if (!!document.pointerLockElement || this.disabledd) {
             return;
         }
         event.preventDefault();
@@ -275,7 +279,7 @@ class InnerViewControls {
     }
 
     onDocumentMouseMove = (event) => {
-        if (this.isUserInteracting === true) {
+        if (this.isUserInteracting === true && this.disabledd === false) {
             if (this.isPointerInteracting) {
                 this.lon = event.movementX * 0.1 + this.lon;
                 this.lat = event.movementY * 0.1 + this.lat;
@@ -295,11 +299,12 @@ class InnerViewControls {
     }
 
     onDocumentMouseUp = (event) => {
+        if (this.disabledd) return;
         this.isUserInteracting = false;
     }
 
     onTouchstart = (event) => {
-        if (event.targetTouches.length === 1) {
+        if (event.targetTouches.length === 1 && this.disabledd === false) {
             console.log('touch', 'start');
             this.isUserInteracting = true;
             // 记录滑动开始的坐标
@@ -313,7 +318,7 @@ class InnerViewControls {
     }
 
     onTouchmove = (event) => {
-        if (this.isUserInteracting === true) {
+        if (this.isUserInteracting === true && this.disabledd === false) {
             var touch = event.targetTouches[0];
             console.log('touching', touch.pageX);
             this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.2 + this.onPointerDownLon;
@@ -329,12 +334,13 @@ class InnerViewControls {
     }
 
     onTouchend = (event) => {
+        if (this.disabledd) return;
         this.isUserInteracting = false;
     }
 
     onDocumentMouseWheel = (event) => {
         //this.distance += event.deltaY * 0.5;
-        if (!this.enableFovChange) return;
+        if (!this.enableFovChange || this.disabledd) return;
         let fov = this.camera.fov;
         fov += event.deltaY * 0.03; // 0.03 is a suitable value
         if (fov >= 160) {
@@ -348,6 +354,7 @@ class InnerViewControls {
     }
 
     onDocumentKeyDown = (event) => {
+        if (this.disabledd) return;
         event.preventDefault();
         var keyCode = event.keyCode || event.which || event.charCode;
         this.setInteractingIfKeys(keyCode, true);
@@ -383,7 +390,7 @@ class InnerViewControls {
     }
 
     setInteractingIfKeys = (keyCode, interacting) => {
-        if (this.isPointerInteracting) {
+        if (this.isPointerInteracting || this.disabledd) {
             return
         }
         switch (keyCode) {
@@ -403,6 +410,7 @@ class InnerViewControls {
     }
 
     onDocumentKeyUp = (event) => {
+        if (this.disabledd) return;
         var keyCode = event.keyCode || event.which || event.charCode;
         this.setInteractingIfKeys(keyCode, false)
         switch (keyCode) {
@@ -424,6 +432,15 @@ class InnerViewControls {
 
         }
     };
+
+    disable = () => {
+        this.disabledd = true;
+    }
+
+    enable = () => {
+        this.disabledd = false;
+        this.isUserInteracting = false;
+    }
 }
 
 export default InnerViewControls;

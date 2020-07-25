@@ -2,31 +2,34 @@ import * as THREE from 'three';
 
 class TextHelper {
     constructor(param) {
-        this.message = "请输入文字";                                 //文字
+        this.message = "请输入文字";                                  //文字
         this.font = "Arial";                                        //字体
         this.fontSize = 36;                                         //字体大小
         this.fontColor = { r:255, g:255, b:255, a:1.0 };            //字体颜色（默认白色不透明）
         this.borderDistanceX = 36;                                  //左边距
         this.borderDistanceY = 24;                                  //上边距
         this.borderThickness = 2;                                   //边框粗细
-        this.borderWidth = 230;                                     //边框宽
+        this.borderWidth = 240;                                     //边框宽
         this.borderHeight = 80;                                     //边框高
         this.borderColor = { r:100, g:100, b:100, a:0.5 };          //边框颜色（默认灰色半透明）
         this.backgroundColor = { r:100, g:100, b:100, a:0.5 };      //背景颜色（默认灰色半透明）
-        this.scaleX = 1;                                            //文本框缩放比例X
-        this.scaleY = 1;                                            //文本框缩放比例Y
-        this.position = new THREE.Vector3(0,0,0);         //文本框位置
-        this.canvasWidth = 1600;                                    //画布宽度
+        this.scaleX = 0.8;                                          //文本框缩放比例X
+        this.scaleY = 0.8;                                          //文本框缩放比例Y
+        this.position = new THREE.Vector3(0,0,0);          //文本框位置
+        this.cameraControl = null;                                    //用于使文本框始终朝向相机
+        this.canvasWidth = 1024;                                    //画布宽度
         this.canvasHeight = 150;                                    //画布高度
         this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
         this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
         this.context = null;                                        //具体的内容对象
         this.sprite = null;                                         //最终呈现的Sprite
+        this.planeMesh = null;                                      //也可以通过Plane呈现
 
         this.init(param);
         this.createCanvas();
         this.fillMessage();
         this.createSprite();
+        this.createPlane();
     }
 
     init = (parameters) => {
@@ -87,6 +90,9 @@ class TextHelper {
         if (parameters.hasOwnProperty("position")) {
             this.position = parameters.position;
         }
+        if (parameters.hasOwnProperty("cameraControl")) {
+            this.cameraControl = parameters.cameraControl;
+        }
         if (parameters.hasOwnProperty("canvasWidth")) {
             this.canvasWidth = parameters.canvasWidth;
             needNewSprite = true;
@@ -110,6 +116,10 @@ class TextHelper {
     }
 
     updateCanvas = () => {
+        const r = 12;//圆角矩形的圆半径
+
+        this.canvasWidth = this.borderWidth + r * 2;
+        this.canvasHeight = this.borderHeight + r * 2;
         this.canvas.width = this.canvasWidth;
         this.canvas.height = this.canvasHeight;
         var context = this.context;
@@ -125,8 +135,7 @@ class TextHelper {
 
         //先使用圆角矩形作为文本框，以后有需求可以设计更多文本框样式
 
-        //圆角矩形的圆半径
-        var r = 12;
+
         this.roundRect(0,0,this.borderWidth,this.borderHeight,r);
     }
 
@@ -175,8 +184,31 @@ class TextHelper {
     }
 
     updateSprite = () => {
-        this.sprite.scale.set(this.scaleX * 1000,this.scaleY * 100,1);
+        this.sprite.scale.set(this.scaleX * 1000, this.scaleY * 100, 1);
         this.sprite.position.set(this.position.x, this.position.y, this.position.z);
+    }
+
+    createPlane = () => {
+        let texture = new THREE.CanvasTexture(this.canvas);
+        texture.needsUpdate = true;
+        let planeMaterial = new THREE.MeshBasicMaterial({map: texture});
+        planeMaterial.depthTest = this.depthTest;
+        planeMaterial.needsUpdate = true;
+        planeMaterial.map.needsUpdate = true;
+        planeMaterial.transparent = true;
+        planeMaterial.opacity = 1;
+        let planeGeometry = new THREE.PlaneGeometry(this.borderWidth, this.borderHeight);
+        let visible = this.planeMesh === null ? true : this.planeMesh.visible;
+        this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        this.planeMesh.visible = visible;
+        this.cameraControl.objectslookingAtCamera.push(this.planeMesh);
+        this.updatePlane();
+    }
+
+    updatePlane = () => {
+        this.planeMesh.scale.set(this.scaleX, this.scaleY, 1);
+        this.planeMesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.planeMesh.lookAt(this.cameraControl.camera.position);
     }
 
     setMessage = (params) => {
@@ -185,29 +217,37 @@ class TextHelper {
         this.fillMessage();
         if (needNewSprite) {
             this.createSprite();
+            this.createPlane();
         }
         else {
             this.updateSprite();
+            this.updatePlane();
         }
     }
 
     addTo = (scene) => {
-        scene.add(this.sprite);
+        scene.add(this.planeMesh);
     }
 
     removeFrom = (scene) => {
-        scene.remove(this.sprite);
+        scene.remove(this.planeMesh);
     }
 
     show = () => {
         if (this.sprite !== null) {
             this.sprite.visible = true;
         }
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = true;
+        }
     }
 
     hide = () => {
         if (this.sprite !== null) {
             this.sprite.visible = false;
+        }
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = false;
         }
     }
 }

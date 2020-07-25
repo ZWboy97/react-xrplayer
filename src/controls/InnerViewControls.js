@@ -25,6 +25,7 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
+        this.objectslookingAtCamera = [];
 
         // 视野自动旋转
         this.enableAutoRotate = false;          // 是否自动旋转
@@ -185,6 +186,9 @@ class InnerViewControls {
             return;
         }
         this.updateCamera();
+        this.objectslookingAtCamera.forEach( object => {
+            object.lookAt(this.camera.position);
+        })
     };
 
     updateCamera = () => {

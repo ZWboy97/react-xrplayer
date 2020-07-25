@@ -77,7 +77,7 @@ class App extends React.Component {
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(-50, 50);
-        this.xrManager.enableChangeFov(false);
+        this.xrManager.enableChangeFov(true);
         this.xrManager.setParticleEffectRes({
             url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
             ,
@@ -222,7 +222,8 @@ class App extends React.Component {
     onCreateTextBox = () => {
         if (!!!this.TextBox) {
             this.TextBox = this.xrManager.createTextBox({
-                position: { x: 0, y: 0, z: -500 }
+                position: { x: 0, y: 0, z: -500 },
+                cameraControl: this.xrManager.innerViewControls,
             });
             this.TextBoxHidden = false;
         }
@@ -230,8 +231,9 @@ class App extends React.Component {
 
     onChangeTextBox = () => {
         this.xrManager.changeTextBox(this.TextBox, {
-            message: "Text has changed. 想要输入更长的句子,请同时修改canvasWidth和scaleX，否则会发生这种情况",
-            borderWidth: 1650,
+            message: "Text has changed. 想要改变文本框宽度以适应文字,请修改borderWidth",
+            borderWidth: 1200,
+            position: new THREE.Vector3(250, 250, -250 * Math.sqrt(2)),
         });
     }
 

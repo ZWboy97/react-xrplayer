@@ -4,6 +4,7 @@ import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
+import {color} from "dat.gui";
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -223,7 +224,7 @@ class App extends React.Component {
         if (!!!this.TextBox) {
             this.TextBox = this.xrManager.createTextBox({
                 position: { x: 0, y: 0, z: -500 },
-                cameraControl: this.xrManager.innerViewControls,
+                cameraPosition: this.xrManager.getCameraPosition(),
             });
             this.TextBoxHidden = false;
         }
@@ -231,9 +232,11 @@ class App extends React.Component {
 
     onChangeTextBox = () => {
         this.xrManager.changeTextBox(this.TextBox, {
-            message: "Text has changed. 想要改变文本框宽度以适应文字,请修改borderWidth",
-            borderWidth: 1200,
+            message: "Text has changed",
+            borderWidth: 370,
             position: new THREE.Vector3(250, 250, -250 * Math.sqrt(2)),
+            backgroundColor: {r:255, g:176, b:79, a:0.7},
+            borderColor: {r:245, g:128, b:0, a:0.9},
         });
     }
 

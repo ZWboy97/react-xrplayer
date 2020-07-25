@@ -55,6 +55,7 @@ class XRPlayerManager {
 
         this.onCameraAnimationEnded = null;
 
+        this.textBoxes = new Set();
 
         this.init();
     }
@@ -161,7 +162,12 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
-
+        if (this.textBoxes) {
+            const x = this.innerViewControls.camera.position.x, z = this.innerViewControls.camera.position.z;
+            this.textBoxes.forEach(textBox => {
+                textBox.planeMesh.lookAt(x, textBox.planeMesh.position.y, z);
+            })
+        }
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -370,6 +376,7 @@ class XRPlayerManager {
     createTextBox = (params) => {
         var TextBox = new TextHelper(params);
         TextBox.addTo(this.scene);
+        this.textBoxes.add(TextBox);
         return TextBox;
     }
 
@@ -394,6 +401,7 @@ class XRPlayerManager {
     removeTextBox = (TextBox) => {
         if (TextBox === undefined) return;
         TextBox.removeFrom(this.scene);
+        this.textBoxes.delete(TextBox);
     }
 
 

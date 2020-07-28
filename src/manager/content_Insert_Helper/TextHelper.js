@@ -78,9 +78,9 @@ class TextHelper {
         const browser = window.navigator.userAgent.toLowerCase();
         const container = document.getElementById('xr-container')
         if (browser.indexOf('mobile') > 0) {
-            // container.addEventListener('touchstart', this.onTouchstart, false);
-            // container.addEventListener('touchmove', this.onTouchmove, false);
-            // container.addEventListener('touchend', this.onTouchend, false);
+            container.addEventListener('touchstart', this.onTouchstart, false);
+            container.addEventListener('touchmove', this.onTouchmove, false);
+            container.addEventListener('touchend', this.onTouchend, false);
         } else {
             container.addEventListener('mousedown', this.onDocumentMouseDown, false);
             container.addEventListener('mousemove', this.onDocumentMouseMove, false);
@@ -88,12 +88,12 @@ class TextHelper {
         }
     };
 
-    getIntersects = (event, array) => {
+    getIntersects = (clientX, clientY, array) => {
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
         const { x: domX, y: domY } = this.renderer.domElement.getBoundingClientRect();
-        mouse.x = ((event.clientX - domX) / this.renderer.domElement.clientWidth) * 2 - 1;
-        mouse.y = - ((event.clientY - domY) / this.renderer.domElement.clientHeight) * 2 + 1;
+        mouse.x = ((clientX - domX) / this.renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = - ((clientY - domY) / this.renderer.domElement.clientHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, this.camera);
         return raycaster.intersectObjects(array);
     }
@@ -101,7 +101,7 @@ class TextHelper {
     onDocumentMouseDown = (event) => {
         event.preventDefault();
         let array = Array.from(this.dragBoxes);
-        let intersects = this.getIntersects(event, array);
+        let intersects = this.getIntersects(event.clientX, event.clientY, array);
         if (intersects.length > 0) {
             this.chosenPlane = intersects[0].object;
             this.isUserInteracting = true;
@@ -112,7 +112,7 @@ class TextHelper {
 
     onDocumentMouseMove = (event) => {
         if (this.isUserInteracting === true) {
-            let intersects = this.getIntersects(event, [this.sceneMesh]);
+            let intersects = this.getIntersects(event.clientX, event.clientY, [this.sceneMesh]);
             if (intersects.length > 0) {
                 let newPosition = intersects[0].point.clone().add(this.deltaPosition);
                 this.chosenPlane.position.set(newPosition.x, newPosition.y, newPosition.z);
@@ -121,6 +121,37 @@ class TextHelper {
     }
 
     onDocumentMouseUp = (event) => {
+        this.isUserInteracting = false;
+        this.cameraControl.enable();
+    }
+
+    onTouchstart = (event) => {
+        if (event.targetTouches.length === 1) {
+            let array = Array.from(this.dragBoxes);
+            let touch = event.targetTouches[0];
+            var intersects = this.getIntersects(touch.pageX, touch.pageY, array);
+        }
+        if (intersects.length > 0) {
+            this.isUserInteracting = true;
+            this.chosenPlane = intersects[0].object;
+            this.isUserInteracting = true;
+            this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.chosenPlane.position.clone());
+            this.cameraControl.disable();
+        }
+    }
+
+    onTouchmove = (event) => {
+        if (this.isUserInteracting === true) {
+            let touch = event.targetTouches[0];
+            let intersects = this.getIntersects(touch.pageX, touch.pageY, [this.sceneMesh]);
+            if (intersects.length > 0) {
+                let newPosition = intersects[0].point.clone().add(this.deltaPosition);
+                this.chosenPlane.position.set(newPosition.x, newPosition.y, newPosition.z);
+            }
+        }
+    }
+
+    onTouchend = (event) => {
         this.isUserInteracting = false;
         this.cameraControl.enable();
     }

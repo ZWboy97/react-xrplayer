@@ -305,7 +305,7 @@ class InnerViewControls {
 
     onTouchstart = (event) => {
         if (event.targetTouches.length === 1 && this.disabledd === false) {
-            console.log('touch', 'start');
+            // console.log('touch', 'start');
             this.isUserInteracting = true;
             // 记录滑动开始的坐标
             var touch = event.targetTouches[0];
@@ -320,7 +320,7 @@ class InnerViewControls {
     onTouchmove = (event) => {
         if (this.isUserInteracting === true && this.disabledd === false) {
             var touch = event.targetTouches[0];
-            console.log('touching', touch.pageX);
+            // console.log('touching', touch.pageX);
             this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.2 + this.onPointerDownLon;
             this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.2 + this.onPointerDownLat;
             // 用于立体场景音效

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { enableEffectContainer, setEffectData } from './redux/player.redux';
+import { enableEffectContainer, setEffectData, setGlobalVolume, setGlobalMuted } from './redux/player.redux';
 import EffectContainer from './effect/EffectContainer';
 import FullScreen from './utils/fullscreen';
 import Proptypes from 'prop-types';
@@ -30,11 +30,16 @@ class XRPlayer extends Component {
   }
 
   componentDidMount() {
-    this.xrManager = new XRPlayerManager(this.mount, this.props);
-    this.xrManager.handler = this.eventHandler;
+    this.xrManager = new XRPlayerManager(this.mount, this.props, this.eventHandler);
     this.props.onCreated && this.props.onCreated(this.xrManager);
-
+    this.initState();
     this.initEvent();
+  }
+
+  initState = () => {
+    this.sceneContainer.volume = this.props.volume;
+    this.sceneContainer.muted = this.props.muted;
+    this.sceneContainer.crossOrigin = 'anonymous';
   }
 
   eventHandler = (name, props, callback = () => { }) => {
@@ -57,6 +62,14 @@ class XRPlayer extends Component {
       case 'close_effect_container':
         this.onCloseEffectContainer();
         break;
+      case 'global_muted':
+        this.props.setGlobalMuted(props.muted);
+        break;
+      case 'global_volume':
+        this.props.setGlobalVolume(props.volume);
+        break;
+      case 'sence_res_ready':
+        break;
       default: break;
     }
   }
@@ -78,6 +91,7 @@ class XRPlayer extends Component {
 
   componentWillUnmount() {
     this.xrManager && this.xrManager.destroy();
+    window.removeEventListener('resize', this.onWindowResize);
   }
 
   onCloseEffectContainer = () => {
@@ -88,6 +102,11 @@ class XRPlayer extends Component {
   render() {
     let { width, height, is_full_screen = false,
       is_effect_displaying, effect_data } = this.props;
+    const { muted, volume } = this.props;
+    if (this.sceneContainer) {
+      this.sceneContainer.volume = volume;
+      this.sceneContainer.muted = muted;
+    }
     return (
       <FullScreen
         enabled={is_full_screen}
@@ -112,7 +131,7 @@ class XRPlayer extends Component {
               <EffectContainer
                 data={effect_data}
                 onCloseClickHandler={() => {
-                  this.onCloseEffectContainer()
+                  this.eventHandler("close_effect_container")
                 }}
                 onCallback={this.effectCallback}
               ></EffectContainer>
@@ -121,6 +140,7 @@ class XRPlayer extends Component {
           }
           <video id="video"
             style={{ display: "none" }}
+            muted={muted}
             ref={(mount) => { this.sceneContainer = mount }} >
           </video>
           <div
@@ -179,5 +199,5 @@ XRPlayer.defaultProps = {
 
 export default connect(
   state => state.player,
-  { enableEffectContainer, setEffectData }
+  { enableEffectContainer, setEffectData, setGlobalVolume, setGlobalMuted }
 )(XRPlayer);

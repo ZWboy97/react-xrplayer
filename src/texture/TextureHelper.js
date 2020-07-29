@@ -5,6 +5,7 @@
 import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
+//import { OS } from '../utils/osuitls';
 
 class TextureHelper {
 
@@ -16,15 +17,16 @@ class TextureHelper {
         this.containerNode = containerNode;
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
+        this.onCanPlayHandler = null;
         this.videoLoader = null;
         this.resType = 'image'
+        this.resUrl = '';
     }
 
     initVideoNode = () => {
         this.containerNode.width = 0;
         this.containerNode.height = 0;
         this.containerNode.loop = true;
-        this.containerNode.muted = true;
         this.containerNode.crossOrigin = "anonymous";
         this.containerNode.autoplay = true;
         this.containerNode.allowsInlineMediaPlayback = true;
@@ -39,6 +41,11 @@ class TextureHelper {
         this.containerNode.setAttribute('x5-video-orientation', 'portrait')
         this.containerNode.setAttribute('style', 'object-fit: fill')
         this.containerNode.setAttribute('loop', "loop")
+        this.containerNode.addEventListener('canplay', this.onVideoStarted, false);
+    }
+
+    onVideoStarted = () => {
+        this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
     }
 
     getTextureFromVideo = (video) => {
@@ -49,9 +56,12 @@ class TextureHelper {
     }
 
     loadFlvVideo = (resUrl) => {
+        this.resUrl = resUrl;
         this.initVideoNode();
         if (flvjs.isSupported()) {
-            let flvPlayer = flvjs.createPlayer({ type: 'flv', url: resUrl });
+            let flvPlayer = flvjs.createPlayer({
+                type: 'flv', url: resUrl, isLive: true,
+            });
             this.videoLoader = flvPlayer;
             flvPlayer.attachMediaElement(this.containerNode);
             flvPlayer.load();
@@ -64,6 +74,7 @@ class TextureHelper {
     }
 
     loadHlsVideo = (resUrl) => {
+        this.resUrl = resUrl;
         this.initVideoNode();
         if (Hls.isSupported()) {
             var hls = new Hls();
@@ -81,7 +92,23 @@ class TextureHelper {
         return this.getTextureFromVideo(this.containerNode);
     }
 
+    createTag = (tag, attr, objs) => {
+        var oMeta = document.createElement(tag);
+        if (attr && typeof attr === "object") {
+            for (var k in attr) {
+                oMeta.setAttribute(k, attr[k]);
+            }
+        }
+        if (objs && typeof objs === "object") {
+            for (var i in objs) {
+                oMeta[i] = objs[i];
+            }
+        }
+        return oMeta;
+    }
+
     loadMp4Video = (resUrl) => {
+        this.resUrl = resUrl;
         this.initVideoNode();
         this.containerNode.src = resUrl;
         this.containerNode.load();
@@ -90,13 +117,16 @@ class TextureHelper {
     }
 
     loadImage = (resUrl) => {
+        this.resUrl = resUrl;
         var texture = new THREE.TextureLoader().load(resUrl);
+        this.onCanPlayHandler && this.onCanPlayHandler();
         return texture;
     }
 
     loadTexture = (resource) => {
         const { type, res_url } = resource;
         this.resType = type;
+        this.resUrl = res_url;
         switch (type) {
             case 'hls':
                 return this.loadHlsVideo(res_url);
@@ -169,6 +199,7 @@ class TextureHelper {
             default:
                 return null;
         }
+        this.containerNode.removeEventListener('canplay', this.onVideoStarted);
     }
 }
 

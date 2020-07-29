@@ -12,10 +12,32 @@ class SpriteShapeHelper {
         this.camera = camera;
         this.renderer = renderer;
         this.container = container;
+        this.hotSpotMap = null;     // 热点标签数据
         this.hotSpotMeshMap = null; // 热点标签Mesh Map，便于动态缩减
         this.pointGroup = null;     // 场景中的热点组合
 
         this.objectClickHandler = null;
+        this.tagClickHandler = null;
+        this.isTipVisible = true;
+    }
+
+    setIsTipVisible = (enable) => {
+        this.isTipVisible = enable;
+        let display = "none";
+        if (enable) {
+            display = "block";
+        } else {
+            display = "none";
+        }
+        for (var i = 0; i < this.pointGroup.children.length; i++) {
+            var name = this.pointGroup.children[i].name;
+            var tip = document.getElementById(name);
+            if (enable) {
+                tip.style.display = display;
+            } else {
+                tip.style.display = display;
+            }
+        }
     }
 
     resetHotSpotGroup = () => {
@@ -37,8 +59,8 @@ class SpriteShapeHelper {
 
     setHotSpotList = (hot_spot_list) => {
         this.resetHotSpotGroup();
-        const hotSpotMap = new Map(hot_spot_list);
-        hotSpotMap.forEach((value, key) => {
+        this.hotSpotMap = new Map(hot_spot_list);
+        this.hotSpotMap.forEach((value, key) => {
             this.createPoint(key, value)
         });
     }
@@ -61,18 +83,22 @@ class SpriteShapeHelper {
         }
     }
 
-    contertSph2Rect = (phi, theta) => {
+    contertSph2Rect = (lat, lon) => {
         let r = Radius;
+        const phi = THREE.Math.degToRad(90 - lat);
+        const theta = THREE.Math.degToRad(lon);
         return [
-            r * Math.sin(THREE.Math.degToRad(phi)) * Math.cos(THREE.Math.degToRad(theta)),
-            r * Math.sin(THREE.Math.degToRad(phi)) * Math.sin(THREE.Math.degToRad(theta)),
-            r * Math.cos(THREE.Math.degToRad(phi))
+            r * Math.sin(phi) * Math.cos(theta),
+            r * Math.sin(phi) * Math.sin(theta),
+            r * Math.cos(phi)
         ];
     }
 
     createPoint(key, value) {
-        let { phi, theta, res_url, opacity = 1, scale = 16, animate = false, title = null, img_url = null, img_height = 100, img_width = 100, title_width} = value;
-        let position = this.contertSph2Rect(phi, theta);
+        let { lat, lon, res_url, opacity = 1, scale = 16,
+            animate = false, title = null, img_url = null,
+            img_height = 100, img_width = 100, title_width } = value;
+        let position = this.contertSph2Rect(lat, lon);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
         meshGroup.position.set(...position);
@@ -88,7 +114,10 @@ class SpriteShapeHelper {
         if (img_url || title) {
             var div = document.createElement("div");
             div.id = key;
-            div.style = "padding:10px 10px;background:rgba(0,0,0,.5);color:#fff;display:none;position:absolute;border-radius:6px; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;font-size:0.85rem;";
+            div.addEventListener('click', () => {
+                this.tagClickHandler && this.tagClickHandler(key);
+            }, false)
+            div.style = "padding:10px 10px;cursor:pointer;background-size: 100% 100%;background-image:url('https://live360.oss-cn-beijing.aliyuncs.com/xr/fuzhou/fz_di.png');color:#fff;display:none;position:absolute;border-radius:6px; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;font-size:0.85rem;";
             if (title_width) div.style.width = title_width + 'px';
         }
         if (img_url) {
@@ -102,8 +131,9 @@ class SpriteShapeHelper {
             this.container.appendChild(div);
         }
         if (title) {
-            let text = document.createElement("font");
+            let text = document.createElement("div");
             text.innerText = title;
+            text.style = "text-align:center;margin-bottom:45px"
             div.appendChild(text);
         }
         if (img_url || title) this.container.appendChild(div);
@@ -132,11 +162,38 @@ class SpriteShapeHelper {
                 var wpVector = new THREE.Vector3();
                 var pos = this.pointGroup.children[i].getWorldPosition(wpVector)
                     .applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
-                if ((pos.x >= -0.8 && pos.x <= 0.7) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                if (this.isTipVisible && (pos.x >= -1 && pos.x <= 0.5) && (pos.y >= -1 && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                    var hotSpot = this.hotSpotMap.get(name);
+                    let position = "top";
+                    if (hotSpot != null && hotSpot.hasOwnProperty("position")) {
+                        position = hotSpot.position;
+                    }
                     var screenPos = this.objectPosToScreenPos(this.pointGroup.children[i], this.container, this.camera);
-                    tip.style.display = "block";
-                    tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
-                    tip.style.top = screenPos.y - tip.clientHeight - 30 + "px";
+                    if (position === 'top') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
+                        tip.style.top = screenPos.y - tip.clientHeight - 30 + "px";
+                    } else if (position === 'bottom') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
+                        tip.style.top = screenPos.y + 30 + "px";
+                    } else if (position === 'left') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth - 30 + "px";
+                        tip.style.top = screenPos.y - tip.clientHeight / 2 + 30 + "px";
+                    } else if (position === 'right') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x + 30 + "px";
+                        tip.style.top = screenPos.y - tip.clientHeight / 2 + 30 + "px";
+                    } else if (position === 'middle') {
+                        tip.style.display = "block";
+                        tip.style.left = screenPos.x - tip.clientWidth / 2 + 30 + "px";
+                        tip.style.top = screenPos.y - tip.clientHeight / 2 + 30 + "px";
+                    }
+                    else {
+                        tip.style.display = "none";
+                    }
+
                 } else {
                     tip.style.display = "none";
                 }
@@ -234,6 +291,7 @@ class SpriteShapeHelper {
             //如果只需要将第一个触发事件，那就取数组的第一个模型
             if (intersects.length > 0) {
                 if (this.objectClickHandler) {
+                    console.log('intersects', intersects);
                     this.objectClickHandler(intersects);
                 }
             }

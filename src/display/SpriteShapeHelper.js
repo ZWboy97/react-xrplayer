@@ -19,6 +19,7 @@ class SpriteShapeHelper {
         this.objectClickHandler = null;
         this.tagClickHandler = null;
         this.isTipVisible = true;
+        this.hotSpotClickable = true;
     }
 
     setIsTipVisible = (enable) => {
@@ -115,6 +116,7 @@ class SpriteShapeHelper {
             var div = document.createElement("div");
             div.id = key;
             div.addEventListener('click', () => {
+                if (!this.hotSpotClickable) return;
                 this.tagClickHandler && this.tagClickHandler(key);
             }, false)
             div.style = "padding:10px 10px;cursor:pointer;background-size: 100% 100%;background-image:url('https://live360.oss-cn-beijing.aliyuncs.com/xr/fuzhou/fz_di.png');color:#fff;display:none;position:absolute;border-radius:6px; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;font-size:0.85rem;";
@@ -281,6 +283,10 @@ class SpriteShapeHelper {
         //与模型的所有mesh都会有交点，但我们选取第一个，也就是intersects[0]。
         const meshArray = Array.from(this.hotSpotMeshMap.values());
         return raycaster.intersectObjects(meshArray);
+    }
+
+    setHotSpotClickable = (enable) => {
+        this.hotSpotClickable = enable;
     }
 
     bindEvent = () => {

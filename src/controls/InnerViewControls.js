@@ -220,10 +220,12 @@ class InnerViewControls {
     };
 
     updateCameraPosition = () => {
-        this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
-        this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
-        if (this.lon >= 270.0) this.lon = this.lon - 355;
-        else if (this.lon <= -90.0) this.lon = this.lon + 365;
+        if (this.fovLeftEdge !== -90 || this.fovRightEdge !== 270) { // 对水平fov做了限制
+            this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
+        }
+        if (this.fovDownEdge !== -90 || this.fovTopEdge !== 90) {// 对垂直fov做了限制
+            this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
+        }
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
         console.log('lat:', this.lat, ',lon:', this.lon, "phi:", this.phi, ",theta:", this.theta);
@@ -286,11 +288,6 @@ class InnerViewControls {
                 this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
                 this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
             }
-            if (this.lon > this.fovRightEdge) {
-                this.lon = this.fovRightEdge;
-            } else if (this.lon < this.fovLeftEdge) {
-                this.lon = this.fovLeftEdge;
-            }
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
         }
@@ -320,11 +317,6 @@ class InnerViewControls {
             this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.2 + this.onPointerDownLat;
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
-            if (this.lon > this.fovRightEdge) {
-                this.lon = this.fovRightEdge;
-            } else if (this.lon < this.fovLeftEdge) {
-                this.lon = this.fovLeftEdge;
-            }
         }
     }
 

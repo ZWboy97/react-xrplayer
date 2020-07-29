@@ -10,16 +10,19 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import {TextHelper} from "./content_Insert_Helper/TextHelper";
+import { TextHelper } from "./content_Insert_Helper/TextHelper";
+import CameraMoveAction from "../action/CameraMoveAction";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 
 class XRPlayerManager {
 
-    constructor(mount, initProps) {
+    constructor(mount, initProps, handler) {
         this.mount = mount;         // Threejs渲染挂载节点
         this.props = initProps;     // 初始化参数
+        this.handler = handler;
+
         this.scene = null;
         this.sceneMesh = null;
         this.camera = null;
@@ -28,7 +31,6 @@ class XRPlayerManager {
         this.sceneContainer = null; // 全景背景挂载节点
         this.sceneTextureHelper = null; //全景场景纹理加载控制器
 
-        this.handler = null;
 
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
@@ -101,6 +103,7 @@ class XRPlayerManager {
         }
         geometry.scale(-1, 1, 1);
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
+        this.sceneTextureHelper.onCanPlayHandler = (resUrl) => this.handler('sence_res_ready', { resUrl: resUrl });
         let texture = this.sceneTextureHelper.loadTexture(textureResource);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh = new THREE.Mesh(geometry, material);
@@ -125,13 +128,11 @@ class XRPlayerManager {
     initVR = () => {
         this.vrHelper = new VRHelper(this.renderer, this.camera);
         this.vrHelper.setObjectInteractionHandler((pickedObject) => {
-            console.log('tag', 'params');
             if (!!pickedObject) {
                 const key = pickedObject.name;
-                if (this.spriteEventList.has(key)) {
-                    const data = this.spriteEventList.get(key);
-                    this.handler('hot_spot_click', { data });
-                }
+                this.emitEvent(key, () => {
+                    this.closeEffectContainer();
+                });
             }
         })
     }
@@ -169,6 +170,14 @@ class XRPlayerManager {
             this.spriteShapeHelper.update();
         }
         this.textHelper && this.textHelper.update();
+    }
+
+    /*****************************全局接口************************************ */
+    setGlobalMuted = (muted) => {
+        this.handler('global_muted', { muted: muted });
+    }
+    setGlobalVolume = (volume) => {
+        this.handler('global_volume', { volume: volume });
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -226,11 +235,14 @@ class XRPlayerManager {
         this.spriteShapeHelper.setHotSpotList(hot_spot_list);
         this.spriteShapeHelper.objectClickHandler = (intersects) => {
             const key = intersects[0].object.name;
-            if (this.spriteEventList.has(key)) {
-                const data = this.spriteEventList.get(key);
-                this.handler('hot_spot_click', { data })
-            }
-            console.log(intersects[0].object.name);
+            this.emitEvent(key, () => {
+                this.closeEffectContainer();
+            })
+        }
+        this.spriteShapeHelper.tagClickHandler = (key) => {
+            this.emitEvent(key, () => {
+                this.closeEffectContainer();
+            })
         }
     }
 
@@ -243,6 +255,14 @@ class XRPlayerManager {
 
     removeHotSpot = (hot_spot_key) => {
         this.spriteShapeHelper.removeHotSpot(hot_spot_key);
+    }
+
+    setIsTipVisible = (enable) => {
+        this.spriteShapeHelper.setIsTipVisible(enable);
+    }
+
+    setHotSpotClickable = (enable) => {
+        this.spriteShapeHelper.setHotSpotClickable(enable);
     }
 
     /*****************************模型控制相关接口**************************** */
@@ -286,6 +306,19 @@ class XRPlayerManager {
         }
         this.innerViewControls.disConnect();
         this.viewConvertHelper.toPlanetView(durtime, delay);
+    }
+
+    moveCameraTo = (descPos, onStart, onEnd, duration = 5000) => {
+        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, duration, 0);
+        cameraMoveAction.onStartHandler = () => {
+            this.innerViewControls && this.innerViewControls.disConnect();
+            onStart && onStart();
+        }
+        cameraMoveAction.onCompleteHandler = () => {
+            this.innerViewControls && this.innerViewControls.connect();
+            onEnd && onEnd();
+        }
+        cameraMoveAction.start();
     }
 
     /**************************相机控制相关接口************************* */

@@ -224,12 +224,16 @@ class InnerViewControls {
     };
 
     updateCameraPosition = () => {
-        this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
-        if (this.lon >= 270) this.lon = 270 - 360;
-        else if (this.lon <= -90) this.lon = -90 + 360;
-        this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
+        if (this.fovLeftEdge !== -90 || this.fovRightEdge !== 270) { // 对水平fov做了限制
+            this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
+        }
+        if (this.fovDownEdge !== -90 || this.fovTopEdge !== 90) {// 对垂直fov做了限制
+            this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
+        }
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
+        console.log('lat:', this.lat, ',lon:', this.lon, "phi:", this.phi, ",theta:", this.theta);
+        console.log('fov', this.camera.fov);
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
@@ -288,11 +292,6 @@ class InnerViewControls {
                 this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
                 this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
             }
-            if (this.lon > this.fovRightEdge) {
-                this.lon = this.fovRightEdge;
-            } else if (this.lon < this.fovLeftEdge) {
-                this.lon = this.fovLeftEdge;
-            }
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
         }
@@ -305,7 +304,6 @@ class InnerViewControls {
 
     onTouchstart = (event) => {
         if (event.targetTouches.length === 1 && this.disabledd === false) {
-            console.log('touch', 'start');
             this.isUserInteracting = true;
             // 记录滑动开始的坐标
             var touch = event.targetTouches[0];
@@ -320,16 +318,10 @@ class InnerViewControls {
     onTouchmove = (event) => {
         if (this.isUserInteracting === true && this.disabledd === false) {
             var touch = event.targetTouches[0];
-            console.log('touching', touch.pageX);
             this.lon = (parseFloat(this.onPointerDownPointerX) - touch.pageX) * 0.2 + this.onPointerDownLon;
             this.lat = (parseFloat(this.onPointerDownPointerY - touch.pageY)) * 0.2 + this.onPointerDownLat;
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);
-            if (this.lon > this.fovRightEdge) {
-                this.lon = this.fovRightEdge;
-            } else if (this.lon < this.fovLeftEdge) {
-                this.lon = this.fovLeftEdge;
-            }
         }
     }
 

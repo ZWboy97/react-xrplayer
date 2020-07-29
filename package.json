@@ -1,6 +1,6 @@
 {
-  "name": "react-xrplayer",
-  "version": "0.1.0",
+  "name": "@zwboy97/react-xrplayer",
+  "version": "0.1.2",
   "description": "A excellent xr player for react",
   "main": "src/index.js",
   "keywords": [
@@ -164,5 +164,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3"
   },
-  "homepage": "/xr/"
+  "homepage": "/xr/",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
 }

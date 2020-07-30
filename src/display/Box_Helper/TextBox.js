@@ -22,65 +22,63 @@ class TextBox {
         this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
         this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
         this.context = null;                                        //具体的内容对象
-        this.sprite = null;                                         //最终呈现的Sprite
         this.planeMesh = null;                                      //也可以通过Plane呈现
         this.draggable = false;                                     //可拖拽改变位置
 
         this.init(param);
         this.createCanvas();
         this.fillMessage();
-        this.createSprite();
         this.createPlane();
     }
 
     init = (parameters) => {
-        let needNewSprite = false;
+        let needNewPlane = false;
         //文字信息设置
         if (parameters.hasOwnProperty("message")) {
             this.message = parameters.message;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("font")) {
             this.font = parameters.font;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("fontSize")) {
             this.fontSize = parameters.fontSize;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("fontColor")) {
             this.fontColor = parameters.fontColor;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         // 边框设置
         if (parameters.hasOwnProperty("borderDistanceX")) {
             this.borderDistanceX = parameters.borderDistanceX;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderDistanceY")) {
             this.borderDistanceY = parameters.borderDistanceY;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderThickness")) {
             this.borderThickness = parameters.borderThickness;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderWidth")) {
             this.borderWidth = parameters.borderWidth;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderHeight")) {
             this.borderHeight = parameters.borderHeight;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderColor")) {
             this.borderColor = parameters.borderColor;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         //画布设置
         if (parameters.hasOwnProperty("backgroundColor")) {
             this.backgroundColor = parameters.backgroundColor;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("scaleX")) {
             this.scaleX = parameters.scaleX;
@@ -96,21 +94,21 @@ class TextBox {
         }
         if (parameters.hasOwnProperty("canvasWidth")) {
             this.canvasWidth = parameters.canvasWidth;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("canvasHeight")) {
             this.canvasHeight = parameters.canvasHeight;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         //其它设置
         if (parameters.hasOwnProperty("depthTest")) {
             this.depthTest = parameters.depthTest;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("draggable")) {
             this.draggable = parameters.draggable;
         }
-        return needNewSprite;
+        return needNewPlane;
     }
 
     createCanvas = () => {
@@ -173,24 +171,6 @@ class TextBox {
         )
     }
 
-    createSprite = () => {
-        var texture = new THREE.Texture(this.canvas);
-        texture.needsUpdate = true;
-        var spriteMaterial = new THREE.SpriteMaterial({ map: texture} );
-        spriteMaterial.depthTest = this.depthTest;
-        spriteMaterial.needsUpdate = true;
-        spriteMaterial.map.needsUpdate = true;
-        var visible = this.sprite === null ? true : this.sprite.visible;
-        this.sprite = new THREE.Sprite( spriteMaterial );
-        this.sprite.visible = visible;
-        this.updateSprite();
-    }
-
-    updateSprite = () => {
-        this.sprite.scale.set(this.scaleX * 1000, this.scaleY * 100, 1);
-        this.sprite.position.set(this.position.x, this.position.y, this.position.z);
-    }
-
     createPlane = () => {
         let texture = new THREE.CanvasTexture(this.canvas);
         texture.needsUpdate = true;
@@ -214,15 +194,13 @@ class TextBox {
     }
 
     setMessage = (params) => {
-        var needNewSprite = this.init(params);
+        var needNewPlane = this.init(params);
         this.updateCanvas();
         this.fillMessage();
-        if (needNewSprite) {
-            this.createSprite();
+        if (needNewPlane) {
             this.createPlane();
         }
         else {
-            this.updateSprite();
             this.updatePlane();
         }
     }
@@ -236,18 +214,12 @@ class TextBox {
     }
 
     show = () => {
-        if (this.sprite !== null) {
-            this.sprite.visible = true;
-        }
         if (this.planeMesh !== null) {
             this.planeMesh.visible = true;
         }
     }
 
     hide = () => {
-        if (this.sprite !== null) {
-            this.sprite.visible = false;
-        }
         if (this.planeMesh !== null) {
             this.planeMesh.visible = false;
         }

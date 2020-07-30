@@ -137,7 +137,7 @@ class TextBoxHelper {
             this.chosenPlane = intersects[0].object;
             this.isUserInteracting = true;
             this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.chosenPlane.position.clone());
-            this.cameraControl.disable();
+            this.cameraControl.disConnect();
         }
     }
 
@@ -153,8 +153,10 @@ class TextBoxHelper {
     }
 
     onTouchend = (event) => {
-        this.isUserInteracting = false;
-        this.cameraControl.enable();
+        if (this.isUserInteracting === true) {
+            this.isUserInteracting = false;
+            this.cameraControl.connect();
+        }
     }
 }
 

@@ -1,36 +1,166 @@
 import * as THREE from 'three';
 
 class TextHelper {
+    constructor(camera, renderer, sceneMesh, cameraControl) {
+        this.camera = camera;
+        this.renderer = renderer;
+        this.cameraControl = cameraControl;
+        this.textBoxes = new Set();
+
+        //拖拽标签控件
+        this.dragBoxes = new Set();
+        this.isUserInteracting = false;
+        this.sceneMesh = sceneMesh;
+        this.chosenPlane = null;
+        this.downPosition = null;
+        this.oldPosition = null;
+
+        this.initControlsListener();
+    }
+
+    createTextBox = (params, scene) => {
+        let textBox = new TextBox(params)
+        textBox.addTo(scene);
+        this.textBoxes.add(textBox.planeMesh);
+        if (params.hasOwnProperty("draggable") && params.draggable === true) {
+            this.dragBoxes.add(textBox.planeMesh);
+        }
+        return textBox;
+    }
+
+    showTextBox = (textBox) => {
+        if (!!!textBox) return;
+        textBox.show();
+    }
+
+    hideTextBox = (textBox) => {
+        if (!!!textBox) return;
+        textBox.hide();
+    }
+
+    changeTextBox = (textBox, params, scene) => {
+        if (!!!textBox) return;
+        const draggable = textBox.draggable;
+        textBox.removeFrom(scene);
+        this.textBoxes.delete(textBox.planeMesh);
+        this.dragBoxes.delete(textBox.planeMesh);
+        textBox.setMessage(params);
+        textBox.addTo(scene);
+        this.textBoxes.add(textBox.planeMesh);
+        if (textBox.draggable) {
+            this.dragBoxes.add(textBox.planeMesh);
+        }
+        if (params.hasOwnProperty("draggable")) {
+            if (draggable === false && params.draggable === true) {
+                this.dragBoxes.add(textBox.planeMesh);
+            }
+            else if (draggable === true && params.draggable === false) {
+                this.dragBoxes.delete(textBox.planeMesh);
+            }
+        }
+    }
+
+    //使用remove后记得将TextBox设为null，防止内存泄漏
+    removeTextBox = (textBox, scene) => {
+        if (textBox === undefined) return;
+        textBox.removeFrom(scene);
+        this.textBoxes.delete(textBox);
+    }
+
+    update = () => {
+        const x = this.camera.position.x, z = this.camera.position.z;
+        this.textBoxes.forEach(planeMesh => {
+            planeMesh.lookAt(x, planeMesh.position.y, z);
+        })
+    }
+
+    initControlsListener = () => {
+        const browser = window.navigator.userAgent.toLowerCase();
+        const container = document.getElementById('xr-container')
+        if (browser.indexOf('mobile') > 0) {
+            // container.addEventListener('touchstart', this.onTouchstart, false);
+            // container.addEventListener('touchmove', this.onTouchmove, false);
+            // container.addEventListener('touchend', this.onTouchend, false);
+        } else {
+            container.addEventListener('mousedown', this.onDocumentMouseDown, false);
+            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
+            container.addEventListener('mouseup', this.onDocumentMouseUp, false);
+        }
+    };
+
+    getIntersects = (event, array) => {
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        const { x: domX, y: domY } = this.renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - domX) / this.renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = - ((event.clientY - domY) / this.renderer.domElement.clientHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, this.camera);
+        return raycaster.intersectObjects(array);
+    }
+
+    onDocumentMouseDown = (event) => {
+        event.preventDefault();
+        let array = Array.from(this.dragBoxes);
+        let intersects = this.getIntersects(event, array);
+        if (intersects.length > 0) {
+            this.chosenPlane = intersects[0].object;
+            this.isUserInteracting = true;
+            this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.chosenPlane.position.clone());
+            this.cameraControl.disable();
+        }
+    }
+
+    onDocumentMouseMove = (event) => {
+        if (this.isUserInteracting === true) {
+            let intersects = this.getIntersects(event, [this.sceneMesh]);
+            if (intersects.length > 0) {
+                let newPosition = intersects[0].point.clone().add(this.deltaPosition);
+                this.chosenPlane.position.set(newPosition.x, newPosition.y, newPosition.z);
+            }
+        }
+    }
+
+    onDocumentMouseUp = (event) => {
+        this.isUserInteracting = false;
+        this.cameraControl.enable();
+    }
+}
+
+class TextBox {
     constructor(param) {
-        this.message = "请输入文字";                                 //文字
+        this.message = "请输入文字";                                  //文字
         this.font = "Arial";                                        //字体
         this.fontSize = 36;                                         //字体大小
         this.fontColor = { r:255, g:255, b:255, a:1.0 };            //字体颜色（默认白色不透明）
-        this.borderDistanceX = 36;                                  //左边距
-        this.borderDistanceY = 24;                                  //上边距
-        this.borderThickness = 2;                                   //边框粗细
-        this.borderWidth = 230;                                     //边框宽
-        this.borderHeight = 80;                                     //边框高
+        this.borderDistanceX = 15;                                  //左边距
+        this.borderDistanceY = 15;                                  //上边距
+        this.borderThickness = 5;                                   //边框粗细
+        this.borderWidth = 190;                                     //边框宽
+        this.borderHeight = 60;                                     //边框高
         this.borderColor = { r:100, g:100, b:100, a:0.5 };          //边框颜色（默认灰色半透明）
         this.backgroundColor = { r:100, g:100, b:100, a:0.5 };      //背景颜色（默认灰色半透明）
-        this.scaleX = 1;                                            //文本框缩放比例X
-        this.scaleY = 1;                                            //文本框缩放比例Y
-        this.position = new THREE.Vector3(0,0,0);         //文本框位置
-        this.canvasWidth = 1600;                                    //画布宽度
+        this.scaleX = 0.8;                                          //文本框缩放比例X
+        this.scaleY = 0.8;                                          //文本框缩放比例Y
+        this.position = new THREE.Vector3(0,0,0);          //文本框位置
+        this.cameraPosition = null;                                 //文本框初始朝向
+        this.canvasWidth = 1024;                                    //画布宽度
         this.canvasHeight = 150;                                    //画布高度
         this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
         this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
         this.context = null;                                        //具体的内容对象
         this.sprite = null;                                         //最终呈现的Sprite
+        this.planeMesh = null;                                      //也可以通过Plane呈现
+        this.draggable = false;                                     //可拖拽改变位置
 
         this.init(param);
         this.createCanvas();
         this.fillMessage();
         this.createSprite();
+        this.createPlane();
     }
 
     init = (parameters) => {
-        var needNewSprite = false;
+        let needNewSprite = false;
         //文字信息设置
         if (parameters.hasOwnProperty("message")) {
             this.message = parameters.message;
@@ -87,6 +217,9 @@ class TextHelper {
         if (parameters.hasOwnProperty("position")) {
             this.position = parameters.position;
         }
+        if (parameters.hasOwnProperty("cameraPosition")) {
+            this.cameraPosition = parameters.cameraPosition;
+        }
         if (parameters.hasOwnProperty("canvasWidth")) {
             this.canvasWidth = parameters.canvasWidth;
             needNewSprite = true;
@@ -100,6 +233,9 @@ class TextHelper {
             this.depthTest = parameters.depthTest;
             needNewSprite = true;
         }
+        if (parameters.hasOwnProperty("draggable")) {
+            this.draggable = parameters.draggable;
+        }
         return needNewSprite;
     }
 
@@ -110,6 +246,10 @@ class TextHelper {
     }
 
     updateCanvas = () => {
+        const r = 12;//圆角矩形的圆半径
+
+        this.canvasWidth = this.borderWidth + r * 2 + this.borderThickness * 2;
+        this.canvasHeight = this.borderHeight + r * 2 + this.borderThickness * 2;
         this.canvas.width = this.canvasWidth;
         this.canvas.height = this.canvasHeight;
         var context = this.context;
@@ -122,11 +262,9 @@ class TextHelper {
         context.strokeStyle = "rgba(" + this.borderColor.r + "," + this.borderColor.g + ","
             + this.borderColor.b + "," + this.borderColor.a + ")";
         context.lineWidth = this.borderThickness;
-
         //先使用圆角矩形作为文本框，以后有需求可以设计更多文本框样式
 
-        //圆角矩形的圆半径
-        var r = 12;
+
         this.roundRect(0,0,this.borderWidth,this.borderHeight,r);
     }
 
@@ -175,8 +313,30 @@ class TextHelper {
     }
 
     updateSprite = () => {
-        this.sprite.scale.set(this.scaleX * 1000,this.scaleY * 100,1);
+        this.sprite.scale.set(this.scaleX * 1000, this.scaleY * 100, 1);
         this.sprite.position.set(this.position.x, this.position.y, this.position.z);
+    }
+
+    createPlane = () => {
+        let texture = new THREE.CanvasTexture(this.canvas);
+        texture.needsUpdate = true;
+        let planeMaterial = new THREE.MeshBasicMaterial({map: texture});
+        planeMaterial.depthTest = this.depthTest;
+        planeMaterial.needsUpdate = true;
+        planeMaterial.map.needsUpdate = true;
+        planeMaterial.transparent = true;
+        planeMaterial.opacity = 1;
+        let planeGeometry = new THREE.PlaneGeometry(this.borderWidth, this.borderHeight);
+        let visible = this.planeMesh === null ? true : this.planeMesh.visible;
+        this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        this.planeMesh.visible = visible;
+        this.updatePlane();
+    }
+
+    updatePlane = () => {
+        this.planeMesh.scale.set(this.scaleX, this.scaleY, 1);
+        this.planeMesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.planeMesh.lookAt(this.cameraPosition.x, this.position.y, this.cameraPosition.z);
     }
 
     setMessage = (params) => {
@@ -185,23 +345,28 @@ class TextHelper {
         this.fillMessage();
         if (needNewSprite) {
             this.createSprite();
+            this.createPlane();
         }
         else {
             this.updateSprite();
+            this.updatePlane();
         }
     }
 
     addTo = (scene) => {
-        scene.add(this.sprite);
+        scene.add(this.planeMesh);
     }
 
     removeFrom = (scene) => {
-        scene.remove(this.sprite);
+        scene.remove(this.planeMesh);
     }
 
     show = () => {
         if (this.sprite !== null) {
             this.sprite.visible = true;
+        }
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = true;
         }
     }
 
@@ -209,7 +374,10 @@ class TextHelper {
         if (this.sprite !== null) {
             this.sprite.visible = false;
         }
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = false;
+        }
     }
 }
 
-export default TextHelper;
+export {TextHelper, TextBox};

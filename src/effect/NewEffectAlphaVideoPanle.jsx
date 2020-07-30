@@ -5,17 +5,26 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './style/EffectAlphaVideoPanel.less';
 import { connect } from 'react-redux';
+import * as THREE from 'three';
 
 
-class EffectAlphaVideoPanel extends Component {
+
+class NewEffectAlphaVideoPanel extends Component {
+
+    state = {
+        is_loading: true
+    }
 
     constructor(props) {
         super(props);
         this.video = null;
-        this.bufferCtx = null;
-        this.image = null;
-        this.alphaData = null;
+        this.videoWidth = 0;
+        this.videoHeight = 0;
         this.isPlaying = false;
+        this.renderer = null;
+        this.mount = null;
+        this.camera = null;
+        this.scene = null;
     }
 
     componentDidMount() {
@@ -30,25 +39,82 @@ class EffectAlphaVideoPanel extends Component {
     loadMp4Video = () => {
         this.video = document.getElementById("alpha-video");
         this.video.src = this.props.videoUrl;
-        this.video.crossOrigin = "anonymous";
-        this.showCanvas = document.getElementById("show");
-        this.showCtx = this.showCanvas.getContext("2d");
-        this.bufferCanvas = document.getElementById("buffer");
-        this.bufferCtx = this.bufferCanvas.getContext("2d");
+        this.video.crossOrigin = "Anonymous";
 
         this.updateCanvasSize();
 
         this.video.play();
 
         this.video.addEventListener('play', this.startPlay, false);
-
         this.video.addEventListener('ended', this.endPlay, false);
-
         window.addEventListener('resize', this.updateCanvasSize, false);
+        this.initCanvas();
     }
+
+    initCanvas = () => {
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setClearColor(new THREE.Color("lightgrey"), 0);
+        this.renderer.setSize(this.mount.clientWidth, this.mount.clientHeight);
+        this.mount.appendChild(this.renderer.domElement);
+
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.Camera();
+        this.scene.add(this.camera);
+
+        var texture = new THREE.VideoTexture(this.video);
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.format = THREE.RGBFormat;
+        var geometry = new THREE.PlaneBufferGeometry(2, 2);
+        var uniforms = {
+            time: { type: "f", value: 1.0 },
+            texture: { type: "sampler2D", value: texture }
+        };
+        var material = new THREE.ShaderMaterial({
+            uniforms: uniforms,
+            vertexShader:
+                `varying vec2 vUv;
+                        void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                        }`,
+            fragmentShader:
+                `#ifdef GL_ES
+                        precision highp float;
+                        #endif
+                        
+                        uniform float time;
+                        uniform sampler2D texture;
+                        varying vec2 vUv;
+                        
+                        void main( void ) {
+                        gl_FragColor = vec4(
+                        texture2D(texture, vec2(vUv.x, 0.5 + vUv.y/2.)).rgb,
+                        texture2D(texture, vec2(vUv.x, vUv.y/2.)).r
+                        );
+                        }`,
+            transparent: true
+        });
+        var mesh = new THREE.Mesh(geometry, material)
+        this.scene.add(mesh);
+    }
+
+    processFrame = () => {
+        if (this.isPlaying === false) {
+            return;
+        }
+        requestAnimationFrame(this.processFrame);
+        this.renderer && this.renderer.render(this.scene, this.camera);
+    }
+
 
     startPlay = () => {
         this.isPlaying = true;
+        this.setState({ is_loading: false })
         this.processFrame();
         if (this.props.onStartPlayHandler) {
             this.props.onStartPlayHandler();
@@ -65,32 +131,14 @@ class EffectAlphaVideoPanel extends Component {
     updateCanvasSize = () => {
         var output = document.getElementById('output');
         if (output) {
-            this.showCanvas.width = output.clientWidth;
-            this.showCanvas.height = output.clientHeight;
-            this.bufferCanvas.width = output.clientWidth;
-            this.bufferCanvas.height = output.clientHeight * 2;
-            this.width = this.showCanvas.width;
-            this.height = this.showCanvas.height;
+            this.videoWidth = output.clientWidth;
+            this.videoHeight = output.clientHeight;
+            this.renderer && this.renderer.setSize(this.videoWidth, this.videoHeight);
+
         } else {
-            this.width = 10;
-            this.height = 10;
+            this.videoWidth = 10;
+            this.videoHeight = 10;
         }
-    }
-
-    processFrame = () => {
-        if (this.isPlaying === false) return;
-        this.bufferCtx.drawImage(this.video, 0, 0, this.width, this.height * 2);
-        this.image = this.bufferCtx.getImageData(0, 0, this.width, this.height);
-        this.image.crossOrigin = "Anonymous";
-
-        this.alphaData = this.bufferCtx.getImageData(0, this.height, this.width,
-            this.height).data;
-
-        for (var i = 3, len = this.image.data.length; i < len; i = i + 4) {
-            this.image.data[i] = this.alphaData[i - 1];
-        }
-        this.showCtx.putImageData(this.image, 0, 0, 0, 0, this.width, this.height);
-        requestAnimationFrame(this.processFrame);
     }
 
     onCloseClickListener = (e) => {
@@ -106,18 +154,6 @@ class EffectAlphaVideoPanel extends Component {
         this.video.removeEventListener('ended', this.endPlay);
         window.removeEventListener('resize', this.updateCanvasSize);
         this.video = null;
-        this.bufferCtx = null;
-        this.image = null;
-        this.alphaData = null;
-        this.showCanvas = null;
-        this.showCtx = null;
-        this.bufferCanvas = null;
-        this.bufferCtx = null;
-    }
-
-    getPosition = () => {
-        var tip = document.getElementById(this.props.id);
-
 
     }
 
@@ -139,16 +175,25 @@ class EffectAlphaVideoPanel extends Component {
                     className="video"
                     style={{ display: "none" }}
                     playsInline
+                    x5-video-player-type="h5-page"
                     ref={(mount) => { this.videoNode = mount }}
                 >
                 </video>
                 <div id="output"
                     className="alpha_video_overlay"
                     style={videoStyle}
+                    ref={(mount) => { this.mount = mount }}
                 >
-                    <canvas id="show" ></canvas>
-                    <canvas id="buffer" style={{ display: "none" }}></canvas>
                 </div>
+                {
+                    this.state.is_loading ?
+                        <div className={'loading-cover'}>
+                            <div className={'loading-icon'}>
+                                加载中...
+                            </div>
+                        </div>
+                        : ""
+                }
                 {
                     enableClose ?
                         <div
@@ -161,7 +206,7 @@ class EffectAlphaVideoPanel extends Component {
     }
 }
 
-EffectAlphaVideoPanel.propTypes = {
+NewEffectAlphaVideoPanel.propTypes = {
     videoUrl: PropTypes.string.isRequired,
     enableClose: PropTypes.bool,
     enableMask: PropTypes.bool,
@@ -172,7 +217,7 @@ EffectAlphaVideoPanel.propTypes = {
     onStartPlayHandler: PropTypes.func
 };
 
-EffectAlphaVideoPanel.defaultProps = {
+NewEffectAlphaVideoPanel.defaultProps = {
     enableClose: false,
     position: "right",
     videoMuted: false,
@@ -183,4 +228,4 @@ EffectAlphaVideoPanel.defaultProps = {
 export default connect(
     state => state.player,
     {}
-)(EffectAlphaVideoPanel);
+)(NewEffectAlphaVideoPanel);

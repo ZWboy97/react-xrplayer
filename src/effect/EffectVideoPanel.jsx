@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import '../style/EffectVideoPanel.less';
 import Hls from 'hls.js';
+import { connect } from 'react-redux'
 
 
 class EffectVideoPanel extends Component {
@@ -16,10 +17,9 @@ class EffectVideoPanel extends Component {
     }
 
     componentDidMount() {
-        this.hls = new Hls();
         this.video = this.videoNode;
-        this.video.loop = true;
-        this.video.muted = true;
+        this.video.muted = this.props.muted;
+        this.video.volume = this.props.volume;
         console.log('videoUrl', this.props.videoUrl);
         this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
         const videoUrl = this.props.videoUrl;
@@ -38,6 +38,7 @@ class EffectVideoPanel extends Component {
 
     loadHlsVideo = () => {
         if (Hls.isSupported()) {
+            this.hls = new Hls();
             console.log('hls', 'support');
             this.hls.attachMedia(this.video);
             this.hls.loadSource(this.props.videoUrl);
@@ -59,10 +60,15 @@ class EffectVideoPanel extends Component {
     }
 
     componentWillUnmount() {
-        this.hls.destroy();
+        this.hls && this.hls.destroy();
     }
 
     render() {
+        const { muted, volume } = this.props;
+        if (this.video) {
+            this.video.muted = muted;
+            this.video.volume = volume;
+        }
         return (
             <div className="overlay">
 
@@ -86,5 +92,6 @@ EffectVideoPanel.propTypes = {
     videoUrl: PropTypes.string.isRequired,
 };
 
-export default EffectVideoPanel;
-
+export default connect(
+    state => state.player,
+)(EffectVideoPanel);

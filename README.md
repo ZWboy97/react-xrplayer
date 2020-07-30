@@ -267,6 +267,47 @@ Map格式
 * hot_spot_key
     目标移除热点的key
 
+#### 嵌入式文本框相关
+嵌入式文本框是嵌入到XR场景中的文本框，可以展示文字、图片和视频，默认始终面向相机所在的平行于y轴的直线，可以更改位置、朝向、内容、大小等属性，并且可以通过修改draggable属性使其可拖动。创建后默认设置为不可见，需使用showTextBox方法使其可见。本质是使用canvas作为材质应用到XR场景中的一个平面上。
+##### createTextBox(params)
+使用一组选项创建并返回一个TextBox类，并且添加到场景中，默认不可见。
+* params：Object类型，包含创建时的选项
+    * message：String类型，文本框中的内容。默认为“请输入文字”。
+    * font：String类型，文本框中文字的字体。默认为“Arial”。
+    * fontSize：Number类型，文本框中文字的大小，单位为像素。默认为36。
+    * fontColor：Object类型，文本框中文字的颜色。默认为{ r:255, g:255, b:255, a:1.0 }。
+    * borderDistanceX：Number类型，文本框中文字距边框的左边距，单位为像素。默认为15。
+    * borderDistanceY：Number类型，文本框中文字距边框的上边距，单位为像素。默认为15。
+    * borderThickness：Number类型，文本框的边框粗细，单位为像素。默认为5。
+    * borderWidth：Number类型，文本框的边框宽度，单位为像素。默认为190。
+    * borderHeight：Number类型，文本框的边框高度，单位为像素。默认为60。
+    * borderColor：Object类型，文本框的边框颜色。默认为{ r:100, g:100, b:100, a:0.5 }。
+    * backgroundColor：Object类型，文本框的背景颜色。默认为{ r:100, g:100, b:100, a:0.5 }。
+    * scaleX：Number类型，文本框的横向缩放比例。默认为0.8。
+    * scaleY：Number类型，文本框的纵向缩放比例。默认为0.8。
+    * position：Object类型，文本框在XR场景中的位置。默认为{ x:0, y:0, z:0 }。
+    * canvasWidth：Number类型，创建文本框使用的canvas的宽度，单位为像素。默认为1024。
+    * canvasHeight：Number类型，创建文本框使用的canvas的高度，单位为像素。默认为150。
+    * depthTest：Boolean类型，控制文本框是否可被遮挡。默认为false。
+    * draggable：Boolean类型，控制文本框是否可拖动。默认为false。
+
+##### showTextBox(textBox)
+使传入的textBox可见，若已经可见则不会有任何效果。
+* textBox：TextBox类型，为想要显示的文本框。
+
+##### hideTextBox(textBox)
+使传入的textBox不可见，若已经不可见则不会有任何效果。
+* textBox：TextBox类型，为想要隐藏的文本框。
+
+##### changeTextBox(textBox, params)
+改变特定文本框的属性。
+* textBox：TextBox类型，为想要改变的文本框。
+* params：Objext类型，包含各属性的选项，具体构造同createTextBox的params参数。
+
+##### removeTextBox(textBox)
+从XR场景中移除文本框。注意：该textBox并不会删除，如不再使用请手动置NULL防止内存泄漏。
+* textBox：TextBox类型，为想要移除的文本框。
+
 #### 模型控制相关
 ##### setModels(model_list)
 通过列表一次性设置一组模型加载，先前加载的模型会被清除

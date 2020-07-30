@@ -10,7 +10,7 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import {TextHelper} from "./content_Insert_Helper/TextHelper";
+import TextBoxHelper from "../display/Box_Helper/TextBoxHelper";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
@@ -137,7 +137,7 @@ class XRPlayerManager {
     }
 
     initTextHelper = () => {
-        this.textHelper = new TextHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
+        this.textHelper = new TextBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
     }
 
     animate = (time) => {
@@ -375,6 +375,7 @@ class XRPlayerManager {
 
     /*******************************文本框接口********************************** */
     createTextBox = (params) => {
+        params.cameraPosition = this.getCameraPosition();
         return this.textHelper.createTextBox(params, this.scene);
     }
 

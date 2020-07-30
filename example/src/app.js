@@ -223,8 +223,7 @@ class App extends React.Component {
     onCreateTextBox = () => {
         if (!!!this.TextBox) {
             this.TextBox = this.xrManager.createTextBox({
-                position: { x: 0, y: 0, z: -500 },
-                cameraPosition: this.xrManager.getCameraPosition(),
+                position: { x: 0, y: 0, z: -500 }
             });
             this.TextBoxHidden = false;
         }

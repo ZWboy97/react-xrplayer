@@ -50,7 +50,6 @@
     "fscreen": "^1.0.2",
     "hls.js": "0.13.3-canary.5457",
     "html-webpack-plugin": "4.0.0-beta.11",
-    "html2canvas": "^1.0.0-rc.5",
     "identity-obj-proxy": "3.0.0",
     "jest": "24.9.0",
     "jest-environment-jsdom-fourteen": "1.0.1",

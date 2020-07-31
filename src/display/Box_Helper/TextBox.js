@@ -1,82 +1,84 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
-class TextHelper {
+class TextBox {
     constructor(param) {
-        this.message = "请输入文字";                                 //文字
+        this.message = "请输入文字";                                  //文字
         this.font = "Arial";                                        //字体
         this.fontSize = 36;                                         //字体大小
         this.fontColor = { r:255, g:255, b:255, a:1.0 };            //字体颜色（默认白色不透明）
-        this.borderDistanceX = 36;                                  //左边距
-        this.borderDistanceY = 24;                                  //上边距
-        this.borderThickness = 2;                                   //边框粗细
-        this.borderWidth = 230;                                     //边框宽
-        this.borderHeight = 80;                                     //边框高
+        this.borderDistanceX = 15;                                  //左边距
+        this.borderDistanceY = 15;                                  //上边距
+        this.borderThickness = 5;                                   //边框粗细
+        this.borderWidth = 190;                                     //边框宽
+        this.borderHeight = 60;                                     //边框高
         this.borderColor = { r:100, g:100, b:100, a:0.5 };          //边框颜色（默认灰色半透明）
         this.backgroundColor = { r:100, g:100, b:100, a:0.5 };      //背景颜色（默认灰色半透明）
-        this.scaleX = 1;                                            //文本框缩放比例X
-        this.scaleY = 1;                                            //文本框缩放比例Y
-        this.position = new THREE.Vector3(0,0,0);         //文本框位置
-        this.canvasWidth = 1600;                                    //画布宽度
+        this.scaleX = 0.8;                                          //文本框缩放比例X
+        this.scaleY = 0.8;                                          //文本框缩放比例Y
+        this.position = new THREE.Vector3(0,0,0);          //文本框位置
+        this.cameraPosition = null;                                 //文本框初始朝向
+        this.canvasWidth = 1024;                                    //画布宽度
         this.canvasHeight = 150;                                    //画布高度
         this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
         this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
         this.context = null;                                        //具体的内容对象
-        this.sprite = null;                                         //最终呈现的Sprite
+        this.planeMesh = null;                                      //也可以通过Plane呈现
+        this.draggable = false;                                     //可拖拽改变位置
 
         this.init(param);
         this.createCanvas();
         this.fillMessage();
-        this.createSprite();
+        this.createPlane();
     }
 
     init = (parameters) => {
-        var needNewSprite = false;
+        let needNewPlane = false;
         //文字信息设置
         if (parameters.hasOwnProperty("message")) {
             this.message = parameters.message;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("font")) {
             this.font = parameters.font;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("fontSize")) {
             this.fontSize = parameters.fontSize;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("fontColor")) {
             this.fontColor = parameters.fontColor;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         // 边框设置
         if (parameters.hasOwnProperty("borderDistanceX")) {
             this.borderDistanceX = parameters.borderDistanceX;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderDistanceY")) {
             this.borderDistanceY = parameters.borderDistanceY;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderThickness")) {
             this.borderThickness = parameters.borderThickness;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderWidth")) {
             this.borderWidth = parameters.borderWidth;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderHeight")) {
             this.borderHeight = parameters.borderHeight;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("borderColor")) {
             this.borderColor = parameters.borderColor;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         //画布设置
         if (parameters.hasOwnProperty("backgroundColor")) {
             this.backgroundColor = parameters.backgroundColor;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("scaleX")) {
             this.scaleX = parameters.scaleX;
@@ -87,20 +89,26 @@ class TextHelper {
         if (parameters.hasOwnProperty("position")) {
             this.position = parameters.position;
         }
+        if (parameters.hasOwnProperty("cameraPosition")) {
+            this.cameraPosition = parameters.cameraPosition;
+        }
         if (parameters.hasOwnProperty("canvasWidth")) {
             this.canvasWidth = parameters.canvasWidth;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         if (parameters.hasOwnProperty("canvasHeight")) {
             this.canvasHeight = parameters.canvasHeight;
-            needNewSprite = true;
+            needNewPlane = true;
         }
         //其它设置
         if (parameters.hasOwnProperty("depthTest")) {
             this.depthTest = parameters.depthTest;
-            needNewSprite = true;
+            needNewPlane = true;
         }
-        return needNewSprite;
+        if (parameters.hasOwnProperty("draggable")) {
+            this.draggable = parameters.draggable;
+        }
+        return needNewPlane;
     }
 
     createCanvas = () => {
@@ -110,6 +118,10 @@ class TextHelper {
     }
 
     updateCanvas = () => {
+        const r = 12;//圆角矩形的圆半径
+
+        this.canvasWidth = this.borderWidth + r * 2 + this.borderThickness * 2;
+        this.canvasHeight = this.borderHeight + r * 2 + this.borderThickness * 2;
         this.canvas.width = this.canvasWidth;
         this.canvas.height = this.canvasHeight;
         var context = this.context;
@@ -122,11 +134,9 @@ class TextHelper {
         context.strokeStyle = "rgba(" + this.borderColor.r + "," + this.borderColor.g + ","
             + this.borderColor.b + "," + this.borderColor.a + ")";
         context.lineWidth = this.borderThickness;
-
         //先使用圆角矩形作为文本框，以后有需求可以设计更多文本框样式
 
-        //圆角矩形的圆半径
-        var r = 12;
+
         this.roundRect(0,0,this.borderWidth,this.borderHeight,r);
     }
 
@@ -161,55 +171,59 @@ class TextHelper {
         )
     }
 
-    createSprite = () => {
-        var texture = new THREE.Texture(this.canvas);
+    createPlane = () => {
+        let texture = new THREE.CanvasTexture(this.canvas);
         texture.needsUpdate = true;
-        var spriteMaterial = new THREE.SpriteMaterial({ map: texture} );
-        spriteMaterial.depthTest = this.depthTest;
-        spriteMaterial.needsUpdate = true;
-        spriteMaterial.map.needsUpdate = true;
-        var visible = this.sprite === null ? true : this.sprite.visible;
-        this.sprite = new THREE.Sprite( spriteMaterial );
-        this.sprite.visible = visible;
-        this.updateSprite();
+        let planeMaterial = new THREE.MeshBasicMaterial({map: texture});
+        planeMaterial.depthTest = this.depthTest;
+        planeMaterial.needsUpdate = true;
+        planeMaterial.map.needsUpdate = true;
+        planeMaterial.transparent = true;
+        planeMaterial.opacity = 1;
+        let planeGeometry = new THREE.PlaneGeometry(this.borderWidth, this.borderHeight);
+        let visible = this.planeMesh === null ? true : this.planeMesh.visible;
+        this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        this.planeMesh.visible = visible;
+        this.updatePlane();
     }
 
-    updateSprite = () => {
-        this.sprite.scale.set(this.scaleX * 1000,this.scaleY * 100,1);
-        this.sprite.position.set(this.position.x, this.position.y, this.position.z);
+    updatePlane = () => {
+        this.planeMesh.scale.set(this.scaleX, this.scaleY, 1);
+        this.planeMesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.planeMesh.lookAt(this.cameraPosition.x, this.position.y, this.cameraPosition.z);
     }
 
     setMessage = (params) => {
-        var needNewSprite = this.init(params);
+        var needNewPlane = this.init(params);
         this.updateCanvas();
         this.fillMessage();
-        if (needNewSprite) {
-            this.createSprite();
+        if (needNewPlane) {
+            this.createPlane();
         }
         else {
-            this.updateSprite();
+            this.updatePlane();
         }
     }
 
     addTo = (scene) => {
-        scene.add(this.sprite);
+        scene.add(this.planeMesh);
     }
 
     removeFrom = (scene) => {
-        scene.remove(this.sprite);
+        scene.remove(this.planeMesh);
     }
 
     show = () => {
-        if (this.sprite !== null) {
-            this.sprite.visible = true;
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = true;
         }
     }
 
     hide = () => {
-        if (this.sprite !== null) {
-            this.sprite.visible = false;
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = false;
         }
     }
 }
 
-export default TextHelper;
+export default TextBox;

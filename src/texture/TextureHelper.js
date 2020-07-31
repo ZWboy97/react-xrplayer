@@ -93,7 +93,7 @@ class TextureHelper {
             });
         } else {
             console.log('设备不支持HLS')
-            var source = this.createTag("source", {
+            source = this.createTag("source", {
                 src: resUrl,
                 type: 'application/x-mpegURL'
             }, null);

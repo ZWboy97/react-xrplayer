@@ -56,7 +56,7 @@ class XRPlayer extends Component {
       case 'alpha_video':
         this.effectCallback = callback;
         this.props.enableEffectContainer(true);
-        var tip = document.getElementById(props.data.id);
+        // var tip = document.getElementById(props.data.id);
         let margin = props.data.margin;
         // if (tip && props.data.width === "40vw") { // 只对大屏做调整
         //   console.log('tip', tip, ' top', tip.getBoundingClientRect().top, ' height', tip.clientHeight);

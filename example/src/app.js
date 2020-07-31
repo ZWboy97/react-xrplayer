@@ -4,7 +4,6 @@ import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
-import {color} from "dat.gui";
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -234,8 +233,8 @@ class App extends React.Component {
             message: "景点4",
             borderWidth: 110,
             position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
-            backgroundColor: {r:255, g:176, b:79, a:0.7},
-            borderColor: {r:245, g:128, b:0, a:0.9},
+            backgroundColor: { r: 255, g: 176, b: 79, a: 0.7 },
+            borderColor: { r: 245, g: 128, b: 0, a: 0.9 },
             draggable: true,
         });
     }

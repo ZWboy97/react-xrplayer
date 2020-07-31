@@ -4,6 +4,7 @@ import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
+import {color} from "dat.gui";
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -77,7 +78,7 @@ class App extends React.Component {
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(-50, 50);
-        this.xrManager.enableChangeFov(false);
+        this.xrManager.enableChangeFov(true);
         this.xrManager.setParticleEffectRes({
             url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
             ,
@@ -230,8 +231,12 @@ class App extends React.Component {
 
     onChangeTextBox = () => {
         this.xrManager.changeTextBox(this.TextBox, {
-            message: "Text has changed. 想要输入更长的句子,请同时修改canvasWidth和scaleX，否则会发生这种情况",
-            borderWidth: 1650,
+            message: "景点4",
+            borderWidth: 110,
+            position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
+            backgroundColor: {r:255, g:176, b:79, a:0.7},
+            borderColor: {r:245, g:128, b:0, a:0.9},
+            draggable: true,
         });
     }
 

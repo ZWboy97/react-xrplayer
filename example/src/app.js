@@ -230,6 +230,23 @@ class App extends React.Component {
     }
 
     onChangeTextBox = () => {
+        // 以下代码用于测试输入canvas作为文本框的内容，测试时需同时把inputCanvas: canvas取消注释。目前存在问题：使用服务器图片导致跨域，材质无法加载变成黑皮
+        // let img = document.createElement("img");
+        // img.src = "https://www.tutorialrepublic.com//examples/images/balloons.jpg";
+        // img.alt = "image";
+        // let canvas = document.createElement("canvas");
+        // canvas.width = 500;
+        // canvas.height = 500;
+        // let context = canvas.getContext('2d');
+        // context.drawImage(img, 0, 0);
+        // document.body.appendChild(canvas);
+
+        // 以下代码用于测试输入Video作为文本框的内容，测试时需同时把inputVideo: video取消注释。同样存在跨域问题
+        let video = document.createElement("video");
+        video.src = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
+        video.autoplay = 'autoplay';
+        document.body.appendChild(video);
+
         this.xrManager.changeTextBox(this.TextBox, {
             message: "景点4",
             borderWidth: 110,
@@ -237,6 +254,8 @@ class App extends React.Component {
             backgroundColor: {r:255, g:176, b:79, a:0.7},
             borderColor: {r:245, g:128, b:0, a:0.9},
             draggable: true,
+            // inputCanvas: canvas
+            inputVideo: video
         });
     }
 

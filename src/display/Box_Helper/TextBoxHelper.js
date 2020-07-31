@@ -57,6 +57,8 @@ class TextBoxHelper {
                 this.dragBoxes.delete(textBox.planeMesh);
             }
         }
+
+        // console.log(textBox.canvas);
     }
 
     //使用remove后记得将TextBox设为null，防止内存泄漏

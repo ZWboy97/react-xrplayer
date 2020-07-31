@@ -14,6 +14,7 @@ class SpriteShapeHelper {
         this.container = container;
         this.hotSpotMap = null;     // 热点标签数据
         this.hotSpotMeshMap = null; // 热点标签Mesh Map，便于动态缩减
+        this.hotSpotLabelMap = null;    //热点标签Label Map，同上
         this.pointGroup = null;     // 场景中的热点组合
 
         this.objectClickHandler = null;
@@ -46,6 +47,7 @@ class SpriteShapeHelper {
             this.pointGroup = new THREE.Group();
             this.scene.add(this.pointGroup);
             this.hotSpotMeshMap = new Map();
+            this.hotSpotLabelMap = new Map();
             this.bindEvent();
         }
     }
@@ -78,10 +80,16 @@ class SpriteShapeHelper {
         if (mesh) {
             this.pointGroup.remove(mesh);
         }
+        const label = this.hotSpotLabelMap.get(hot_spot_key);
+        if (label) {
+            this.pointGroup.remove(label);
+        }
+        /*废弃方案
         var tip = document.getElementById(hot_spot_key);
         if (tip) {
             this.container.removeChild(tip);
         }
+        */
     }
 
     contertSph2Rect = (lat, lon) => {
@@ -109,9 +117,17 @@ class SpriteShapeHelper {
         mesh.meshType = 'markIcon';
         this.hotSpotMeshMap.set(key, mesh);
         this.pointGroup.add(mesh);
+
+        // let label = this.createLabelMesh(value);
+        // label.name = key;
+        // label.position.set()
+        // this.hotSpotLabelMap.set(key, label);
+        // this.pointGroup.add(label);
+
         if (animate) {
             this.animatePoint(mesh);
         }
+
         if (img_url || title) {
             var div = document.createElement("div");
             div.id = key;
@@ -153,6 +169,10 @@ class SpriteShapeHelper {
         let mesh = new THREE.Sprite(material);
         mesh.scale.set(scale * 2, scale * 2, 1);
         return mesh;
+    }
+
+    createLabelMesh = (value) => {
+
     }
 
     markTitleInViews = () => {
@@ -280,8 +300,8 @@ class SpriteShapeHelper {
         // mouse为鼠标的二维设备坐标，camera为射线起点处的相机
         raycaster.setFromCamera(mouse, this.camera);
         // 射线与模型的交点，这里交点会是多个，因为射线是穿过模型的，
-        //与模型的所有mesh都会有交点，但我们选取第一个，也就是intersects[0]。
-        const meshArray = Array.from(this.hotSpotMeshMap.values());
+        //与模型的所有mesh和label都会有交点，但我们选取第一个，也就是intersects[0]。
+        const meshArray = Array.from(this.hotSpotMeshMap.values()).concat(Array.from(this.hotSpotLabelMap.values()));
         return raycaster.intersectObjects(meshArray);
     }
 
@@ -290,7 +310,8 @@ class SpriteShapeHelper {
     }
 
     bindEvent = () => {
-        document.addEventListener('click', (event) => {
+        const container = document.getElementById('xr-container')
+        container.addEventListener('click', (event) => {
             event.preventDefault();
             console.log('检测热点点击');
             var intersects = this.getIntersects(event);
@@ -302,7 +323,7 @@ class SpriteShapeHelper {
                 }
             }
         }, true);
-        document.addEventListener('mousemove', (event) => {
+        container.addEventListener('mousemove', (event) => {
             event.preventDefault();
             var intersects = this.getIntersects(event);
             //如果只需要将第一个触发事件，那就取数组的第一个模型

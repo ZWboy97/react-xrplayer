@@ -68,6 +68,7 @@ class App extends React.Component {
                 type: 'control',
             }]
         ]
+        this.autoDisplayList = [];
     }
 
     onXRCreated = (manager) => {
@@ -76,7 +77,7 @@ class App extends React.Component {
         this.xrManager.toNormalView(5000, 1000);
         this.xrManager.setModels(this.model_list);
         this.xrManager.connectCameraControl();
-        this.xrManager.setFovVerticalScope(-50, 50);
+        //this.xrManager.setFovVerticalScope(-50, 50);
         this.xrManager.enableChangeFov(true);
         this.xrManager.setParticleEffectRes({
             url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
@@ -94,20 +95,22 @@ class App extends React.Component {
 
         let animateList = [
             {
-                pos0: { lat: 0, lon: 180, fov: 80, distance: 450 }, pos1: { lat: 0, lon: 0, fov: 80, distance: 100 },
+                pos0: { lat: 0, lon: 180, fov: 80, distance: 450 },
+                pos1: { lat: 0, lon: 0, fov: 80, distance: 100 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             },
             {
-                pos0: { lat: 0, lon: 0, fov: 80 }, pos1: { lat: 0, lon: -180, fov: 80 },
+                pos0: { lat: 0, lon: 0, fov: 80 },
+                pos1: { lat: 0, lon: -180, fov: 80 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             }
         ]
         var cameraTweenGroup = this.xrManager.createCameraTweenGroup(animateList, true);
         //cameraTweenGroup.enableAutoNext(true);
         this.xrManager.setCameraTweenGroup(cameraTweenGroup);
-        this.xrManager.onCameraAnimationEnded = (index) => {
-            cameraTweenGroup.next();
-        }
+        // this.xrManager.onCameraAnimationEnded = (index) => {
+        //     cameraTweenGroup.next();
+        // }
     }
 
     onEventHandler = (name, props) => {
@@ -255,6 +258,28 @@ class App extends React.Component {
         this.TextBox = null;
     }
 
+    onPickDirector = () => {
+        let pos = this.xrManager.getCameraLatLon();
+        let fov = this.xrManager.getCameraFov();
+        let startLat = 0, startLon = 180;
+        if (this.autoDisplayList.length != 0) {
+            startLat = this.autoDisplayList[this.autoDisplayList.length - 1].pos1.lat;
+            startLon = this.autoDisplayList[this.autoDisplayList.length - 1].pos1.lon;
+        }
+        this.autoDisplayList.push({
+            pos0: { lat: startLat, lon: startLon, fov: 80, distance: 450 },
+            pos1: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 450 },
+            duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
+        })
+    }
+
+    onStartAutoDisplay = () => {
+        var cameraTweenGroup = this.xrManager.createCameraTweenGroup(this.autoDisplayList, true);
+        this.xrManager.setCameraTweenGroup(cameraTweenGroup);
+        cameraTweenGroup.enableAutoNext(true);
+        this.xrManager.startCameraTweenGroup();
+    }
+
 
     render() {
         return (
@@ -269,8 +294,9 @@ class App extends React.Component {
                     }}
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
-                        type: 'hls',
-                        res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
+                        type: 'image',
+                        res_url: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+                        //res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
                         panoramic_type: "360",
                         radius: 500
                     }}
@@ -310,6 +336,8 @@ class App extends React.Component {
                     <button onClick={() => { this.xrManager.playCameraTweenGroup(); }}>播放</button>
                     <button onClick={() => { this.xrManager.pauseCameraTweenGroup() }}>暂停</button>
                     <button onClick={() => { this.xrManager.stopCameraTweenGroup(); }}>停止</button>
+                    <button onClick={this.onPickDirector}>拾取导览点</button>
+                    <button onClick={this.onStartAutoDisplay}>开始自动导览</button>
                 </div>
             </div >
         )

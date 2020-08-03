@@ -27,19 +27,20 @@ class App extends React.Component {
 
         this.hot_spot_list = [
             ['infocard', {
-                title: '林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。', phi: -90, theta: -10, animate: true,
+                title: '林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。'
+                , lat: -90, lon: -10, animate: true,
                 res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
                 img_url: 'https://bkimg.cdn.bcebos.com/pic/bba1cd11728b471065ce20afc0cec3fdfd0323f4?x-bce-process=image/watermark,g_7,image_d2F0ZXIvYmFpa2U4MA==,xp_5,yp_5',
                 img_height: 100, img_width: 150, title_width: 300
             }],
             ['image', {
-                title: "景点二", phi: -153, theta: -44,
+                title: "景点二", lat: -153, lon: -44,
                 res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
                 img_url: 'https://www.tutorialrepublic.com//examples/images/sky.jpg',
                 img_height: 100, img_width: 100
             }],
             ['video', {
-                title: "景点三", phi: 32, theta: 14,
+                title: "景点三", lon: 32, lat: 14,
                 res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
                 img_url: 'https://www.tutorialrepublic.com//examples/images/balloons.jpg',
                 img_height: 100, img_width: 100
@@ -95,7 +96,7 @@ class App extends React.Component {
 
         let animateList = [
             {
-                pos0: { lat: 0, lon: 180, fov: 80, distance: 450 },
+                pos0: { lat: 0, lon: 180, fov: 80, distance: 100 },
                 pos1: { lat: 0, lon: 0, fov: 80, distance: 100 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             },
@@ -128,7 +129,7 @@ class App extends React.Component {
         this.xrManager.addHotSpot({
             key: `infocard`,
             value: {
-                phi: - 90, theta: -10,
+                lat: - 90, lon: -10,
                 res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png'
             }
         }, {
@@ -262,13 +263,13 @@ class App extends React.Component {
         let pos = this.xrManager.getCameraLatLon();
         let fov = this.xrManager.getCameraFov();
         let startLat = 0, startLon = 180;
-        if (this.autoDisplayList.length != 0) {
+        if (this.autoDisplayList.length !== 0) {
             startLat = this.autoDisplayList[this.autoDisplayList.length - 1].pos1.lat;
             startLon = this.autoDisplayList[this.autoDisplayList.length - 1].pos1.lon;
         }
         this.autoDisplayList.push({
-            pos0: { lat: startLat, lon: startLon, fov: 80, distance: 450 },
-            pos1: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 450 },
+            pos0: { lat: startLat, lon: startLon, fov: 80, distance: 100 },
+            pos1: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 100 },
             duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
         })
     }
@@ -294,9 +295,9 @@ class App extends React.Component {
                     }}
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
-                        type: 'image',
-                        res_url: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                        //res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
+                        type: 'hls',
+                        //res_url: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+                        res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
                         panoramic_type: "360",
                         radius: 500
                     }}

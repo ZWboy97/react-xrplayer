@@ -67,7 +67,6 @@ class XRPlayer extends Component {
         // }
         const data = { ...props.data, margin: margin }
         this.props.setEffectData(data);
-        this.xrManager.setIsTipVisible(false);
         break;
       case 'close_effect_container':
         this.onCloseEffectContainer();

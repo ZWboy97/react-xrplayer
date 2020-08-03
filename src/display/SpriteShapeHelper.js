@@ -171,10 +171,6 @@ class SpriteShapeHelper {
         return mesh;
     }
 
-    createLabelMesh = (value) => {
-
-    }
-
     markTitleInViews = () => {
         var camera = this.camera;
         for (var i = 0; i < this.pointGroup.children.length; i++) {

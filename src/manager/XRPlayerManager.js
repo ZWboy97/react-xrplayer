@@ -348,6 +348,19 @@ class XRPlayerManager {
     setCameraPosition = (x, y, z) => {
         this.innerViewControls.setCameraPosition(x, y, z);
     }
+    getCameraLatLon = () => {
+        const position = this.getCameraPosition();
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        var phi = spherical.phi;
+        var theta = spherical.theta;
+        var lon = 90 - THREE.Math.radToDeg(theta);
+        var lat = 90 - THREE.Math.radToDeg(phi);
+        return {
+            lat: lat,
+            lon: lon
+        }
+    }
 
     // 相机当前fov接口
     setCameraFov = (fov) => {

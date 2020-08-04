@@ -420,6 +420,26 @@ class XRPlayerManager {
     }
 
     /*******************************文本框接口********************************** */
+    simpleCreateTextBox = () => { //在相机聚焦位置创建一个初始文本框
+        var params = {};
+        params.cameraPosition = this.getCameraPosition();
+        params.position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        return this.textHelper.createTextBox(params, this.scene);
+    }
+
+    changeText = (textBox, message) => {    //改变文本框的内容
+        var params = {};
+        params.message = message;
+        this.textHelper.changeTextBox(textBox, params, this.scene);
+    }
+
+    changeBoxSize = (textBox, width, height) => {    //改变文本框的宽高
+        var params = {};
+        params.borderWidth = width;
+        params.borderHeight = height;
+        this.textHelper.changeTextBox(textBox, params, this.scene);
+    }
+
     createTextBox = (params) => {
         params.cameraPosition = this.getCameraPosition();
         return this.textHelper.createTextBox(params, this.scene);

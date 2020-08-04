@@ -126,7 +126,6 @@ class TextBox {
         this.canvas.height = this.canvasHeight;
         var context = this.context;
         context.clearRect(0,0,this.canvas.width,this.canvas.height);
-        context.font = "Bold " + this.fontSize + "px " + this.font;
         // 背景颜色
         context.fillStyle   = "rgba(" + this.backgroundColor.r + "," + this.backgroundColor.g + ","
             + this.backgroundColor.b + "," + this.backgroundColor.a + ")";
@@ -160,15 +159,28 @@ class TextBox {
     }
 
     fillMessage = () => {
+        this.context.font = "Bold " + this.fontSize + "px " + this.font;
         this.context.fillStyle = "rgba(" + this.fontColor.r + "," + this.fontColor.g + ","
             + this.fontColor.b + "," + this.fontColor.a + ")";
-        /*this.context.fillText( this.message,
-            this.borderThickness / 2 + this.borderDistanceX * this.fontSize,
-            this.borderThickness / 2 + this.borderDistanceY * this.fontSize + this.fontSize);*/
-        this.context.fillText( this.message,
-            this.borderDistanceX,
-            this.borderDistanceY + this.fontSize
-        )
+
+        //根据边距自动换行
+        let lineWidth = this.borderDistanceX * 2;
+        let canvasWidth = this.canvas.width;    //计算canvas的宽度
+        let deltaHeight = this.fontSize + 2 + this.borderDistanceY; //当前行距边框顶部的距离
+        let lastSubStrIndex= 0; //每次开始截取的字符串的索引
+        for(let i = 0; i < this.message.length; i++) {
+            let dLength = this.context.measureText(this.message[i]).width;
+            lineWidth += dLength;
+            if (lineWidth > canvasWidth) {
+                this.context.fillText(this.message.substring(lastSubStrIndex, i), this.borderDistanceX, deltaHeight);//绘制截取部分
+                deltaHeight += this.fontSize + 2;//20为字体的高度
+                lineWidth = this.borderDistanceX * 2 + dLength;
+                lastSubStrIndex = i;
+            }
+            if (i === this.message.length - 1) {//绘制剩余部分
+                this.context.fillText(this.message.substring(lastSubStrIndex, i + 1), this.borderDistanceX, deltaHeight);
+            }
+        }
     }
 
     createPlane = () => {

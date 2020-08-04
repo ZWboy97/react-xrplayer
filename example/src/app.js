@@ -234,8 +234,9 @@ class App extends React.Component {
 
     onChangeTextBox = () => {
         this.xrManager.changeTextBox(this.TextBox, {
-            message: "景点4",
-            borderWidth: 110,
+            message: "林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。",
+            borderWidth: 500,
+            borderHeight: 350,
             position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
             backgroundColor: { r: 255, g: 176, b: 79, a: 0.7 },
             borderColor: { r: 245, g: 128, b: 0, a: 0.9 },
@@ -257,6 +258,16 @@ class App extends React.Component {
     onRemoveTextBox = () => {
         this.xrManager.removeTextBox(this.TextBox);
         this.TextBox = null;
+    }
+
+    onSimpleCreateTextBox = () => {
+        this.simpleTextBox = this.xrManager.simpleCreateTextBox();
+    }
+
+    onSimpleChangeTextBox = () => {
+        if (!!!this.simpleTextBox) return;
+        this.xrManager.changeText(this.simpleTextBox, "评论1：abcd");
+        this.xrManager.changeBoxSize(this.simpleTextBox, 230, 60);
     }
 
     onPickDirector = () => {
@@ -328,6 +339,8 @@ class App extends React.Component {
                     <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                     <button onClick={this.onChangeTextBox}>修改文本框</button>
                     <button onClick={this.onRemoveTextBox}>移除文本框</button>
+                    <button onClick={this.onSimpleCreateTextBox}>在相机注视位置创建文本框</button>
+                    <button onClick={this.onSimpleChangeTextBox}>修改文本框内容</button>
                     <button onClick={() => { this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio(); }}>播放/暂停音频</button>
                     <button onClick={() => { this.xrManager.getAudioVolume() === 1 ? this.xrManager.setAudioVolume(0.5) : this.xrManager.setAudioVolume(1); }}>减小音量/复原</button>
                     <button onClick={() => { this.xrManager.getAudioMuted() ? this.xrManager.setAudioMuted(false) : this.xrManager.setAudioMuted(true); }}>静音/复原</button>

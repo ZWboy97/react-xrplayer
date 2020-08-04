@@ -21,6 +21,8 @@ class TextBox {
         this.canvasHeight = 150;                                    //画布高度
         this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
         this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
+        this.inputCanvas = null;                                    //用户输入的canvas
+        this.inputVideo = null;                                     //用户输入的HTML Video元素
         this.context = null;                                        //具体的内容对象
         this.planeMesh = null;                                      //也可以通过Plane呈现
         this.draggable = false;                                     //可拖拽改变位置
@@ -92,12 +94,13 @@ class TextBox {
         if (parameters.hasOwnProperty("cameraPosition")) {
             this.cameraPosition = parameters.cameraPosition;
         }
-        if (parameters.hasOwnProperty("canvasWidth")) {
-            this.canvasWidth = parameters.canvasWidth;
+        if (parameters.hasOwnProperty("inputCanvas")) {
+            this.inputCanvas = parameters.inputCanvas;
+            this.canvas = this.inputCanvas;
             needNewPlane = true;
         }
-        if (parameters.hasOwnProperty("canvasHeight")) {
-            this.canvasHeight = parameters.canvasHeight;
+        if (parameters.hasOwnProperty("inputVideo")) {
+            this.inputVideo = parameters.inputVideo;
             needNewPlane = true;
         }
         //其它设置
@@ -112,12 +115,17 @@ class TextBox {
     }
 
     createCanvas = () => {
-        this.canvas = document.createElement('canvas');
-        this.context = this.canvas.getContext('2d');
-        this.updateCanvas();
+        if (this.inputCanvas === null && this.inputVideo === null) {
+            this.canvas = document.createElement('canvas');
+            this.context = this.canvas.getContext('2d');
+            this.updateCanvas();
+        }
     }
 
     updateCanvas = () => {
+        if (this.inputCanvas !== null || this.inputVideo !== null) {
+            return;
+        }
         const r = 12;//圆角矩形的圆半径
 
         this.canvasWidth = this.borderWidth + r * 2 + this.borderThickness * 2;
@@ -159,6 +167,9 @@ class TextBox {
     }
 
     fillMessage = () => {
+        if (this.inputCanvas !== null || this.inputVideo !== null) {
+            return;
+        }
         this.context.font = "Bold " + this.fontSize + "px " + this.font;
         this.context.fillStyle = "rgba(" + this.fontColor.r + "," + this.fontColor.g + ","
             + this.fontColor.b + "," + this.fontColor.a + ")";
@@ -184,8 +195,17 @@ class TextBox {
     }
 
     createPlane = () => {
-        let texture = new THREE.CanvasTexture(this.canvas);
-        texture.needsUpdate = true;
+        let texture = null;
+        if (this.inputVideo !== null) {
+            texture = new THREE.VideoTexture(this.inputVideo);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.format = THREE.RGBFormat;
+        }
+        else {
+            texture = new THREE.Texture(this.canvas);
+            texture.needsUpdate = true;
+        }
         let planeMaterial = new THREE.MeshBasicMaterial({map: texture});
         planeMaterial.depthTest = this.depthTest;
         planeMaterial.needsUpdate = true;
@@ -197,6 +217,7 @@ class TextBox {
         this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
         this.planeMesh.visible = visible;
         this.updatePlane();
+
     }
 
     updatePlane = () => {

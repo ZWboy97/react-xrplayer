@@ -292,10 +292,10 @@ Map格式
     * scaleX：Number类型，文本框的横向缩放比例。默认为0.8。
     * scaleY：Number类型，文本框的纵向缩放比例。默认为0.8。
     * position：Object类型，文本框在XR场景中的位置。默认为{ x:0, y:0, z:0 }。
-    * canvasWidth：Number类型，创建文本框使用的canvas的宽度，单位为像素。默认为1024。
-    * canvasHeight：Number类型，创建文本框使用的canvas的高度，单位为像素。默认为150。
     * depthTest：Boolean类型，控制文本框是否可被遮挡。默认为false。
     * draggable：Boolean类型，控制文本框是否可拖动。默认为false。
+    * inputCanvas：Object类型，HTML DOM中的canvas元素，可以让文本框只显示输入canvas上的内容。默认为null。注意：如果文本框已经使用了输入的canvas，想要取消的话需置此项为null。
+        * 注意：使用给定canvas将会导致从message到backgroundColor的所有属性无效，但是仍会保存在TextBox中，可以通过取消给定canvas恢复。
 
 ##### showTextBox(textBox)
 使传入的textBox可见，若已经可见则不会有任何效果。

@@ -67,7 +67,6 @@ class TextBoxHelper {
         if (!!!textBox) return;
         textBox.removeFrom(scene);
         this.textBoxes.delete(textBox);
-        textBox.video = null;
         textBox.kill();
         textBox = null;
     }

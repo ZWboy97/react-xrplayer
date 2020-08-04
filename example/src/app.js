@@ -245,10 +245,7 @@ class App extends React.Component {
         // document.body.appendChild(canvas);
 
         // 以下代码用于测试输入Video作为文本框的内容，测试时需同时把inputVideo: video取消注释。同样存在跨域问题
-        let video = document.createElement("video");
-        video.src = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
-        video.autoplay = 'autoplay';
-        document.body.appendChild(video);
+        let video = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
 
         this.xrManager.changeTextBox(this.TextBox, {
             message: "林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。",
@@ -285,8 +282,8 @@ class App extends React.Component {
 
     onSimpleChangeTextBox = () => {
         if (!!!this.simpleTextBox) return;
-        this.xrManager.changeText(this.simpleTextBox, "评论1：abcd");
-        this.xrManager.changeBoxSize(this.simpleTextBox, 230, 60);
+        this.xrManager.setTextBoxText(this.simpleTextBox, "评论1：abcd");
+        this.xrManager.setTextBoxSize(this.simpleTextBox, 230, 60);
     }
 
     onPickDirector = () => {

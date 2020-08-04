@@ -427,13 +427,13 @@ class XRPlayerManager {
         return this.textHelper.createTextBox(params, this.scene);
     }
 
-    changeText = (textBox, message) => {    //改变文本框的内容
+    setTextBoxText = (textBox, message) => {    //改变文本框的内容
         var params = {};
         params.message = message;
         this.textHelper.changeTextBox(textBox, params, this.scene);
     }
 
-    changeBoxSize = (textBox, width, height) => {    //改变文本框的宽高
+    setTextBoxSize = (textBox, width, height) => {    //改变文本框的宽高
         var params = {};
         params.borderWidth = width;
         params.borderHeight = height;
@@ -460,6 +460,18 @@ class XRPlayerManager {
     //使用remove后记得将TextBox设为null，防止内存泄漏
     removeTextBox = (textBox) => {
         this.textHelper.removeTextBox(textBox, this.scene);
+    }
+
+    textBoxPlayVideo = (textBox) => {
+        this.textHelper.playVideo(textBox);
+    }
+
+    textBoxPauseVideo = (textBox) => {
+        this.textHelper.pauseVideo(textBox);
+    }
+
+    setTextBoxVideoVolume = (textBox, volume) => {
+        this.textHelper.setVideoVolume(textBox, volume);
     }
 
     addIcon = (img, position, name, title, width, height) => {

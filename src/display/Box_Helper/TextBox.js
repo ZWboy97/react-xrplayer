@@ -22,10 +22,11 @@ class TextBox {
         this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
         this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
         this.inputCanvas = null;                                    //用户输入的canvas
-        this.inputVideo = null;                                     //用户输入的HTML Video元素
+        this.inputVideo = null;                                     //用户输入的video的地址
         this.context = null;                                        //具体的内容对象
         this.planeMesh = null;                                      //也可以通过Plane呈现
         this.draggable = false;                                     //可拖拽改变位置
+        this.videoElement = null;                                   //HTML Video元素
 
         this.init(param);
         this.createCanvas();
@@ -197,7 +198,10 @@ class TextBox {
     createPlane = () => {
         let texture = null;
         if (this.inputVideo !== null) {
-            texture = new THREE.VideoTexture(this.inputVideo);
+            this.videoElement = document.createElement("video");
+            this.videoElement.src = this.inputVideo;
+            this.videoElement.autoplay = 'autoplay';
+            texture = new THREE.VideoTexture(this.videoElement);
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
             texture.format = THREE.RGBFormat;
@@ -255,6 +259,12 @@ class TextBox {
     hide = () => {
         if (this.planeMesh !== null) {
             this.planeMesh.visible = false;
+        }
+    }
+
+    kill = () => {
+        if (this.videoElement !== null) {
+            this.videoElement.setAttribute("src","");
         }
     }
 }

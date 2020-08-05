@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import TextBox from './TextBox';
+import EmbeddedResourceBox from './EmbeddedResourceBox';
 
-class TextBoxHelper {
+class ResourceBoxHelper {
     constructor(camera, renderer, sceneMesh, cameraControl) {
         this.camera = camera;
         this.renderer = renderer;
         this.cameraControl = cameraControl;
-        this.textBoxes = new Set();
+        this.textBoxes = new Map();
 
         //拖拽标签控件
         this.dragBoxes = new Set();
@@ -17,35 +17,37 @@ class TextBoxHelper {
         this.initControlsListener();
     }
 
-    createTextBox = (params, scene) => {
-        let textBox = new TextBox(params)
+    createTextBox = (boxId, params, scene) => {
+        if (this.textBoxes.has(boxId)) return 1;    //Id重复
+        let textBox = new EmbeddedResourceBox(params);
         textBox.addTo(scene);
-        this.textBoxes.add(textBox.planeMesh);
+        this.textBoxes.set(boxId, textBox);
         if (params.hasOwnProperty("draggable") && params.draggable === true) {
             this.dragBoxes.add(textBox.planeMesh);
         }
-        return textBox;
+        return 0;
     }
 
-    showTextBox = (textBox) => {
+    showTextBox = (boxId) => {
+        let textBox = this.textBoxes.get(boxId);
         if (!!!textBox) return;
         textBox.show();
     }
 
-    hideTextBox = (textBox) => {
+    hideTextBox = (boxId) => {
+        let textBox = this.textBoxes.get(boxId);
         if (!!!textBox) return;
         textBox.hide();
     }
 
-    changeTextBox = (textBox, params, scene) => {
+    changeTextBox = (boxId, params, scene) => {
+        let textBox = this.textBoxes.get(boxId);
         if (!!!textBox) return;
         const draggable = textBox.draggable;
         textBox.removeFrom(scene);
-        this.textBoxes.delete(textBox.planeMesh);
         this.dragBoxes.delete(textBox.planeMesh);
         textBox.setMessage(params);
         textBox.addTo(scene);
-        this.textBoxes.add(textBox.planeMesh);
         if (textBox.draggable) {
             this.dragBoxes.add(textBox.planeMesh);
         }
@@ -59,17 +61,34 @@ class TextBoxHelper {
         }
     }
 
-    //使用remove后记得将TextBox设为null，防止内存泄漏
-    removeTextBox = (textBox, scene) => {
-        if (textBox === undefined) return;
+    removeTextBox = (boxId, scene) => {
+        let textBox = this.textBoxes.get(boxId);
+        if (!!!textBox) return;
         textBox.removeFrom(scene);
-        this.textBoxes.delete(textBox);
+        this.textBoxes.delete(boxId);
+        textBox.kill();
+        textBox = null;
+    }
+
+    playVideo = (boxId) => {
+        let textBox = this.textBoxes.get(boxId);
+        textBox.videoElement && textBox.videoElement.play();
+    }
+
+    pauseVideo = (boxId) => {
+        let textBox = this.textBoxes.get(boxId);
+        textBox.videoElement && textBox.videoElement.pause();
+    }
+
+    setVideoVolume = (boxId, volume) => {
+        let textBox = this.textBoxes.get(boxId);
+        textBox.videoElement && (textBox.videoElement.volume = volume);
     }
 
     update = () => {
         const x = this.camera.position.x, z = this.camera.position.z;
-        this.textBoxes.forEach(planeMesh => {
-            planeMesh.lookAt(x, planeMesh.position.y, z);
+        this.textBoxes.forEach(textBox => {
+            textBox.planeMesh.lookAt(x, textBox.planeMesh.position.y, z);
         })
     }
 
@@ -160,4 +179,4 @@ class TextBoxHelper {
     }
 }
 
-export default TextBoxHelper;
+export default ResourceBoxHelper;

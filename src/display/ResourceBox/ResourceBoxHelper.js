@@ -1,13 +1,12 @@
 import * as THREE from 'three';
-import TextBox from './TextBox';
+import EmbeddedResourceBox from './EmbeddedResourceBox';
 
-class TextBoxHelper {
+class ResourceBoxHelper {
     constructor(camera, renderer, sceneMesh, cameraControl) {
         this.camera = camera;
         this.renderer = renderer;
         this.cameraControl = cameraControl;
         this.textBoxes = new Map();
-        this.boxId = 0;
 
         //拖拽标签控件
         this.dragBoxes = new Set();
@@ -18,15 +17,15 @@ class TextBoxHelper {
         this.initControlsListener();
     }
 
-    createTextBox = (params, scene) => {
-        let textBox = new TextBox(params);
+    createTextBox = (boxId, params, scene) => {
+        if (this.textBoxes.has(boxId)) return 1;    //Id重复
+        let textBox = new EmbeddedResourceBox(params);
         textBox.addTo(scene);
-        this.boxId++;
-        this.textBoxes.set(this.boxId, textBox);
+        this.textBoxes.set(boxId, textBox);
         if (params.hasOwnProperty("draggable") && params.draggable === true) {
             this.dragBoxes.add(textBox.planeMesh);
         }
-        return this.boxId;
+        return 0;
     }
 
     showTextBox = (boxId) => {
@@ -66,7 +65,7 @@ class TextBoxHelper {
         let textBox = this.textBoxes.get(boxId);
         if (!!!textBox) return;
         textBox.removeFrom(scene);
-        this.textBoxes.delete(textBox);
+        this.textBoxes.delete(boxId);
         textBox.kill();
         textBox = null;
     }
@@ -180,4 +179,4 @@ class TextBoxHelper {
     }
 }
 
-export default TextBoxHelper;
+export default ResourceBoxHelper;

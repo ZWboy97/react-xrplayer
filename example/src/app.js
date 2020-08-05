@@ -225,7 +225,8 @@ class App extends React.Component {
 
     onCreateTextBox = () => {
         if (!!!this.TextBox) {
-            this.TextBox = this.xrManager.createTextBox({
+            this.EmbeddedResourceBox = 1 ;
+            this.xrManager.createTextBox('textBox1', {
                 position: { x: 0, y: 0, z: -500 }
             });
             this.TextBoxHidden = false;
@@ -247,43 +248,58 @@ class App extends React.Component {
         // 以下代码用于测试输入Video作为文本框的内容，测试时需同时把inputVideo: video取消注释。同样存在跨域问题
         let video = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
 
-        this.xrManager.changeTextBox(this.TextBox, {
-            message: "林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。",
-            borderWidth: 500,
-            borderHeight: 350,
-            position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
-            backgroundColor: { r: 255, g: 176, b: 79, a: 0.7 },
-            borderColor: { r: 245, g: 128, b: 0, a: 0.9 },
-            draggable: true,
-            // inputCanvas: canvas
-            inputVideo: video
-        });
+        if (!!!this.textBoxParams) {    //多次点击修改可测试不同情况下的文本框
+            this.textBoxParams = [
+                {
+                    message: "林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。",
+                    position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
+                    backgroundColor: { r: 255, g: 176, b: 79, a: 0.7 },
+                    borderColor: { r: 245, g: 128, b: 0, a: 0.9 },
+                    borderWidth: 500,
+                    widthAdaptation: false,
+                    draggable: true,
+                },
+                {
+                    message: "景点4",
+                    position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
+                    draggable: true,
+                    widthAdaptation: true,
+                    // inputCanvas: canvas
+                },
+                {
+                    message: "景点ABCDEFG",
+                    widthAdaptation: true,
+                    // inputVideoURL: video
+                }
+            ];
+            this.textBoxParamsCount = -1;
+        }
+        this.textBoxParamsCount = (this.textBoxParamsCount+1)%3;
+        this.xrManager.changeTextBox('textBox1', this.textBoxParams[this.textBoxParamsCount]);
     }
 
     onShowTextBox = () => {
         if (this.TextBoxHidden) {
-            this.xrManager.showTextBox(this.TextBox);
+            this.xrManager.showTextBox('textBox1');
             this.TextBoxHidden = false;
         }
         else {
-            this.xrManager.hideTextBox(this.TextBox);
+            this.xrManager.hideTextBox('textBox1');
             this.TextBoxHidden = true;
         }
     }
 
     onRemoveTextBox = () => {
-        this.xrManager.removeTextBox(this.TextBox);
-        this.TextBox = null;
+        this.xrManager.removeTextBox('textBox1');
     }
 
     onSimpleCreateTextBox = () => {
-        this.simpleTextBox = this.xrManager.simpleCreateTextBox();
+        this.xrManager.simpleCreateTextBox('textBox2');
     }
 
     onSimpleChangeTextBox = () => {
-        if (!!!this.simpleTextBox) return;
-        this.xrManager.setTextBoxText(this.simpleTextBox, "评论1：abcd");
-        this.xrManager.setTextBoxSize(this.simpleTextBox, 230, 60);
+        this.xrManager.setTextBoxText('textBox2', "评论1：abcd");
+        this.xrManager.setTextBoxSize('textBox2', 230, 60);
     }
 
     onPickDirector = () => {

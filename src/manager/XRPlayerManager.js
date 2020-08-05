@@ -10,7 +10,7 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import TextBoxHelper from "../display/Box_Helper/TextBoxHelper";
+import ResourceBoxHelper from "../display/ResourceBox/ResourceBoxHelper";
 import CameraMoveAction from "../action/CameraMoveAction";
 
 import HotSpotHelper from '../display/HotSpotHelper';
@@ -138,7 +138,7 @@ class XRPlayerManager {
     }
 
     initTextHelper = () => {
-        this.textHelper = new TextBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
+        this.textHelper = new ResourceBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
     }
 
     animate = (time) => {
@@ -420,26 +420,58 @@ class XRPlayerManager {
     }
 
     /*******************************文本框接口********************************** */
-    createTextBox = (params) => {
+    simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+        var params = {};
         params.cameraPosition = this.getCameraPosition();
-        return this.textHelper.createTextBox(params, this.scene);
+        params.position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        return this.textHelper.createTextBox(boxId, params, this.scene);
     }
 
-    showTextBox = (textBox) => {
-        this.textHelper.showTextBox(textBox);
+    setTextBoxText = (boxId, message) => {    //改变文本框的内容
+        var params = {};
+        params.message = message;
+        this.textHelper.changeTextBox(boxId, params, this.scene);
     }
 
-    hideTextBox = (textBox) => {
-        this.textHelper.hideTextBox(textBox);
+    setTextBoxSize = (boxId, width, height) => {    //改变文本框的宽高
+        var params = {};
+        params.borderWidth = width;
+        params.borderHeight = height;
+        this.textHelper.changeTextBox(boxId, params, this.scene);
     }
 
-    changeTextBox = (textBox, params) => {
-        this.textHelper.changeTextBox(textBox, params, this.scene);
+    createTextBox = (boxId, params) => {
+        params.cameraPosition = this.getCameraPosition();
+        return this.textHelper.createTextBox(boxId, params, this.scene);
+    }
+
+    showTextBox = (boxId) => {
+        this.textHelper.showTextBox(boxId);
+    }
+
+    hideTextBox = (boxId) => {
+        this.textHelper.hideTextBox(boxId);
+    }
+
+    changeTextBox = (boxId, params) => {
+        this.textHelper.changeTextBox(boxId, params, this.scene);
     }
 
     //使用remove后记得将TextBox设为null，防止内存泄漏
-    removeTextBox = (textBox) => {
-        this.textHelper.removeTextBox(textBox, this.scene);
+    removeTextBox = (boxId) => {
+        this.textHelper.removeTextBox(boxId, this.scene);
+    }
+
+    textBoxPlayVideo = (boxId) => {
+        this.textHelper.playVideo(boxId);
+    }
+
+    textBoxPauseVideo = (boxId) => {
+        this.textHelper.pauseVideo(boxId);
+    }
+
+    setTextBoxVideoVolume = (boxId, volume) => {
+        this.textHelper.setVideoVolume(boxId, volume);
     }
 
     addIcon = (img, position, name, title, width, height) => {

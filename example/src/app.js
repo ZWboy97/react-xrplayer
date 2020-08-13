@@ -4,6 +4,9 @@ import XRPlayer from '../../src/index';
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
+import EmbeddedTextBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
+import EmbeddedImageBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
+import EmbeddedVideoBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
 console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
@@ -224,58 +227,35 @@ class App extends React.Component {
     }
 
     onCreateTextBox = () => {
-        if (!!!this.TextBox) {
-            this.EmbeddedResourceBox = 1 ;
-            this.xrManager.createTextBox('textBox1', {
-                position: { x: 0, y: 0, z: -500 }
-            });
-            this.TextBoxHidden = false;
-        }
+        let textBox = new EmbeddedTextBox('box1');
+        // textBox.setText('helloooooooooooooooooooooo');
+        textBox.setPosition(-30, 0);
+        this.boxManager = this.xrManager.getEmbeddedBoxManager();
+        this.boxManager.addEmbeddedBox(textBox);
+
+        let imageBox = new EmbeddedImageBox('box2');
+        imageBox.setImage(process.env.PUBLIC_URL+'/logo192.png', 192, 192);
+        imageBox.setPosition(0, 45);
+        this.boxManager.addEmbeddedBox(imageBox);
+
+        let videoBox = new EmbeddedVideoBox('box3');
+        videoBox.setVideo(process.env.PUBLIC_URL+'/shuttle.mp4', 426, 240);
+        videoBox.setPosition(0, 120);
+        // videoBox.setEnableDisplay(true);
+        this.boxManager.addEmbeddedBox(videoBox);
     }
 
     onChangeTextBox = () => {
-        // 以下代码用于测试输入canvas作为文本框的内容，测试时需同时把inputCanvas: canvas取消注释。目前存在问题：使用服务器图片导致跨域，材质无法加载变成黑皮
-        // let img = document.createElement("img");
-        // img.src = "https://www.tutorialrepublic.com//examples/images/balloons.jpg";
-        // img.alt = "image";
-        // let canvas = document.createElement("canvas");
-        // canvas.width = 500;
-        // canvas.height = 500;
-        // let context = canvas.getContext('2d');
-        // context.drawImage(img, 0, 0);
-        // document.body.appendChild(canvas);
+        let textBox = this.boxManager.getEmbeddedBox('box1');
+        textBox.setTextSize('large');
 
-        // 以下代码用于测试输入Video作为文本框的内容，测试时需同时把inputVideo: video取消注释。同样存在跨域问题
-        let video = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
+        let imageBox = this.boxManager.getEmbeddedBox('box2');
+        imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
 
-        if (!!!this.textBoxParams) {    //多次点击修改可测试不同情况下的文本框
-            this.textBoxParams = [
-                {
-                    message: "林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。",
-                    position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
-                    backgroundColor: { r: 255, g: 176, b: 79, a: 0.7 },
-                    borderColor: { r: 245, g: 128, b: 0, a: 0.9 },
-                    borderWidth: 500,
-                    widthAdaptation: false,
-                    draggable: true,
-                },
-                {
-                    message: "景点4",
-                    position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
-                    draggable: true,
-                    widthAdaptation: true,
-                    // inputCanvas: canvas
-                },
-                {
-                    message: "景点ABCDEFG",
-                    widthAdaptation: true,
-                    // inputVideoURL: video
-                }
-            ];
-            this.textBoxParamsCount = -1;
-        }
-        this.textBoxParamsCount = (this.textBoxParamsCount+1)%3;
-        this.xrManager.changeTextBox('textBox1', this.textBoxParams[this.textBoxParamsCount]);
+        let videoBox = this.boxManager.getEmbeddedBox('box3');
+        videoBox.setVideoSize(213, 120);
+        videoBox.setPosition(30, 0);
+        videoBox.play();
     }
 
     onShowTextBox = () => {
@@ -291,6 +271,16 @@ class App extends React.Component {
 
     onRemoveTextBox = () => {
         this.xrManager.removeTextBox('textBox1');
+    }
+
+    onChangeTextBoxType = () => {
+        if (this.textBoxType === '2d') {
+            this.textBoxType = 'embedded';
+        }
+        else {
+            this.textBoxType = '2d';
+        }
+        this.xrManager.textHelper.setTextBoxType(this.textBoxType);
     }
 
     onSimpleCreateTextBox = () => {
@@ -371,6 +361,7 @@ class App extends React.Component {
                     <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                     <button onClick={this.onChangeTextBox}>修改文本框</button>
                     <button onClick={this.onRemoveTextBox}>移除文本框</button>
+                    <button onClick={this.onChangeTextBoxType}>改变文本框类型</button>
                     <button onClick={this.onSimpleCreateTextBox}>在相机注视位置创建文本框</button>
                     <button onClick={this.onSimpleChangeTextBox}>修改文本框内容</button>
                     <button onClick={() => { this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio(); }}>播放/暂停音频</button>

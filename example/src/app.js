@@ -241,21 +241,27 @@ class App extends React.Component {
         let videoBox = new EmbeddedVideoBox('box3');
         videoBox.setVideo(process.env.PUBLIC_URL+'/shuttle.mp4', 426, 240);
         videoBox.setPosition(0, 120);
-        // videoBox.setEnableDisplay(true);
+        // videoBox.setEnableAutoDisplay(true);
         this.boxManager.addEmbeddedBox(videoBox);
     }
 
     onChangeTextBox = () => {
         let textBox = this.boxManager.getEmbeddedBox('box1');
         textBox.setTextSize('large');
+        textBox.setDraggable(true);
+        textBox.onClick(() => {
+            console.log("点击了标签");
+        });
 
         let imageBox = this.boxManager.getEmbeddedBox('box2');
         imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
+        imageBox.setDraggable(true);
 
         let videoBox = this.boxManager.getEmbeddedBox('box3');
         videoBox.setVideoSize(213, 120);
         videoBox.setPosition(30, 0);
         videoBox.play();
+        videoBox.setDraggable(true);
     }
 
     onShowTextBox = () => {

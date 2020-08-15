@@ -8,12 +8,12 @@ class EmbeddedVideoBox extends EmbeddedBox{
         this.width = 30;
         this.height = 30;
         this.autoplay = false;
-        this.poster = 'url';
+        this.poster = '';
 
         this.update();
     }
 
-    setVideo = (url, width, height) => {
+    setVideo = (url, width = 30, height = 30) => {
         this.url = url;
         this.width = width;
         this.height = height;
@@ -28,7 +28,7 @@ class EmbeddedVideoBox extends EmbeddedBox{
         this.update();
     }
 
-    setEnableDisplay = (enable) => {
+    setEnableAutoDisplay = (enable) => {
         this.autoplay = enable;
         this.play();
     }

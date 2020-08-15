@@ -10,7 +10,7 @@ class EmbeddedImageBox extends EmbeddedBox{
         this.update();
     }
 
-    setImage = (url, width, height) => {
+    setImage = (url, width = 30, height = 30) => {
         this.url = url;
         this.width = width;
         this.height = height;

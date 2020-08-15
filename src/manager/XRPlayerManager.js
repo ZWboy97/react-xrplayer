@@ -10,16 +10,19 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import TextHelper from "./content_Insert_Helper/TextHelper";
+import ResourceBoxHelper from "../display/ResourceBox/ResourceBoxHelper";
+import CameraMoveAction from "../action/CameraMoveAction";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 
 class XRPlayerManager {
 
-    constructor(mount, initProps) {
+    constructor(mount, initProps, handler) {
         this.mount = mount;         // Threejs渲染挂载节点
         this.props = initProps;     // 初始化参数
+        this.handler = handler;
+
         this.scene = null;
         this.sceneMesh = null;
         this.camera = null;
@@ -28,7 +31,6 @@ class XRPlayerManager {
         this.sceneContainer = null; // 全景背景挂载节点
         this.sceneTextureHelper = null; //全景场景纹理加载控制器
 
-        this.handler = null;
 
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
@@ -55,6 +57,8 @@ class XRPlayerManager {
 
         this.onCameraAnimationEnded = null;
 
+        this.textHelper = null;
+        this.textBoxes = new Set();
 
         this.init();
     }
@@ -64,6 +68,7 @@ class XRPlayerManager {
         this.initScene();
         this.initRenderer();
         this.initVR();
+        this.initTextHelper();
         this.animate(0);
     }
 
@@ -98,6 +103,7 @@ class XRPlayerManager {
         }
         geometry.scale(-1, 1, 1);
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
+        this.sceneTextureHelper.onCanPlayHandler = (resUrl) => this.handler('sence_res_ready', { resUrl: resUrl });
         let texture = this.sceneTextureHelper.loadTexture(textureResource);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh = new THREE.Mesh(geometry, material);
@@ -122,15 +128,17 @@ class XRPlayerManager {
     initVR = () => {
         this.vrHelper = new VRHelper(this.renderer, this.camera);
         this.vrHelper.setObjectInteractionHandler((pickedObject) => {
-            console.log('tag', 'params');
             if (!!pickedObject) {
                 const key = pickedObject.name;
-                if (this.spriteEventList.has(key)) {
-                    const data = this.spriteEventList.get(key);
-                    this.handler('hot_spot_click', { data });
-                }
+                this.emitEvent(key, () => {
+                    this.closeEffectContainer();
+                });
             }
         })
+    }
+
+    initTextHelper = () => {
+        this.textHelper = new ResourceBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
     }
 
     animate = (time) => {
@@ -161,7 +169,15 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
+        this.textHelper && this.textHelper.update();
+    }
 
+    /*****************************全局接口************************************ */
+    setGlobalMuted = (muted) => {
+        this.handler('global_muted', { muted: muted });
+    }
+    setGlobalVolume = (volume) => {
+        this.handler('global_volume', { volume: volume });
     }
 
     /****************************全景场景相关控制接口************************* */
@@ -219,11 +235,14 @@ class XRPlayerManager {
         this.spriteShapeHelper.setHotSpotList(hot_spot_list);
         this.spriteShapeHelper.objectClickHandler = (intersects) => {
             const key = intersects[0].object.name;
-            if (this.spriteEventList.has(key)) {
-                const data = this.spriteEventList.get(key);
-                this.handler('hot_spot_click', { data })
-            }
-            console.log(intersects[0].object.name);
+            this.emitEvent(key, () => {
+                this.closeEffectContainer();
+            })
+        }
+        this.spriteShapeHelper.tagClickHandler = (key) => {
+            this.emitEvent(key, () => {
+                this.closeEffectContainer();
+            })
         }
     }
 
@@ -236,6 +255,14 @@ class XRPlayerManager {
 
     removeHotSpot = (hot_spot_key) => {
         this.spriteShapeHelper.removeHotSpot(hot_spot_key);
+    }
+
+    setIsTipVisible = (enable) => {
+        this.spriteShapeHelper.setIsTipVisible(enable);
+    }
+
+    setHotSpotClickable = (enable) => {
+        this.spriteShapeHelper.setHotSpotClickable(enable);
     }
 
     /*****************************模型控制相关接口**************************** */
@@ -281,6 +308,19 @@ class XRPlayerManager {
         this.viewConvertHelper.toPlanetView(durtime, delay);
     }
 
+    moveCameraTo = (descPos, onStart, onEnd, duration = 5000) => {
+        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, duration, 0);
+        cameraMoveAction.onStartHandler = () => {
+            this.innerViewControls && this.innerViewControls.disConnect();
+            onStart && onStart();
+        }
+        cameraMoveAction.onCompleteHandler = () => {
+            this.innerViewControls && this.innerViewControls.connect();
+            onEnd && onEnd();
+        }
+        cameraMoveAction.start();
+    }
+
     /**************************相机控制相关接口************************* */
     // 相机控制器开关
     connectCameraControl = () => {
@@ -307,6 +347,19 @@ class XRPlayerManager {
     }
     setCameraPosition = (x, y, z) => {
         this.innerViewControls.setCameraPosition(x, y, z);
+    }
+    getCameraLatLon = () => {
+        const position = this.getCameraPosition();
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        var phi = spherical.phi;
+        var theta = spherical.theta;
+        var lon = 90 - THREE.Math.radToDeg(theta);
+        var lat = 90 - THREE.Math.radToDeg(phi);
+        return {
+            lat: lat,
+            lon: lon
+        }
     }
 
     // 相机当前fov接口
@@ -367,36 +420,59 @@ class XRPlayerManager {
     }
 
     /*******************************文本框接口********************************** */
-    createTextBox = (params) => {
-        var TextBox = new TextHelper(params);
-        TextBox.addTo(this.scene);
-        return TextBox;
+    simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+        var params = {};
+        params.cameraPosition = this.getCameraPosition();
+        params.position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        return this.textHelper.createTextBox(boxId, params, this.scene);
     }
 
-    showTextBox = (TextBox) => {
-        if (!!!TextBox) return;
-        TextBox.show();
+    setTextBoxText = (boxId, message) => {    //改变文本框的内容
+        var params = {};
+        params.message = message;
+        this.textHelper.changeTextBox(boxId, params, this.scene);
     }
 
-    hideTextBox = (TextBox) => {
-        if (!!!TextBox) return;
-        TextBox.hide();
+    setTextBoxSize = (boxId, width, height) => {    //改变文本框的宽高
+        var params = {};
+        params.borderWidth = width;
+        params.borderHeight = height;
+        this.textHelper.changeTextBox(boxId, params, this.scene);
     }
 
-    changeTextBox = (TextBox, params) => {
-        if (!!!TextBox) return;
-        TextBox.removeFrom(this.scene);
-        TextBox.setMessage(params);
-        TextBox.addTo(this.scene);
+    createTextBox = (boxId, params) => {
+        params.cameraPosition = this.getCameraPosition();
+        return this.textHelper.createTextBox(boxId, params, this.scene);
+    }
+
+    showTextBox = (boxId) => {
+        this.textHelper.showTextBox(boxId);
+    }
+
+    hideTextBox = (boxId) => {
+        this.textHelper.hideTextBox(boxId);
+    }
+
+    changeTextBox = (boxId, params) => {
+        this.textHelper.changeTextBox(boxId, params, this.scene);
     }
 
     //使用remove后记得将TextBox设为null，防止内存泄漏
-    removeTextBox = (TextBox) => {
-        if (TextBox === undefined) return;
-        TextBox.removeFrom(this.scene);
+    removeTextBox = (boxId) => {
+        this.textHelper.removeTextBox(boxId, this.scene);
     }
 
+    textBoxPlayVideo = (boxId) => {
+        this.textHelper.playVideo(boxId);
+    }
 
+    textBoxPauseVideo = (boxId) => {
+        this.textHelper.pauseVideo(boxId);
+    }
+
+    setTextBoxVideoVolume = (boxId, volume) => {
+        this.textHelper.setVideoVolume(boxId, volume);
+    }
 
     addIcon = (img, position, name, title, width, height) => {
         if (!this.hotSpotHelper) {

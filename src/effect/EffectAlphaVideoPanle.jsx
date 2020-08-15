@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './style/EffectAlphaVideoPanel.less';
+import { connect } from 'react-redux';
 
 
 class EffectAlphaVideoPanel extends Component {
@@ -18,9 +19,10 @@ class EffectAlphaVideoPanel extends Component {
     }
 
     componentDidMount() {
-        const { videoMuted } = this.props;
+        const { muted, volume, videoMuted } = this.props;
         this.video = this.videoNode;
-        this.video.muted = videoMuted;
+        this.video.volume = volume;
+        this.video.muted = videoMuted || muted;
         this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
         this.loadMp4Video();
     }
@@ -38,22 +40,26 @@ class EffectAlphaVideoPanel extends Component {
 
         this.video.play();
 
-        this.video.addEventListener('play', () => {
-            this.isPlaying = true;
-            this.processFrame();
-            if (this.props.onStartPlayHandler) {
-                this.props.onStartPlayHandler();
-            }
-        }, false);
+        this.video.addEventListener('play', this.startPlay, false);
 
-        this.video.addEventListener('ended', () => {
-            this.isPlaying = false;
-            if (this.props.onDisplayEndedHandler) {
-                this.props.onDisplayEndedHandler();
-            }
-        }, false);
+        this.video.addEventListener('ended', this.endPlay, false);
 
         window.addEventListener('resize', this.updateCanvasSize, false);
+    }
+
+    startPlay = () => {
+        this.isPlaying = true;
+        this.processFrame();
+        if (this.props.onStartPlayHandler) {
+            this.props.onStartPlayHandler();
+        }
+    }
+
+    endPlay = () => {
+        this.isPlaying = false;
+        if (this.props.onDisplayEndedHandler) {
+            this.props.onDisplayEndedHandler();
+        }
     }
 
     updateCanvasSize = () => {
@@ -94,9 +100,28 @@ class EffectAlphaVideoPanel extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.isPlaying = false;
+        this.video.removeEventListener('play', this.startPlay);
+        this.video.removeEventListener('ended', this.endPlay);
+        window.removeEventListener('resize', this.updateCanvasSize);
+        this.video = null;
+        this.bufferCtx = null;
+        this.image = null;
+        this.alphaData = null;
+        this.showCanvas = null;
+        this.showCtx = null;
+        this.bufferCanvas = null;
+        this.bufferCtx = null;
+    }
+
     render() {
-        const { enableClose, videoStyle,
-            enableMask } = this.props;
+        const { muted, volume, videoMuted } = this.props;
+        if (this.video) {
+            this.video.volume = volume;
+            this.video.muted = videoMuted || muted;
+        }
+        const { enableClose, videoStyle, enableMask } = this.props;
         let overlayClassName = "alpha_video_overlay";
         if (enableMask) {
             overlayClassName += " grep_overlay";
@@ -115,7 +140,7 @@ class EffectAlphaVideoPanel extends Component {
                     className="alpha_video_overlay"
                     style={videoStyle}
                 >
-                    <canvas id="show"></canvas>
+                    <canvas id="show" ></canvas>
                     <canvas id="buffer" style={{ display: "none" }}></canvas>
                 </div>
                 {
@@ -149,5 +174,7 @@ EffectAlphaVideoPanel.defaultProps = {
     videoStyle: { width: 400, height: 400 }
 }
 
-export default EffectAlphaVideoPanel;
-
+export default connect(
+    state => state.player,
+    {}
+)(EffectAlphaVideoPanel);

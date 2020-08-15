@@ -63,8 +63,6 @@ class FullScreen extends Component {
         if (this.props.enabled) {
             className.push("fullscreen-enabled");
         }
-        console.log('fullscreen', this.props.enabled);
-
         return (
             <div
                 //className={className.join(" ")}

@@ -41,10 +41,11 @@ class EmbeddedImageBox extends EmbeddedBox{
         let width = this.width;
         let height = this.height;
         let createPlane = this.createPlane;
+        let tHis = this;
         img.onload = function () {
             context.drawImage(img, 0, 0, width, height);
             createPlane();
-            this.manager && this.manager.updateDisplay(this);
+            tHis.manager && tHis.manager.updateDisplay(tHis);
         }
     }
 }

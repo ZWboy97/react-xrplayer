@@ -46,7 +46,7 @@ class EmbeddedTextBox extends EmbeddedBox {
     }
 
     getTextInfo = () => {
-        return this.text;
+        return {text: this.text};
     }
 
     //内部控件

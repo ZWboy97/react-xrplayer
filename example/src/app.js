@@ -248,7 +248,6 @@ class App extends React.Component {
     onChangeTextBox = () => {
         let textBox = this.boxManager.getEmbeddedBox('box1');
         textBox.setTextSize('large');
-        textBox.setDraggable(true);
         textBox.onClick(() => {
             console.log("点击了标签");
         });

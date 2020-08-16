@@ -7,7 +7,7 @@ class EmbeddedBox {
         this.callback = null;
         this.lat = 0;
         this.lon = 0;
-        this.dragable = false;
+        this.draggable = false;
 
         //控制信息
         this.planeMesh = null;
@@ -16,9 +16,6 @@ class EmbeddedBox {
         this.height = 0;
         this.manager = null;
         this.meshReady = false;
-        this.isUserInteracting = false;
-
-        this.initControlsListener();
     }
 
     //外部接口
@@ -38,11 +35,23 @@ class EmbeddedBox {
     }
 
     setDraggable = (enable) => {
-        this.dragable = enable;
+        if (this.draggable === enable)
+            return;
+        this.draggable = enable;
+        if (this.meshReady === false) return;
+        if (this.manager !== null) {
+            if (enable) {
+                this.manager.dragMeshes.add(this.planeMesh);
+            }
+            else
+            {
+                this.manager.dragMeshes.delete(this.planeMesh);
+            }
+        }
     }
 
     getDraggable = () => {
-        return this.dragable;
+        return this.draggable;
     }
 
     onClick = (callback) => {
@@ -94,112 +103,5 @@ class EmbeddedBox {
     kill = () => {
 
     }
-
-    //拖拽控制函数
-
-    initControlsListener = () => {
-        const browser = window.navigator.userAgent.toLowerCase();
-        const container = document.getElementById('xr-container');
-        //这个container的获取需不需要更好的手段，或者直接用window
-        if (browser.indexOf('mobile') > 0) {
-            container.addEventListener('touchstart', this.onTouchstart, false);
-            container.addEventListener('touchmove', this.onTouchmove, false);
-            container.addEventListener('touchend', this.onTouchend, false);
-        } else {
-            container.addEventListener('mousedown', this.onDocumentMouseDown, false);
-            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
-            container.addEventListener('mouseup', this.onDocumentMouseUp, false);
-        }
-    };
-
-    getIntersects = (clientX, clientY, mesh) => {
-        if (this.dragable === false || this.manager === null)
-            return null;
-        let raycaster = new THREE.Raycaster();
-        let mouse = new THREE.Vector2();
-        let xrManager = this.manager.XRManager;
-        const { x: domX, y: domY } = xrManager.renderer.domElement.getBoundingClientRect();
-        mouse.x = ((clientX - domX) / xrManager.renderer.domElement.clientWidth) * 2 - 1;
-        mouse.y = - ((clientY - domY) / xrManager.renderer.domElement.clientHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, xrManager.camera);
-        return raycaster.intersectObject(mesh);
-    }
-
-    onDocumentMouseDown = (event) => {
-        event.preventDefault();
-        if (this.dragable === false || this.manager === null)
-            return;
-        let intersects = this.getIntersects(event.clientX, event.clientY, this.planeMesh);
-        if (intersects.length > 0) {
-            this.isUserInteracting = true;
-            this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.planeMesh.position.clone());
-            this.manager.XRManager.disConnectCameraControl();
-        }
-    }
-
-    onDocumentMouseMove = (event) => {
-        if (this.dragable === false || this.manager === null)
-            return;
-        if (this.isUserInteracting === true) {
-            let intersects = this.getIntersects(event.clientX, event.clientY, this.manager.XRManager.sceneMesh);
-            if (intersects.length > 0) {
-                let newPosition = intersects[0].point.clone().add(this.deltaPosition);
-                this.planeMesh.position.set(newPosition.x, newPosition.y, newPosition.z);
-            }
-        }
-    }
-
-    onDocumentMouseUp = (event) => {
-        if (this.callback !== null) {
-            let intersects = this.getIntersects(event.clientX, event.clientY, this.planeMesh);
-            if (intersects.length > 0) {
-                this.callback();
-            }
-        }
-        if (this.dragable === false || this.manager === null)
-            return;
-        if (this.isUserInteracting === true) {
-            this.isUserInteracting = false;
-            this.manager.XRManager.connectCameraControl();
-        }
-    }
-
-    onTouchstart = (event) => {
-        if (this.dragable === false || this.manager === null)
-            return;
-        if (event.targetTouches.length === 1) {
-            let touch = event.targetTouches[0];
-            var intersects = this.getIntersects(touch.pageX, touch.pageY, this.planeMesh);
-        }
-        if (intersects.length > 0) {
-            this.isUserInteracting = true;
-            this.planeMesh = intersects[0].object;
-            this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.planeMesh.position.clone());
-            this.manager.XRManager.disConnectCameraControl();
-        }
-    }
-
-    onTouchmove = (event) => {
-        if (this.dragable === false || this.manager === null)
-            return;
-        if (this.isUserInteracting === true) {
-            let touch = event.targetTouches[0];
-            let intersects = this.getIntersects(touch.pageX, touch.pageY, this.manager.XRManager.sceneMesh);
-            if (intersects.length > 0) {
-                let newPosition = intersects[0].point.clone().add(this.deltaPosition);
-                this.planeMesh.position.set(newPosition.x, newPosition.y, newPosition.z);
-            }
-        }
-    }
-
-    onTouchend = (event) => {
-        if (this.dragable === false || this.manager === null)
-            return;
-        if (this.isUserInteracting === true) {
-            this.isUserInteracting = false;
-            this.manager.XRManager.connectCameraControl();
-        }
-    }
-
 }
 export default EmbeddedBox;

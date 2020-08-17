@@ -1,5 +1,5 @@
 {
-  "name": "react-xrplayer",
+  "name": "@zwboy97/react-xrplayer",
   "version": "0.1.2",
   "description": "A excellent xr player for react",
   "main": "src/index.js",

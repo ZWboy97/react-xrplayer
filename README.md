@@ -211,45 +211,7 @@ Map格式
         ]
 ```
 
-### 组件开放属性
 
-#### 组件相关
-##### width
-    width: Proptypes.string, 播放器组件的宽度
-##### height
-    height: Proptypes.string, 播放器组件的高度
-##### is_full_screen
-    Proptypes.bool,
-
-#### 全景相机相关
-##### camera_fov
-    camera_fov: Proptypes.number,
-##### camera_near
-    camera_near: Proptypes.number,
-##### camera_far
-    camera_far: Proptypes.number,
-##### camera_position
-    camera_position: Proptypes.object,
-##### camera_target
-    camera_target: Proptypes.object,
-
-#### 全景场景属性
-##### scene_texture_resource
-    Proptypes.object.isRequired,
-##### axes_helper_display
-    Proptypes.bool,
-##### hot_spot_list
-    Proptypes.array,
-##### event_list
-    Proptypes.array,
-
-#### 回调接口函数
-##### onCreated
-    Proptypes.func,
-##### onFullScreenChange
-    Proptypes.func,
-##### onEventHandler
-    Proptypes.func
 
 ### 组件外部控制器
 开放给业务组件的控制接口，提供各种动态控制能力

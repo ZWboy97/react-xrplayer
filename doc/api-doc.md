@@ -1,13 +1,150 @@
-# React-XRplayer 接口文档（初步）
+# React-XRplayer 设计
 
-## 零、基础全景相关
+## 零、集成与启动模块
+
+### 1. 集成react-xrplayer到项目中
+react-xrplayer播放器通过React组件的方式集成到您的项目中，只需要几行代码，您的应用便能拥有强大的全景互动能力。
+实现简单的全景播放
+```js
+import React from 'react';
+import XRPlayer from 'react-xrplayer'
+class App extends React.Component {
+    render() {
+        return (
+            <div>
+                <XRPlayer
+                    width="100vw"
+                    height="100vh"
+                    scene_texture_resource={{
+                        type: 'hls',
+                        res_url: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8'
+                    }}
+                ></XRPlayer>
+            </div>
+        )
+    }
+}
+export default App;
+```
+### 2. react-xrplayer组件提供的属性
+为了通过传统组件Props的方式来使用react-xrplayer，针对部分属性提供了props的设置方式
+通过组件Props属性的方式，适合初始化或者不需要动态变更的场景
+以下是提供的props属性（注意：只能用于初始化等场景，不支持动态更改）
+```
+  width: '100%',                // 设置播放器高度，支持css常用的写法，直接作用于底层canvas
+  height: '100%',               // 同上
+  camera_fov: 80,               // 设置全景相机的初始fov大小
+  axes_helper_display: false,   // 是否展示坐标坐标系
+  hot_spot_list: [],            // 按照指定的数据格式，提供热点标签数据
+  event_list: [],               // 按照指定的数据格式，提供事件列表
+  model_list: [],               // 按照指定的数据格式，提供模型列表
+  embeded_box_list: [],         // 按照指定的数据格式，提供嵌入内容列表
+  is_full_screen: false,        // 设置是否全屏
+```
+
+### 3. react-xrplayer组件提供的回调方法
+通过Props，只能实现向播放器设置属性，无法获取来自播放器的信息
+因此，还提供了几个方法回调
+
+#### onFullScreenChange 回调方法
+- 当浏览器的全屏状态发生变化的时候，通过该回调方法通过外部
+- 回调会携带参数 isFull, 表示当前播放器的全屏状态
+- 回调的使用示例
+```js
+    onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
+```
+
+#### onCreated 回调方法
+- 通过props属性只能实现一些简单的配置，对于动态变化的需求，还是基于方法调用的方式比较简单
+- onCreated回调方法将在播放器初始化之后回调，此时核心组件均已完成初始化
+- 回调会携带参数 xrManager, 其是播放器与外部组件之间的代理对象，提供了诸多方法和属性供外部组件使用和调用。
+- 回调的使用示例
+```js
+    onCreated={(xrManager)=>{
+        // 获得播放器管理器的代理对象
+        this.xrManager = xrManager;
+        // 如果需要在多个组件中使用到xrManager，可以直接将其加入到全局变量中
+        window.xrManager = xrManager;
+        // 通过代理对象，动态控制播放器的行为
+        this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
+        this.xrManager.toNormalView(5000, 1000);
+    }}
+```
+- xrManager 集成了几乎react-xrplayer的所有能力，下文会详细介绍其提供的接口方法
+
+#### onEventHandler 回调方法
+- react-xrplayer有多种事件，比如标签点击事件、视频结束事件等
+- react-xrplayer内部对这些事件均提供了默认的处理方式。但实际应用中常常会有动态定制事件处理的场景，因此，通过onEventHandler回调方法，为外层提供灵活的定制能力。
+- 回调会在内部默认处理方式调用之前被调用，因此可以实现对默认事件的拦截
+- 回调会携带两个参数，name, props。 name表示事件的名称，props表示用于事件处理的参数
+- 回调的返回值：true和false，为true表示事件被外部处理完成，不需要内部处理了，实现了拦截。false表示事件仍然需要内部处理
+- 回调的使用示例
+```js
+    onEventHandler={ (name, props) => {
+        switch (name) {
+            case 'sence_res_ready':
+                const { resUrl } = props;
+                if (resUrl !== this.currentSenceResUrl) {
+                    this.currentSenceResUrl = resUrl;
+                    this.setState({ is_loading: false });
+                    this.onReadyToPlay();
+                }
+                break;
+            default: break;
+        }
+        return false;
+    }}
+```
+
+### 4. XRManager主模块
+react-xrplayer的主要能力大部分均是通过XRManager主模块对外层应用提供的，其提供了面向热点标签管理、内嵌内容管理等等接口方法。本部分主要介绍那些面向整个播放器的接口方法，对于各个模块中的方式，将在下文再详细展开。
+
+#### import(sence_data)
+- sence_data 为整个全景场景的配置对象，该配置对象的各个字段记录了全景场景各个模块的配置和属性信息
+- import方法将读取配置对象信息，并解析其中各个模块的配置，从而构建出sence_data对象所描述的全景场景
+- 可以直接将之前编辑好的json配置信息解析，然后重建整个全景场景
+- 基于import和export方法，能够实现全景编辑器的功能
+
+#### export():Object
+- 是import方法的逆过程，实现将当前的全景播放器状态导出到一个配置对象中
+
+## 一、全景模块
+
+### setSenceResource(res)
+- 全景背景的资源地址
+- 参数res的参考字段
+- 支持动态更改res，从而实现全景切换和漫游
+```
+{
+    type:'hls', // 支持[hls,mp4,flv,image]
+    res_url: "http://cache.utovr.com/b8.m3u8",
+    panoramic_type: "360", // 全景类型['360','180']
+    radius: 500  // 全景的半径
+}
+```
+
+### get/setGlobalMuted(muted)
+- 设置全局静音接口
+
+### start/stopDisplaySenceResource
+- 背景全景视频播放与暂停
+
+### get/setEnableAutoRotate(enable)
+- 设置自动旋转开关
+
+### setAutoRotateSpeed(speed)
+- 设置自动旋转速度, 正整数
+
+### setAutoRotateDirection(direction)
+- 设置自动旋转方向, -1,1
 
 
-## 一、标签内容相关
+
+## 二、标签模块
 
 ### 1. 标签种类和UI组成
 
-普通标签(label)UI由以下几个部分组成
+普通标签(label)UI由以qu下几个部分组成
 
 - icon，一般是一些可点击的button
 - title，说明性的文本描述，位于标签上方
@@ -136,7 +273,7 @@ Label
 - 该标签被点击之后的回调
 
 
-### 3. 内嵌内容相关
+## 三、内嵌内容模块
 
 #### 内嵌支持的内容
 内嵌文本
@@ -272,3 +409,5 @@ EmbeddedBox
 
 ##### setEnableDisplay(enable)
 - 是否允许自动播放
+
+## 四、事件响应模块

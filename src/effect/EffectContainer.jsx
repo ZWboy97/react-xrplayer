@@ -41,8 +41,18 @@ class EffectContainer extends Component {
                 <EffectVideoPanel
                     onCloseClickHandler={() => {
                         this.props.onCloseClickHandler && this.props.onCloseClickHandler();
+                        this.props.onCallback && this.props.onCallback();
                     }}
                     videoUrl={data.videoUrl}
+                    videoType={data.videoType}
+                    videoStyle={{
+                        width: data.width,
+                        height: data.height,
+                        margin: data.margin
+                    }}
+                    enableMask={data.enableMask}
+                    enableClose={data.enableClose}
+                    videoMuted={data.videoMuted}
                 ></EffectVideoPanel>
             )
         } else if (data.type === 'control') {
@@ -58,6 +68,7 @@ class EffectContainer extends Component {
                 <NewEffectAlphaVideoPanel
                     key={data.id}
                     videoUrl={data.videoUrl}
+                    videoType={data.videoType}
                     videoStyle={{
                         width: data.width,
                         height: data.height,

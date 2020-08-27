@@ -5,10 +5,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import '../style/EffectVideoPanel.less';
 import Hls from 'hls.js';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import { Spin } from "antd";
 
 
 class EffectVideoPanel extends Component {
+
+    state = {
+        is_loading: true
+    }
 
     constructor(props) {
         super(props);
@@ -22,13 +27,22 @@ class EffectVideoPanel extends Component {
         this.video.volume = this.props.volume;
         console.log('videoUrl', this.props.videoUrl);
         this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
-        const videoUrl = this.props.videoUrl;
-        if (videoUrl.endsWith('.mp4')) {
-            this.loadMp4Video();
-        } else if (videoUrl.endsWith('.m3u8')) {
-            this.loadHlsVideo();
+        this.video.addEventListener('canplay', this.startPlay, false);
+        this.video.addEventListener('ended', this.endPlay, false);
+        const { videoUrl, videoType = "" } = this.props;
+        if (videoType === "") {
+            if (videoUrl.endsWith('.mp4')) {
+                this.loadMp4Video();
+            } else if (videoUrl.endsWith('.m3u8')) {
+                this.loadHlsVideo();
+            }
+        } else {
+            if (videoType === "hls") {
+                this.loadHlsVideo();
+            } else if (videoType === "mp4") {
+                this.loadMp4Video();
+            }
         }
-
     }
 
     loadMp4Video = () => {
@@ -52,6 +66,13 @@ class EffectVideoPanel extends Component {
         }
     }
 
+    startPlay = () => {
+        this.setState({ is_loading: false })
+    }
+
+    endPlay = () => {
+    }
+
     onCloseClickListener = (e) => {
         e.preventDefault();
         if (this.props.onCloseClickHandler) {
@@ -60,11 +81,13 @@ class EffectVideoPanel extends Component {
     }
 
     componentWillUnmount() {
+        this.video.removeEventListener('canplay', this.startPlay);
+        this.video.removeEventListener('ended', this.endPlay);
         this.hls && this.hls.destroy();
     }
 
     render() {
-        const { muted, volume } = this.props;
+        const { muted, volume, videoStyle } = this.props;
         if (this.video) {
             this.video.muted = muted;
             this.video.volume = volume;
@@ -75,7 +98,7 @@ class EffectVideoPanel extends Component {
                 <div className="container ">
                     <video
                         className="video"
-                        controls
+                        style={videoStyle}
                         ref={(mount) => { this.videoNode = mount }}
                     ></video>
                 </div>
@@ -83,6 +106,15 @@ class EffectVideoPanel extends Component {
                     className="close"
                     onClick={this.onCloseClickListener}
                 ></div>
+                {
+                    this.state.is_loading ?
+                        <div className={'loading-cover'}>
+                            <div className={'loading-icon'}>
+                                <Spin size={'large'} tip={'实时直播画面连接中...'} />
+                            </div>
+                        </div>
+                        : ""
+                }
             </div>)
     }
 }

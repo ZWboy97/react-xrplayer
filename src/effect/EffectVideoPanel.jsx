@@ -7,6 +7,8 @@ import '../style/EffectVideoPanel.less';
 import Hls from 'hls.js';
 import { connect } from 'react-redux';
 import { Spin } from "antd";
+import { OS } from '../utils/osuitls';
+import flvjs from 'flv.js/dist/flv.min.js';
 
 
 class EffectVideoPanel extends Component {
@@ -25,6 +27,7 @@ class EffectVideoPanel extends Component {
         this.video = this.videoNode;
         this.video.muted = this.props.muted;
         this.video.volume = this.props.volume;
+        this.video.autoplay = true;
         console.log('videoUrl', this.props.videoUrl);
         this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
         this.video.addEventListener('canplay', this.startPlay, false);
@@ -51,6 +54,18 @@ class EffectVideoPanel extends Component {
     }
 
     loadHlsVideo = () => {
+        if (OS.isAndroid() && OS.isWeixin()) {
+            if (flvjs.isSupported()) {
+                let flvUrl = this.props.videoUrl.replace(".m3u8", ".flv")
+                let flvPlayer = flvjs.createPlayer({
+                    type: 'flv', url: flvUrl, isLive: true,
+                });
+                flvPlayer.attachMediaElement(this.video);
+                flvPlayer.load();
+                flvPlayer.play();
+                return;
+            }
+        }
         if (Hls.isSupported()) {
             this.hls = new Hls();
             console.log('hls', 'support');
@@ -58,11 +73,21 @@ class EffectVideoPanel extends Component {
             this.hls.loadSource(this.props.videoUrl);
             this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.video.play();
-                console.log('videoplay');
             });
         } else {
-            console.log('设备不支持')
-            alert("设备不支持");
+            if (OS.isiOS()) {
+                if (OS.isSafari()) {
+                    this.video.setAttribute("src", this.props.videoUrl);
+                    this.video.setAttribute("type", "application/x-mpegURL");
+                    this.video.play();
+                } else {
+                    this.video.setAttribute("src", this.props.videoUrl);
+                    this.video.setAttribute("type", "application/x-mpegURL");
+                    this.video.play();
+                }
+            } else {
+                alert("设备不支持");
+            }
         }
     }
 

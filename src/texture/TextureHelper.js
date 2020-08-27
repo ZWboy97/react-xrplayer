@@ -97,21 +97,26 @@ class TextureHelper {
             console.log('设备不支持HLS')
             if (OS.isiOS()) {
                 if (OS.isSafari()) {
-                    console.log('IOS设备', '尝试IOS原生播放');
+                    console.log('IOS，Safari浏览器', '尝试IOS原生播放HLS');
                     var source = this.createTag("source", {
                         src: resUrl,
                         type: 'application/x-mpegURL'
                     }, null);
                     this.containerNode.appendChild(source);
                 } else {
-                    const options = {
-                        sources: [{
+                    console.log("IOS设备，第三方浏览器，", '推荐使用原生浏览器播放');
+                    if (flvjs.isSupported()) {
+                        console.log("IOS，支持flv.js")
+                        return this.loadFlvVideo(resUrl.replace(".m3u8", ".flv"));
+                    } else {
+                        console.log("IOS,不支持flv，使用原生播放")
+                        alert("推荐使用Safari浏览器")
+                        var source = this.createTag("source", {
                             src: resUrl,
                             type: 'application/x-mpegURL'
-                        }]
-                    };
-                    this.player = videojs(this.containerNode, options,);
-                    this.player.play();
+                        }, null);
+                        this.containerNode.appendChild(source);
+                    }
                 }
             } else if (flvjs.isSupported()) {
                 console.log("尝试FLV播放")

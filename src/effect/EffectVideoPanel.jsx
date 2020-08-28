@@ -77,18 +77,39 @@ class EffectVideoPanel extends Component {
         } else {
             if (OS.isiOS()) {
                 if (OS.isSafari()) {
-                    this.video.setAttribute("src", this.props.videoUrl);
-                    this.video.setAttribute("type", "application/x-mpegURL");
+                    var source = this.createTag("source", {
+                        src: this.props.videoUrl,
+                        type: 'application/x-mpegURL'
+                    }, null);
+                    this.video.appendChild(source);
                     this.video.play();
                 } else {
-                    this.video.setAttribute("src", this.props.videoUrl);
-                    this.video.setAttribute("type", "application/x-mpegURL");
+                    var source = this.createTag("source", {
+                        src: this.props.videoUrl,
+                        type: 'application/x-mpegURL'
+                    }, null);
+                    this.video.appendChild(source);
                     this.video.play();
                 }
             } else {
                 alert("设备不支持");
             }
         }
+    }
+
+    createTag = (tag, attr, objs) => {
+        var oMeta = document.createElement(tag);
+        if (attr && typeof attr === "object") {
+            for (var k in attr) {
+                oMeta.setAttribute(k, attr[k]);
+            }
+        }
+        if (objs && typeof objs === "object") {
+            for (var i in objs) {
+                oMeta[i] = objs[i];
+            }
+        }
+        return oMeta;
     }
 
     startPlay = () => {

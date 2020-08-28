@@ -163,20 +163,17 @@ class InnerViewControls {
     initControlsListener = () => {
         this.browser = window.navigator.userAgent.toLowerCase();
         const container = document.getElementById('xr-container')
-        if (this.browser.indexOf('mobile') > 0) {
-            container.addEventListener('touchstart', this.onTouchstart, false);
-            container.addEventListener('touchmove', this.onTouchmove, false);
-            container.addEventListener('touchend', this.onTouchend, false);
-            container.addEventListener('wheel', this.onDocumentMouseWheel, false);
-        } else {
-            container.addEventListener('mousedown', this.onDocumentMouseDown, false);
-            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
-            container.addEventListener('mouseup', this.onDocumentMouseUp, false);
-            container.addEventListener('wheel', this.onDocumentMouseWheel, false);
-            //添加键盘监听
-            document.addEventListener('keydown', this.onDocumentKeyDown, false);
-            document.addEventListener('keyup', this.onDocumentKeyUp, false);
-        }
+        container.addEventListener('touchstart', this.onTouchstart, false);
+        container.addEventListener('touchmove', this.onTouchmove, false);
+        container.addEventListener('touchend', this.onTouchend, false);
+        container.addEventListener('wheel', this.onDocumentMouseWheel, false);
+        container.addEventListener('mousedown', this.onDocumentMouseDown, false);
+        container.addEventListener('mousemove', this.onDocumentMouseMove, false);
+        container.addEventListener('mouseup', this.onDocumentMouseUp, false);
+        container.addEventListener('wheel', this.onDocumentMouseWheel, false);
+        //添加键盘监听
+        document.addEventListener('keydown', this.onDocumentKeyDown, false);
+        document.addEventListener('keyup', this.onDocumentKeyUp, false);
     };
 
     update = () => {
@@ -301,6 +298,7 @@ class InnerViewControls {
     }
 
     onTouchstart = (event) => {
+        console.log('touch', 'start');
         if (event.targetTouches.length === 1) {
             this.isUserInteracting = true;
             // 记录滑动开始的坐标

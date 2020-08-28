@@ -19,6 +19,7 @@ class TextureHelper {
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
         this.onCanPlayHandler = null;
+        this.onStartDisplay = null;
         this.videoLoader = null;
         this.resType = 'image'
         this.resUrl = '';
@@ -43,11 +44,16 @@ class TextureHelper {
         this.containerNode.setAttribute('style', 'object-fit: fill')
         this.containerNode.setAttribute('loop', "loop")
         this.containerNode.addEventListener('canplay', this.onVideoStarted, false);
+        this.containerNode.addEventListener('play', this.onVideoStartDisplay, false)
     }
 
     onVideoStarted = () => {
         this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
-        console.log('视频开始播放');
+        console.log('视频可以播放播放');
+    }
+
+    onVideoStartDisplay = () => {
+        this.onStartDisplay && this.onStartDisplay();
     }
 
     getTextureFromVideo = (video) => {

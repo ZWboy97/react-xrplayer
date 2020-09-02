@@ -6,7 +6,6 @@ import * as THREE from 'three';
 import EmbeddedTextBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
 import EmbeddedImageBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
 import EmbeddedVideoBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
-
 class App extends React.Component {
 
     state = {
@@ -190,12 +189,12 @@ class App extends React.Component {
         this.boxManager.addEmbeddedBox(textBox);
 
         let imageBox = new EmbeddedImageBox('box2');
-        imageBox.setImage(process.env.PUBLIC_URL + '/logo192.png', 192, 192);
+        imageBox.setImage(process.env.PUBLIC_URL+'/logo192.png', 192, 192);
         imageBox.setPosition(0, 45);
         this.boxManager.addEmbeddedBox(imageBox);
 
         let videoBox = new EmbeddedVideoBox('box3');
-        videoBox.setVideo(process.env.PUBLIC_URL + '/shuttle.mp4', 426, 240);
+        videoBox.setVideo(process.env.PUBLIC_URL+'/shuttle.mp4', 426, 240);
         videoBox.setPosition(0, 120);
         // videoBox.setEnableAutoDisplay(true);
         this.boxManager.addEmbeddedBox(videoBox);
@@ -209,7 +208,7 @@ class App extends React.Component {
         });
 
         let imageBox = this.boxManager.getEmbeddedBox('box2');
-        imageBox.setImage(process.env.PUBLIC_URL + '/logo512.png', 512, 512);
+        imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
         imageBox.setDraggable(true);
 
         let videoBox = this.boxManager.getEmbeddedBox('box3');

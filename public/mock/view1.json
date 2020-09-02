@@ -1,0 +1,314 @@
+{
+    "camera_fov": 100,
+    "auto_rotate_speed": 1.0,
+    "enable_auto_rotate": false,
+    "volume": 90,
+    "muted": true,
+    "res_urls": [
+        {
+            "type": "hls",
+            "res_url": "https://cache2.utovr.com/7c74396d99b247eab358a3b93d784c85/L2_m420in607jbt3xjy.m3u8",
+            "panoramic_type": "360",
+            "radius": 500
+        }
+    ],
+    "model_list": [
+        [
+            "23433",
+            {
+                "objUrl": "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.json",
+                "texture": "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.png",
+                "modeFormat": "obj",
+                "scale": 1
+            }
+        ]
+    ],
+    "hot_spot_list": [
+        [
+            "zhong_shan_she_qu",
+            {
+                "lat": 140,
+                "lon": -40,
+                "position": "top",
+                "animate": true,
+                "name": "中山社区",
+                "title": "中山社区",
+                "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
+                "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_she_qu.jpg",
+                "img_height": 100,
+                "img_width": 150
+            }
+        ],
+        [
+            "zhong_shan_ji_nian_tang",
+            {
+                "lat": 310,
+                "lon": -60,
+                "animate": true,
+                "name": "福州中山纪念堂",
+                "title": "福州中山纪念堂",
+                "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
+                "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_ji_nian_tang.jpg",
+                "img_height": 100,
+                "img_width": 150
+            }
+        ],
+        [
+            "ling_ze_xu",
+            {
+                "lat": 305,
+                "lon": 55,
+                "animate": true,
+                "position": "top",
+                "name": "林则徐出生地",
+                "title": "林则徐出生地",
+                "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
+                "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/lin_ze_xu_chu_sheng_di.jpg",
+                "img_height": 100,
+                "img_width": 150
+            }
+        ],
+        [
+            "ma_qiu_chang",
+            {
+                "lat": 320,
+                "lon": 20,
+                "animate": true,
+                "name": "唐代马球场遗址",
+                "title": "唐代马球场遗址",
+                "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
+                "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/tang_dai_ma_qiu_chang_yi_zhi.jpg",
+                "img_height": 100,
+                "img_width": 150
+            }
+        ],
+        [
+            "ren_shou_tang",
+            {
+                "lat": 360,
+                "lon": 20,
+                "animate": true,
+                "name": "泉山仁寿堂萨镇冰故居",
+                "title": "泉山仁寿堂萨镇冰故居",
+                "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
+                "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.jpg",
+                "img_height": 100,
+                "img_width": 150
+            }
+        ],
+        [
+            "ou_ye_chi",
+            {
+                "lat": 410,
+                "lon": 40,
+                "animate": true,
+                "position": "top",
+                "name": "欧冶池遗址",
+                "title": "欧冶池遗址",
+                "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
+                "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ou_ye_chi_yi_zhi.jpg",
+                "img_height": 100,
+                "img_width": 150
+            }
+        ]
+    ],
+    "event_list": [
+        [
+            "zhong_shan_she_qu",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_she_qu.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ],
+        [
+            "zhong_shan_ji_nian_tang",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/fu_zhou_zhong_shan_tang.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ],
+        [
+            "yi_shi_ting",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/ah_04_wms_khfh_800.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ],
+        [
+            "ling_ze_xu",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/lin_ze_xu_gu_ku.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ],
+        [
+            "ma_qiu_chang",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ma_qiu_chang.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ],
+        [
+            "ou_ye_chi",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ou_ye_chi.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ],
+        [
+            "ren_shou_tang",
+            {
+                "id": "video",
+                "type": "alpha_video",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
+                "width": "60vw",
+                "height": "60vw",
+                "enableClose": true,
+                "margin": "auto auto",
+                "videoMuted": false,
+                "enableMask": true
+            }
+        ]
+    ],
+    "particle_effect": {
+        "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png",
+        "num": 5000,
+        "range": 500,
+        "color": "0xffffff",
+        "sizeAttenuation": true
+    },
+    "cameraAnimationList": [
+        {
+            "key": "zhong_shan_ji_nian_tang",
+            "pos0": {
+                "lat": 0,
+                "lon": -15,
+                "fov": 90
+            },
+            "pos1": {
+                "lat": 21,
+                "lon": 110,
+                "fov": 58
+            },
+            "duration": 5000,
+            "easing": "InOut"
+        },
+        {
+            "key": "ling_ze_xu",
+            "pos0": {
+                "lat": 21,
+                "lon": 110,
+                "fov": 58
+            },
+            "pos1": {
+                "lat": -15,
+                "lon": 110,
+                "fov": 58
+            },
+            "duration": 5000,
+            "easing": "InOut"
+        },
+        {
+            "key": "ma_qiu_chang",
+            "pos0": {
+                "lat": -15,
+                "lon": 110,
+                "fov": 58
+            },
+            "pos1": {
+                "lat": -10,
+                "lon": 137,
+                "fov": 38
+            },
+            "duration": 5000,
+            "easing": "InOut"
+        },
+        {
+            "key": "ren_shou_tang",
+            "pos0": {
+                "lat": -10,
+                "lon": 137,
+                "fov": 38
+            },
+            "pos1": {
+                "lat": -10,
+                "lon": 180,
+                "fov": 70
+            },
+            "duration": 5000,
+            "easing": "InOut"
+        },
+        {
+            "key": "ou_ye_chi",
+            "pos0": {
+                "lat": -10,
+                "lon": 180,
+                "fov": 70
+            },
+            "pos1": {
+                "lat": -1.5,
+                "lon": 206,
+                "fov": 80
+            },
+            "duration": 5000,
+            "easing": "InOut"
+        },
+        {
+            "key": "zhong_shan_she_qu",
+            "pos0": {
+                "lat": -1.5,
+                "lon": 206,
+                "fov": 80
+            },
+            "pos1": {
+                "lat": 0,
+                "lon": -15,
+                "fov": 90
+            },
+            "duration": 10000,
+            "easing": "InOut"
+        }
+    ]
+}

@@ -1,92 +1,47 @@
 import React from 'react';
-//import XRPlayer from '../../lib/index';
-import XRPlayer from '../../src/index';
+import XRPlayer from '../../src/index'; // 实际项目中使用，请使用如下方式
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
-console.log('xrplayer', XRPlayer);
 class App extends React.Component {
 
     state = {
         isFullScreen: false,
-        onOrientationControls: false
+        onOrientationControls: false,
+        isDataReady: false
     }
 
     constructor(props) {
         super(props);
         this.xrManager = null;
-
-        this.model_list = [
-            ['23433', {
-                objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.json",
-                texture: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.png",
-                modeFormat: "obj",
-                scale: 1
-            }]
-        ];
-
-        this.hot_spot_list = [
-            ['infocard', {
-                title: '林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。'
-                , lat: -90, lon: -10, animate: true,
-                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
-                img_url: 'https://bkimg.cdn.bcebos.com/pic/bba1cd11728b471065ce20afc0cec3fdfd0323f4?x-bce-process=image/watermark,g_7,image_d2F0ZXIvYmFpa2U4MA==,xp_5,yp_5',
-                img_height: 100, img_width: 150, title_width: 300
-            }],
-            ['image', {
-                title: "景点二", lat: -153, lon: -44,
-                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
-                img_url: 'https://www.tutorialrepublic.com//examples/images/sky.jpg',
-                img_height: 100, img_width: 100
-            }],
-            ['video', {
-                title: "景点三", lon: 32, lat: 14,
-                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
-                img_url: 'https://www.tutorialrepublic.com//examples/images/balloons.jpg',
-                img_height: 100, img_width: 100
-            }]
-        ];
-
-        this.event_list = [
-            ['infocard', {
-                id: 'infocard',
-                type: 'infocard',
-                iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
-            }],
-            ['image', {
-                id: 'image',
-                type: 'image',
-                imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                jumpUrl: 'http://www.youmuvideo.com',
-            }],
-            ['video', {
-                id: 'video',
-                type: 'video',
-                videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
-            }],
-            ['control', {
-                id: 'control',
-                type: 'control',
-            }]
-        ]
+        this.xrConfigure = {};
+        this.hot_spot_list = [];
+        this.event_list = [];
+        this.model_list = [];
         this.autoDisplayList = [];
+        fetch('/react-xrplayer/mock/view1.json')
+            .then(res => {
+                return res.json();
+            })
+            .then(json => {
+                console.log('json', json);
+                this.xrConfigure = json;
+                this.setState({
+                    isDataReady: true,
+                });
+            });
     }
 
     onXRCreated = (manager) => {
         this.xrManager = manager;
-        this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
+        window.xrManager = manager;
+        this.xrManager.setHotSpots(this.xrConfigure.hot_spot_list, this.xrConfigure.event_list);
         this.xrManager.toNormalView(5000, 1000);
-        this.xrManager.setModels(this.model_list);
+        this.xrManager.setModels(this.xrConfigure.model_list);
         this.xrManager.connectCameraControl();
-        //this.xrManager.setFovVerticalScope(-50, 50);
+        this.xrManager.setFovVerticalScope(-90, 90);
         this.xrManager.enableChangeFov(true);
-        this.xrManager.setParticleEffectRes({
-            url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
-            ,
-            num: 5000, range: 500,
-            color: 0xffffff, sizeAttenuation: true
-        });
-
+        this.xrManager.setParticleEffectRes(this.xrConfigure.particle_effect);
         this.onCameraAnimationSet();
     }
 
@@ -120,8 +75,8 @@ class App extends React.Component {
 
     onChangeSenceRes = () => {
         this.xrManager.setSenceResource({
-            type: 'image',
-            res_url: 'https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg'
+            type: 'hls',
+            res_url: 'https://cache2.utovr.com/977825f316044bd6b20362be4cf39680/L2_1buy4rinqqxlqesb.m3u8'
         });
     }
 
@@ -246,7 +201,6 @@ class App extends React.Component {
         // document.body.appendChild(canvas);
 
         // 以下代码用于测试输入Video作为文本框的内容，测试时需同时把inputVideo: video取消注释。同样存在跨域问题
-        let video = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
 
         if (!!!this.textBoxParams) {    //多次点击修改可测试不同情况下的文本框
             this.textBoxParams = [
@@ -328,27 +282,28 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                <XRPlayer
-                    width="100vw"
-                    height="100vh"
-                    camera_position={{
-                        x: 0,
-                        y: 450,
-                        z: 0
-                    }}
-                    onCreated={this.onXRCreated}
-                    scene_texture_resource={{
-                        type: 'hls',
-                        //res_url: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                        res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
-                        panoramic_type: "360",
-                        radius: 500
-                    }}
-                    axes_helper_display={true}
-                    is_full_screen={this.state.isFullScreen}
-                    onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
-                    onEventHandler={this.onEventHandler}
-                ></XRPlayer>
+                {
+                    this.state.isDataReady ?
+                        <XRPlayer
+                            width="100vw"
+                            height="100vh"
+                            camera_position={{
+                                x: 0,
+                                y: 450,
+                                z: 0
+                            }}
+                            onCreated={this.onXRCreated}
+                            scene_texture_resource={
+                                this.xrConfigure.res_urls[0]
+                            }
+                            axes_helper_display={true}
+                            is_full_screen={this.state.isFullScreen}
+                            onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
+                            onEventHandler={this.onEventHandler}
+                        ></XRPlayer>
+                        :
+                        <div>加载中</div>
+                }
                 <div style={{ "position": "fixed", "bottom": "0" }}>
                     <button onClick={this.onStartSenceVideoDisplay}>播放</button>
                     <button onClick={this.onPauseSenceVideoDisplay}>暂停</button>

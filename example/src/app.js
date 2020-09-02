@@ -225,7 +225,7 @@ class App extends React.Component {
 
     onCreateTextBox = () => {
         if (!!!this.TextBox) {
-            this.EmbeddedResourceBox = 1 ;
+            this.EmbeddedResourceBox = 1;
             this.xrManager.createTextBox('textBox1', {
                 position: { x: 0, y: 0, z: -500 }
             });
@@ -274,7 +274,7 @@ class App extends React.Component {
             ];
             this.textBoxParamsCount = -1;
         }
-        this.textBoxParamsCount = (this.textBoxParamsCount+1)%3;
+        this.textBoxParamsCount = (this.textBoxParamsCount + 1) % 3;
         this.xrManager.changeTextBox('textBox1', this.textBoxParams[this.textBoxParamsCount]);
     }
 

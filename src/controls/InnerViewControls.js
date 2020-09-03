@@ -173,9 +173,9 @@ class InnerViewControls {
             container.addEventListener('mousemove', this.onDocumentMouseMove, false);
             container.addEventListener('mouseup', this.onDocumentMouseUp, false);
             container.addEventListener('wheel', this.onDocumentMouseWheel, false);
-            //添加键盘监听
-            document.addEventListener('keydown', this.onDocumentKeyDown, false);
-            document.addEventListener('keyup', this.onDocumentKeyUp, false);
+            // TODO 键盘控制时候，会印象到文字输入 
+            //document.addEventListener('keydown', this.onDocumentKeyDown, false);
+            //document.addEventListener('keyup', this.onDocumentKeyUp, false);
         }
     };
 

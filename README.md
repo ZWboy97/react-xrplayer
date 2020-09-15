@@ -4,7 +4,7 @@
 ![profileviews](https://windard-visitor-badge.glitch.me/badge?page_id=zwboy97.github.profile)
 ![](https://img.shields.io/npm/l/express.svg)
 ![](https://img.shields.io/badge/language-javascript-yellow.svg)
-![](https://img.shields.io/badge/support-chorme-lightgrey.svg)
+![](https://img.shields.io/badge/support-chrome-lightgrey.svg)
 ![status](https://img.shields.io/badge/status-dev-red.svg)
 ## 关于
 

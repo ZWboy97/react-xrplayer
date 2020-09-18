@@ -15,6 +15,7 @@ import CameraMoveAction from "../action/CameraMoveAction";
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 import EmbeddedBoxManager from "../display/ResourceBox/EmbeddedResource/EmbeddedBoxManager";
+import EmbeddedTextBox from "../display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
 
 class XRPlayerManager {
 
@@ -427,10 +428,28 @@ class XRPlayerManager {
     }
 
     simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
-        var params = {};
-        params.cameraPosition = this.getCameraPosition();
-        params.position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
-        return this.textHelper.createTextBox(boxId, params, this.scene);
+        let textBox = new EmbeddedTextBox(boxId);
+        textBox.setText('简易文本框');
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let lon = 90 - THREE.Math.radToDeg(theta);
+        let lat = 90 - THREE.Math.radToDeg(phi);
+        textBox.setPosition(lat, lon);
+        return textBox;
+    }
+
+    //快捷设置嵌入文本框的点击事件，如展示图片、视频、网页
+    simpleSetEmbeddedBoxEvent = (boxId, data) => {
+        let textBox = this.getEmbeddedBoxManager().getEmbeddedBox(boxId);
+        if (!!!textBox) return;
+        textBox.onClick(() => {
+            this.handler(data.type, { data }, () => {
+                this.closeEffectContainer();
+            });
+        });
     }
 
     setTextBoxText = (boxId, message) => {    //改变文本框的内容

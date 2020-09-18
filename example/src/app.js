@@ -248,19 +248,32 @@ class App extends React.Component {
     onChangeTextBox = () => {
         let textBox = this.boxManager.getEmbeddedBox('box1');
         textBox.setTextSize('large');
-        textBox.onClick(() => {
+        /*textBox.onClick(() => {
             console.log("点击了标签");
-        });
+        });*/
+        this.xrManager.simpleSetEmbeddedBoxEvent('box1', {
+                type: 'infocard',
+                iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+            });
 
         let imageBox = this.boxManager.getEmbeddedBox('box2');
         imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
         imageBox.setDraggable(true);
+        this.xrManager.simpleSetEmbeddedBoxEvent('box2', {
+            type: 'image',
+            imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+            jumpUrl: 'http://www.youmuvideo.com',
+        });
 
         let videoBox = this.boxManager.getEmbeddedBox('box3');
         videoBox.setVideoSize(213, 120);
         videoBox.setPosition(30, 0);
         videoBox.play();
         videoBox.setDraggable(true);
+        this.xrManager.simpleSetEmbeddedBoxEvent('box3', {
+            type: 'video',
+            videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
+        });
     }
 
     onShowTextBox = () => {
@@ -289,12 +302,18 @@ class App extends React.Component {
     }
 
     onSimpleCreateTextBox = () => {
-        this.xrManager.simpleCreateTextBox('textBox2');
+        let simpleBox = this.xrManager.simpleCreateTextBox('textBoxSimple');
+        let boxManager = this.xrManager.getEmbeddedBoxManager();
+        boxManager.addEmbeddedBox(simpleBox);
     }
 
     onSimpleChangeTextBox = () => {
-        this.xrManager.setTextBoxText('textBox2', "评论1：abcd");
-        this.xrManager.setTextBoxSize('textBox2', 230, 60);
+        let boxManager = this.xrManager.getEmbeddedBoxManager();
+        let textBox = boxManager.getEmbeddedBox('textBoxSimple');
+        textBox.setTextSize('large');
+        textBox.onClick(() => {
+            console.log("点击了简易标签");
+        });
     }
 
     onPickDirector = () => {
@@ -333,9 +352,10 @@ class App extends React.Component {
                     }}
                     onCreated={this.onXRCreated}
                     scene_texture_resource={{
-                        type: 'hls',
+                        type: 'mp4',
                         //res_url: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                        res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
+                        //res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
+                        res_url: "https://live360bucket.oss-cn-beijing.aliyuncs.com/vrresource/%E8%BF%87%E5%B1%B1%E8%BD%A6.mp4",
                         panoramic_type: "360",
                         radius: 500
                     }}

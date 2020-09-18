@@ -16,6 +16,8 @@ import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
 import EmbeddedBoxManager from "../display/ResourceBox/EmbeddedResource/EmbeddedBoxManager";
 import EmbeddedTextBox from "../display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
+import EmbeddedImageBox from "../display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
+import EmbeddedVideoBox from "../display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
 
 class XRPlayerManager {
 
@@ -430,6 +432,32 @@ class XRPlayerManager {
     simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
         let textBox = new EmbeddedTextBox(boxId);
         textBox.setText('简易文本框');
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let lon = 90 - THREE.Math.radToDeg(theta);
+        let lat = 90 - THREE.Math.radToDeg(phi);
+        textBox.setPosition(lat, lon);
+        return textBox;
+    }
+
+    simpleCreateImageBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+        let textBox = new EmbeddedImageBox(boxId);
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let lon = 90 - THREE.Math.radToDeg(theta);
+        let lat = 90 - THREE.Math.radToDeg(phi);
+        textBox.setPosition(lat, lon);
+        return textBox;
+    }
+
+    simpleCreateVideoBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+        let textBox = new EmbeddedVideoBox(boxId);
         let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
         const spherical = new THREE.Spherical();
         spherical.setFromCartesianCoords(position.x, position.y, position.z);

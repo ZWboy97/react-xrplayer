@@ -257,7 +257,8 @@ class App extends React.Component {
     }
 
     onSimpleCreateTextBox = () => {
-        let simpleBox = this.xrManager.simpleCreateTextBox('textBoxSimple');
+        let simpleBox = this.xrManager.simpleCreateImageBox('textBoxSimple');
+        simpleBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
         let boxManager = this.xrManager.getEmbeddedBoxManager();
         boxManager.addEmbeddedBox(simpleBox);
     }

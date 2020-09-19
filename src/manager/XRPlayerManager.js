@@ -10,11 +10,11 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import ResourceBoxHelper from "../display/ResourceBox/ResourceBoxHelper";
 import CameraMoveAction from "../action/CameraMoveAction";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
+import EmbeddedBoxManager from "../display/ResourceBox/EmbeddedResource/EmbeddedBoxManager";
 
 class XRPlayerManager {
 
@@ -138,7 +138,8 @@ class XRPlayerManager {
     }
 
     initTextHelper = () => {
-        this.textHelper = new ResourceBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
+        // this.textHelper = new ResourceBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls, this.mount);
+        this.embeddedBoxManager = new EmbeddedBoxManager(this);
     }
 
     animate = (time) => {
@@ -170,6 +171,7 @@ class XRPlayerManager {
             this.spriteShapeHelper.update();
         }
         this.textHelper && this.textHelper.update();
+        this.embeddedBoxManager && this.embeddedBoxManager.update();
     }
 
     /*****************************全局接口************************************ */
@@ -420,6 +422,10 @@ class XRPlayerManager {
     }
 
     /*******************************文本框接口********************************** */
+    getEmbeddedBoxManager = () => {
+        return this.embeddedBoxManager;
+    }
+
     simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
         var params = {};
         params.cameraPosition = this.getCameraPosition();

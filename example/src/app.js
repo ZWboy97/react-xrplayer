@@ -1,92 +1,50 @@
 import React from 'react';
-//import XRPlayer from '../../lib/index';
-import XRPlayer from '../../src/index';
+import XRPlayer from '../../src/index'; // 实际项目中使用，请使用如下方式
 //import XRPlayer from 'react-xrplayer'
 import TWEEN from '@tweenjs/tween.js';
 import * as THREE from 'three';
-console.log('xrplayer', XRPlayer);
+import EmbeddedTextBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
+import EmbeddedImageBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
+import EmbeddedVideoBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
 class App extends React.Component {
 
     state = {
         isFullScreen: false,
-        onOrientationControls: false
+        onOrientationControls: false,
+        isDataReady: false
     }
 
     constructor(props) {
         super(props);
         this.xrManager = null;
-
-        this.model_list = [
-            ['23433', {
-                objUrl: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.json",
-                texture: "https://live360.oss-cn-beijing.aliyuncs.com/xr/models/texture1.png",
-                modeFormat: "obj",
-                scale: 1
-            }]
-        ];
-
-        this.hot_spot_list = [
-            ['infocard', {
-                title: '林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。'
-                , lat: -90, lon: -10, animate: true,
-                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
-                img_url: 'https://bkimg.cdn.bcebos.com/pic/bba1cd11728b471065ce20afc0cec3fdfd0323f4?x-bce-process=image/watermark,g_7,image_d2F0ZXIvYmFpa2U4MA==,xp_5,yp_5',
-                img_height: 100, img_width: 150, title_width: 300
-            }],
-            ['image', {
-                title: "景点二", lat: -153, lon: -44,
-                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
-                img_url: 'https://www.tutorialrepublic.com//examples/images/sky.jpg',
-                img_height: 100, img_width: 100
-            }],
-            ['video', {
-                title: "景点三", lon: 32, lat: 14,
-                res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png',
-                img_url: 'https://www.tutorialrepublic.com//examples/images/balloons.jpg',
-                img_height: 100, img_width: 100
-            }]
-        ];
-
-        this.event_list = [
-            ['infocard', {
-                id: 'infocard',
-                type: 'infocard',
-                iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
-            }],
-            ['image', {
-                id: 'image',
-                type: 'image',
-                imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                jumpUrl: 'http://www.youmuvideo.com',
-            }],
-            ['video', {
-                id: 'video',
-                type: 'video',
-                videoUrl: 'https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4'
-            }],
-            ['control', {
-                id: 'control',
-                type: 'control',
-            }]
-        ]
+        this.xrConfigure = {};
+        this.hot_spot_list = [];
+        this.event_list = [];
+        this.model_list = [];
         this.autoDisplayList = [];
+        fetch('/react-xrplayer/mock/view1.json')
+            .then(res => {
+                return res.json();
+            })
+            .then(json => {
+                console.log('json', json);
+                this.xrConfigure = json;
+                this.setState({
+                    isDataReady: true,
+                });
+            });
     }
 
     onXRCreated = (manager) => {
         this.xrManager = manager;
-        this.xrManager.setHotSpots(this.hot_spot_list, this.event_list);
+        window.xrManager = manager;
+        this.xrManager.setHotSpots(this.xrConfigure.hot_spot_list, this.xrConfigure.event_list);
         this.xrManager.toNormalView(5000, 1000);
-        this.xrManager.setModels(this.model_list);
+        this.xrManager.setModels(this.xrConfigure.model_list);
         this.xrManager.connectCameraControl();
-        //this.xrManager.setFovVerticalScope(-50, 50);
+        this.xrManager.setFovVerticalScope(-90, 90);
         this.xrManager.enableChangeFov(true);
-        this.xrManager.setParticleEffectRes({
-            url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png'
-            ,
-            num: 5000, range: 500,
-            color: 0xffffff, sizeAttenuation: true
-        });
-
+        this.xrManager.setParticleEffectRes(this.xrConfigure.particle_effect);
         this.onCameraAnimationSet();
     }
 
@@ -120,8 +78,8 @@ class App extends React.Component {
 
     onChangeSenceRes = () => {
         this.xrManager.setSenceResource({
-            type: 'image',
-            res_url: 'https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg'
+            type: 'hls',
+            res_url: 'https://cache2.utovr.com/977825f316044bd6b20362be4cf39680/L2_1buy4rinqqxlqesb.m3u8'
         });
     }
 
@@ -224,58 +182,40 @@ class App extends React.Component {
     }
 
     onCreateTextBox = () => {
-        if (!!!this.TextBox) {
-            this.EmbeddedResourceBox = 1;
-            this.xrManager.createTextBox('textBox1', {
-                position: { x: 0, y: 0, z: -500 }
-            });
-            this.TextBoxHidden = false;
-        }
+        let textBox = new EmbeddedTextBox('box1');
+        // textBox.setText('helloooooooooooooooooooooo');
+        textBox.setPosition(-30, 0);
+        this.boxManager = this.xrManager.getEmbeddedBoxManager();
+        this.boxManager.addEmbeddedBox(textBox);
+
+        let imageBox = new EmbeddedImageBox('box2');
+        imageBox.setImage(process.env.PUBLIC_URL+'/logo192.png', 192, 192);
+        imageBox.setPosition(0, 45);
+        this.boxManager.addEmbeddedBox(imageBox);
+
+        let videoBox = new EmbeddedVideoBox('box3');
+        videoBox.setVideo(process.env.PUBLIC_URL+'/shuttle.mp4', 426, 240);
+        videoBox.setPosition(0, 120);
+        // videoBox.setEnableAutoDisplay(true);
+        this.boxManager.addEmbeddedBox(videoBox);
     }
 
     onChangeTextBox = () => {
-        // 以下代码用于测试输入canvas作为文本框的内容，测试时需同时把inputCanvas: canvas取消注释。目前存在问题：使用服务器图片导致跨域，材质无法加载变成黑皮
-        // let img = document.createElement("img");
-        // img.src = "https://www.tutorialrepublic.com//examples/images/balloons.jpg";
-        // img.alt = "image";
-        // let canvas = document.createElement("canvas");
-        // canvas.width = 500;
-        // canvas.height = 500;
-        // let context = canvas.getContext('2d');
-        // context.drawImage(img, 0, 0);
-        // document.body.appendChild(canvas);
+        let textBox = this.boxManager.getEmbeddedBox('box1');
+        textBox.setTextSize('large');
+        textBox.onClick(() => {
+            console.log("点击了标签");
+        });
 
-        // 以下代码用于测试输入Video作为文本框的内容，测试时需同时把inputVideo: video取消注释。同样存在跨域问题
-        let video = "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4";
+        let imageBox = this.boxManager.getEmbeddedBox('box2');
+        imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
+        imageBox.setDraggable(true);
 
-        if (!!!this.textBoxParams) {    //多次点击修改可测试不同情况下的文本框
-            this.textBoxParams = [
-                {
-                    message: "林则徐出生地纪念馆位于福州市中山路19号，是林则徐出生和幼年生活、学习的地方之一，1997年被列入市级文物保护单位。2000年6月26日，福州市人民政府在馆内开辟了“福州市禁毒教育基地”。此后，年均有八九万名游客到这里接受爱国主义教育。",
-                    position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
-                    backgroundColor: { r: 255, g: 176, b: 79, a: 0.7 },
-                    borderColor: { r: 245, g: 128, b: 0, a: 0.9 },
-                    borderWidth: 500,
-                    widthAdaptation: false,
-                    draggable: true,
-                },
-                {
-                    message: "景点4",
-                    position: new THREE.Vector3(-125 * Math.sqrt(3), 125, -250 * Math.sqrt(2)),
-                    draggable: true,
-                    widthAdaptation: true,
-                    // inputCanvas: canvas
-                },
-                {
-                    message: "景点ABCDEFG",
-                    widthAdaptation: true,
-                    // inputVideoURL: video
-                }
-            ];
-            this.textBoxParamsCount = -1;
-        }
-        this.textBoxParamsCount = (this.textBoxParamsCount + 1) % 3;
-        this.xrManager.changeTextBox('textBox1', this.textBoxParams[this.textBoxParamsCount]);
+        let videoBox = this.boxManager.getEmbeddedBox('box3');
+        videoBox.setVideoSize(213, 120);
+        videoBox.setPosition(30, 0);
+        videoBox.play();
+        videoBox.setDraggable(true);
     }
 
     onShowTextBox = () => {
@@ -291,6 +231,16 @@ class App extends React.Component {
 
     onRemoveTextBox = () => {
         this.xrManager.removeTextBox('textBox1');
+    }
+
+    onChangeTextBoxType = () => {
+        if (this.textBoxType === '2d') {
+            this.textBoxType = 'embedded';
+        }
+        else {
+            this.textBoxType = '2d';
+        }
+        this.xrManager.textHelper.setTextBoxType(this.textBoxType);
     }
 
     onSimpleCreateTextBox = () => {
@@ -328,27 +278,28 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                <XRPlayer
-                    width="100vw"
-                    height="100vh"
-                    camera_position={{
-                        x: 0,
-                        y: 450,
-                        z: 0
-                    }}
-                    onCreated={this.onXRCreated}
-                    scene_texture_resource={{
-                        type: 'hls',
-                        //res_url: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                        res_url: "http://cache.utovr.com/eb845860c7c448958e9d2c191866bca2/L2_odieddoam7txzqb8.m3u8",
-                        panoramic_type: "360",
-                        radius: 500
-                    }}
-                    axes_helper_display={true}
-                    is_full_screen={this.state.isFullScreen}
-                    onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
-                    onEventHandler={this.onEventHandler}
-                ></XRPlayer>
+                {
+                    this.state.isDataReady ?
+                        <XRPlayer
+                            width="100vw"
+                            height="100vh"
+                            camera_position={{
+                                x: 0,
+                                y: 450,
+                                z: 0
+                            }}
+                            onCreated={this.onXRCreated}
+                            scene_texture_resource={
+                                this.xrConfigure.res_urls[0]
+                            }
+                            axes_helper_display={true}
+                            is_full_screen={this.state.isFullScreen}
+                            onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
+                            onEventHandler={this.onEventHandler}
+                        ></XRPlayer>
+                        :
+                        <div>加载中</div>
+                }
                 <div style={{ "position": "fixed", "bottom": "0" }}>
                     <button onClick={this.onStartSenceVideoDisplay}>播放</button>
                     <button onClick={this.onPauseSenceVideoDisplay}>暂停</button>
@@ -371,6 +322,7 @@ class App extends React.Component {
                     <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                     <button onClick={this.onChangeTextBox}>修改文本框</button>
                     <button onClick={this.onRemoveTextBox}>移除文本框</button>
+                    <button onClick={this.onChangeTextBoxType}>改变文本框类型</button>
                     <button onClick={this.onSimpleCreateTextBox}>在相机注视位置创建文本框</button>
                     <button onClick={this.onSimpleChangeTextBox}>修改文本框内容</button>
                     <button onClick={() => { this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio(); }}>播放/暂停音频</button>

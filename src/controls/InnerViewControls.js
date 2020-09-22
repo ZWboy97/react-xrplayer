@@ -194,6 +194,7 @@ class InnerViewControls {
     };
 
     removeControlsListener = () => {
+        const container = document.getElementById('xr-container')
         container.removeEventListener('touchstart', this.onTouchstart, false);
         container.removeEventListener('touchmove', this.onTouchmove, false);
         container.removeEventListener('touchend', this.onTouchend, false);

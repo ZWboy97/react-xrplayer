@@ -685,6 +685,16 @@ class XRPlayerManager {
         this.mount.removeChild(this.renderer.domElement)
         this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();
     }
+
+    spherical2Cartesian = (lat, lon, distance) => {
+        let pos = { x: 0, y: 0, z: 0 };
+        const phi = THREE.Math.degToRad(90 - lat);
+        const theta = THREE.Math.degToRad(lon);
+        pos.x = distance * Math.sin(phi) * Math.cos(theta);
+        pos.y = distance * Math.cos(phi);
+        pos.z = distance * Math.sin(phi) * Math.sin(theta);
+        return pos;
+    }
 }
 
 export default XRPlayerManager;

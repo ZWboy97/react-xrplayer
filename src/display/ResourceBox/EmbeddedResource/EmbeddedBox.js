@@ -8,6 +8,7 @@ class EmbeddedBox {
         this.lat = 0;
         this.lon = 0;
         this.draggable = false;
+        this.visible = true;
 
         //控制信息
         this.planeMesh = null;
@@ -16,7 +17,6 @@ class EmbeddedBox {
         this.height = 0;
         this.manager = null;
         this.meshReady = false;
-        this.visible = true;
     }
 
     //外部接口
@@ -53,6 +53,18 @@ class EmbeddedBox {
 
     getDraggable = () => {
         return this.draggable;
+    }
+
+    setVisible = (visible) => {
+        this.visible = visible;
+        if (this.meshReady === false) return;
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = visible;
+        }
+    }
+
+    getVisible = () => {
+        return this.visible;
     }
 
     onClick = (callback) => {
@@ -100,18 +112,6 @@ class EmbeddedBox {
             500 * Math.sin(phi) * Math.sin(theta)
         );
     };
-
-    setVisible = (visible) => {
-        this.visible = visible;
-        if (this.meshReady === false) return;
-        if (this.planeMesh !== null) {
-            this.planeMesh.visible = visible;
-        }
-    }
-
-    getVisible = () => {
-        return this.visible;
-    }
 
     kill = () => {
 

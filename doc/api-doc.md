@@ -411,3 +411,153 @@ EmbeddedBox
 - 是否允许自动播放
 
 ## 四、事件响应模块
+
+
+## 三、内嵌内容模块
+#### 概述
+该模块提供四种类型的内嵌资源（文本、图片、视频、模型），用户可在自己的代码中设计好这些资源后通过内嵌资源管理器（EmbeddedBoxManager）添加到XR场景中。
+
+### 1. 内嵌资源
+#### 支持内嵌的内容
+内嵌文本
+
+- 以3D的方式将文本框内容嵌入到全景场景中
+- EmbeddedTextBox
+
+内嵌图片
+
+- 以3D的方式将图片框嵌入到全景场景中
+- EmbeddedImageBox
+
+内嵌视频
+
+- 以3D的方式将视频嵌入到全景场景中
+- EmbeddedVideoBox
+
+内嵌模型
+
+- 以3D方式将模型嵌入到全景场景中
+- EmbeddedModelBox
+- 未实现
+
+#### 数据结构
+##### 基类
+```js
+EmbeddedBox
+{
+    // 信息字段
+    id:'e_xxxxx',
+    type: 'text',// 类型【text,image, video,model】
+    callback: function,// 点击回调函数
+    lat: -90, lon: -10, // 标签位置
+    dragable: false,//可否拖拽
+    visible: true;// 是否可见
+
+    // 控制字段
+    planeMesh: null,// three.js中的mesh，代表资源实体
+    canvas: null,// canvas画布，用于生成材质
+    width: 0, height: 0,// 具体大小参数
+    manager: null,// 与之关联的内嵌资源管理器
+    meshReady: false,// 标记mesh实体是否已经准备好添加到场景中
+}
+```
+##### 内嵌文本
+```js
+EmbeddedTextBox
+{
+    // 目前已提供接口的参数
+    text: "请输入文字",// 文本框中的文字
+    textSize: "medium",// 字体大小【large, medium, small】
+    // 未提供接口，但可修改的参数，以下为默认值
+    this.font = 'Arial';    //字体
+    this.fontSize = 36;     //字体大小
+    this.borderThickness = 5;   //边框厚度
+    this.maxWidth = 100;     //一行中文字占用的最多像素，超过就换行
+    this.borderDistanceX = 15;  //左边距
+    this.borderDistanceY = 15;  //上边距
+    this.fontColor = { r:255, g:255, b:255, a:1.0 };    //字体颜色（默认白色不透明）
+    this.borderColor = { r:100, g:100, b:100, a:0.5 };  //边框颜色（默认灰色半透明）
+    this.backgroundColor = { r:100, g:100, b:100, a:0.5 };  //背景颜色（默认灰色半透明）
+}
+```
+##### 内嵌图片
+```js
+EmbeddedImageBox
+{
+    url = '',// 图片位置
+}
+```
+##### 内嵌视频
+```js
+EmbeddedVideoBox
+{
+    url = '',// 视频位置
+    autoplay = false;// 是否自动播放
+}
+```
+#### 接口
+##### ----共用接口----
+##### setPosition(lat, lon)
+- 设置当前内嵌资源位置
+- 参数为经纬度，角度制
+
+##### getPosition()
+- 获取当前内嵌资源经纬度
+- `{lat: this.lat, lon: this.lon}`
+
+##### setDraggable(enable)
+- 设置当前资源可否被鼠标拖动
+- enable取值：[true, false]
+
+##### getDraggable()
+- 获取当前资源可否被鼠标拖动
+
+##### setVisible(visible)
+- 设置当前资源是否可见
+
+##### getVisible()
+- 获取当前资源可见性
+
+##### onClick(callback)
+- 设置当前资源被点击后的回调函数
+
+##### ----EmbeddedTextBox特有接口----
+##### setText(String)
+- 设置文本资源的文字内容
+
+##### setTextSize(textSize)
+- 设置文本资源字体大小
+- 可选参数：["small", "medium", "large"]
+
+##### getTextInfo()
+- 返回当前资源文本内容
+
+
+##### ----EmbeddedImageBox特有接口----
+##### setImage(url, width = 30, height = 30)
+- 设置图片资源地址，大小
+- 宽高默认为30像素
+
+##### setImageSize(width, height)
+- 设置图片大小，单位为像素
+
+##### getImageInfo()
+- 返回资源信息
+- {url: this.url, width: this.width, height: this.height}
+
+##### -----EmbeddedVideoBox特有接口-----
+##### setVideo(url, width = 30, height = 30)
+- 设置视频资源地址，大小
+- 宽高默认为30像素
+
+##### setVideoSize(width, height)
+- 设置视频大小，单位为像素
+
+##### setEnableAutoDisplay(enable)
+- 设置视频自动播放
+
+##### play()
+- 播放视频
+
+##### pause()
+- 暂停视频

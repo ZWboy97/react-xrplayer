@@ -28,16 +28,16 @@ class EmbeddedBoxManager {
         }
     }
 
-    removeEmbeddedBox = (embeddedBox) => {
+    removeEmbeddedBox = (id) => {
+        let embeddedBox = this.getEmbeddedBox(id);
+        if (!!!embeddedBox) return false;
         this.embeddedBoxes.delete(embeddedBox.id);
-
         this.XRManager.scene.remove(embeddedBox.planeMesh);
-
         if (embeddedBox.draggable) {
             this.dragMeshes.delete(embeddedBox.planeMesh);
         }
-
         embeddedBox.kill();
+        return true;
     }
 
     getEmbeddedBox = (id) => {
@@ -51,7 +51,9 @@ class EmbeddedBoxManager {
     }
 
     clearAllEmbeddedBox = () => {
-        this.embeddedBoxes.clear();
+        for (let id of this.embeddedBoxes.keys()) {
+            this.removeEmbeddedBox(id);
+        }
     }
 
     //内部控制
@@ -68,7 +70,6 @@ class EmbeddedBoxManager {
                 let mesh = this.XRManager.scene.children.find(box => box.name === embeddedBox.id);
                 this.XRManager.scene.remove(mesh);
                 this.XRManager.scene.add(embeddedBox.planeMesh);
-                console.log("add "+embeddedBox.id);
                 deletBox.push(embeddedBox);
             }
         }

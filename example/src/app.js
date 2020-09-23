@@ -255,12 +255,9 @@ class App extends React.Component {
 
     onRemoveTextBox = () => {
         let boxManager = this.xrManager.getEmbeddedBoxManager();
-        let textBox = boxManager.getEmbeddedBox('box1');
-        if (!!!textBox) {
+        if (!boxManager.removeEmbeddedBox('box1')) {
             alert("请先点击“创建文本框”按钮");
-            return;
         }
-        boxManager.removeEmbeddedBox(textBox);
     }
 
     onChangeTextBoxType = () => {

@@ -201,8 +201,13 @@ class App extends React.Component {
     }
 
     onChangeTextBox = () => {
+        if (!!!this.boxManager) {
+            alert("请先点击“创建文本框”按钮");
+            return;
+        }
+
         let textBox = this.boxManager.getEmbeddedBox('box1');
-        textBox.setTextSize('large');
+        textBox && textBox.setTextSize('large');
         /*textBox.onClick(() => {
             console.log("点击了标签");
         });*/
@@ -232,18 +237,30 @@ class App extends React.Component {
     }
 
     onShowTextBox = () => {
+        let boxManager = this.xrManager.getEmbeddedBoxManager();
+        let textBox = boxManager.getEmbeddedBox('box1');
+        if (!!!textBox) {
+            alert("请先点击“创建文本框”按钮");
+            return;
+        }
         if (this.TextBoxHidden) {
-            this.xrManager.showTextBox('textBox1');
+            textBox.setVisible(true);
             this.TextBoxHidden = false;
         }
         else {
-            this.xrManager.hideTextBox('textBox1');
+            textBox.setVisible(false);
             this.TextBoxHidden = true;
         }
     }
 
     onRemoveTextBox = () => {
-        this.xrManager.removeTextBox('textBox1');
+        let boxManager = this.xrManager.getEmbeddedBoxManager();
+        let textBox = boxManager.getEmbeddedBox('box1');
+        if (!!!textBox) {
+            alert("请先点击“创建文本框”按钮");
+            return;
+        }
+        boxManager.removeEmbeddedBox(textBox);
     }
 
     onChangeTextBoxType = () => {
@@ -266,7 +283,11 @@ class App extends React.Component {
     onSimpleChangeTextBox = () => {
         let boxManager = this.xrManager.getEmbeddedBoxManager();
         let textBox = boxManager.getEmbeddedBox('textBoxSimple');
-        textBox.setTextSize('large');
+        if (textBox == null) {
+            alert("请先点击“在相机注视位置创建文本框”按钮");
+            return;
+        }
+        textBox.setImageSize(256, 256);
         textBox.onClick(() => {
             console.log("点击了简易标签");
         });
@@ -342,7 +363,7 @@ class App extends React.Component {
                     <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                     <button onClick={this.onChangeTextBox}>修改文本框</button>
                     <button onClick={this.onRemoveTextBox}>移除文本框</button>
-                    <button onClick={this.onChangeTextBoxType}>改变文本框类型</button>
+                    {/*<button onClick={this.onChangeTextBoxType}>改变文本框类型</button>*/}
                     <button onClick={this.onSimpleCreateTextBox}>在相机注视位置创建文本框</button>
                     <button onClick={this.onSimpleChangeTextBox}>修改文本框内容</button>
                     <button onClick={() => { this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio(); }}>播放/暂停音频</button>

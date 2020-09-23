@@ -36,6 +36,8 @@ class EmbeddedBoxManager {
         if (embeddedBox.draggable) {
             this.dragMeshes.delete(embeddedBox.planeMesh);
         }
+
+        embeddedBox.kill();
     }
 
     getEmbeddedBox = (id) => {
@@ -43,7 +45,7 @@ class EmbeddedBoxManager {
     }
 
     addEmbeddedBoxList = (embeddedBoxList) => {
-        for (let embeddedBox in embeddedBoxList) {
+        for (let embeddedBox of embeddedBoxList) {
             this.addEmbeddedBox(embeddedBox);
         }
     }
@@ -60,15 +62,17 @@ class EmbeddedBoxManager {
 
     update = () => {
         let deletBox = [];
-        this.boxesNeedAddToScene.forEach(embeddedBox => {
+
+        for (let embeddedBox of this.boxesNeedAddToScene) {
             if (embeddedBox.meshReady) {
                 let mesh = this.XRManager.scene.children.find(box => box.name === embeddedBox.id);
                 this.XRManager.scene.remove(mesh);
                 this.XRManager.scene.add(embeddedBox.planeMesh);
+                console.log("add "+embeddedBox.id);
                 deletBox.push(embeddedBox);
             }
-        });
-        for (let box in deletBox) {
+        }
+        for (let box of deletBox) {
             this.boxesNeedAddToScene.delete(box);
         }
 

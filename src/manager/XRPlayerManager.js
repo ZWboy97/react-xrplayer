@@ -424,7 +424,7 @@ class XRPlayerManager {
         }
     }
 
-    /*******************************文本框接口********************************** */
+    /*******************************嵌入式文本框接口***************************** */
     getEmbeddedBoxManager = () => {
         return this.embeddedBoxManager;
     }
@@ -443,7 +443,7 @@ class XRPlayerManager {
         return textBox;
     }
 
-    simpleCreateImageBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+    simpleCreateImageBox = (boxId) => { //在相机聚焦位置创建一个初始图片框
         let textBox = new EmbeddedImageBox(boxId);
         let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
         const spherical = new THREE.Spherical();
@@ -456,7 +456,7 @@ class XRPlayerManager {
         return textBox;
     }
 
-    simpleCreateVideoBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+    simpleCreateVideoBox = (boxId) => { //在相机聚焦位置创建一个初始视频框
         let textBox = new EmbeddedVideoBox(boxId);
         let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
         const spherical = new THREE.Spherical();
@@ -480,6 +480,7 @@ class XRPlayerManager {
         });
     }
 
+    /*******************************文本框接口********************************** */
     setTextBoxText = (boxId, message) => {    //改变文本框的内容
         var params = {};
         params.message = message;

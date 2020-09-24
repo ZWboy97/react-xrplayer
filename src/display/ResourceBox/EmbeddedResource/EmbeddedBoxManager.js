@@ -12,6 +12,7 @@ class EmbeddedBoxManager {
         this.chosenPlane = null;
         this.boxesNeedDrag = new Set();
 
+        this.isDragging = false;
 
         this.initControlsListener();
     }
@@ -35,6 +36,8 @@ class EmbeddedBoxManager {
         if (embeddedBox.draggable) {
             this.dragMeshes.delete(embeddedBox.planeMesh);
         }
+
+        embeddedBox.kill();
     }
 
     getEmbeddedBox = (id) => {
@@ -42,7 +45,7 @@ class EmbeddedBoxManager {
     }
 
     addEmbeddedBoxList = (embeddedBoxList) => {
-        for (let embeddedBox in embeddedBoxList) {
+        for (let embeddedBox of embeddedBoxList) {
             this.addEmbeddedBox(embeddedBox);
         }
     }
@@ -54,20 +57,22 @@ class EmbeddedBoxManager {
     //内部控制
     updateDisplay = (embeddedBox) => {
         this.boxesNeedAddToScene.add(embeddedBox);
-        this.boxesNeedDrag.add(embeddedBox);
+        embeddedBox.draggable && this.boxesNeedDrag.add(embeddedBox);
     }
 
     update = () => {
         let deletBox = [];
-        this.boxesNeedAddToScene.forEach(embeddedBox => {
+
+        for (let embeddedBox of this.boxesNeedAddToScene) {
             if (embeddedBox.meshReady) {
                 let mesh = this.XRManager.scene.children.find(box => box.name === embeddedBox.id);
                 this.XRManager.scene.remove(mesh);
                 this.XRManager.scene.add(embeddedBox.planeMesh);
+                console.log("add "+embeddedBox.id);
                 deletBox.push(embeddedBox);
             }
-        });
-        for (let box in deletBox) {
+        }
+        for (let box of deletBox) {
             this.boxesNeedAddToScene.delete(box);
         }
 
@@ -131,6 +136,7 @@ class EmbeddedBoxManager {
 
     onDocumentMouseMove = (event) => {
         if (this.isUserInteracting === true) {
+            this.isDragging = true;
             let intersects = this.getIntersects(event.clientX, event.clientY, [this.XRManager.sceneMesh]);
             if (intersects.length > 0) {
                 let newPosition = intersects[0].point.clone().add(this.deltaPosition);
@@ -141,12 +147,7 @@ class EmbeddedBoxManager {
     }
 
     onDocumentMouseUp = (event) => {
-        if (this.isUserInteracting === true) {
-            this.isUserInteracting = false;
-            this.chosenPlane = null;
-            this.XRManager.connectCameraControl();
-        }
-        else {  //只有当不被拖拽时才能触发点击回调，防止误触
+        if(!this.isDragging) {  //只有当不被拖拽时才能触发点击回调，防止误触
             let array = [];
             this.embeddedBoxes.forEach(value => {
                 if (value.callback !== null)
@@ -158,26 +159,37 @@ class EmbeddedBoxManager {
                 box.callback();
             }
         }
+        if (this.isUserInteracting === true) {
+            this.isUserInteracting = false;
+            this.chosenPlane = null;
+            this.XRManager.connectCameraControl();
+            this.isDragging = false;
+        }
     }
 
     onTouchstart = (event) => {
         if (event.targetTouches.length === 1) {
             let array = Array.from(this.dragMeshes);
             let touch = event.targetTouches[0];
+            this.lastTouchX = touch.pageX;
+            this.lastTouchY = touch.pageY;
             var intersects = this.getIntersects(touch.pageX, touch.pageY, array);
+            if (intersects.length > 0) {
+                this.isUserInteracting = true;
+                this.chosenPlane = intersects[0].object;
+                this.isUserInteracting = true;
+                this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.chosenPlane.position.clone());
+                this.XRManager.disConnectCameraControl();
+            }
         }
-        if (intersects.length > 0) {
-            this.isUserInteracting = true;
-            this.chosenPlane = intersects[0].object;
-            this.isUserInteracting = true;
-            this.deltaPosition = intersects[0].point.clone().multiplyScalar(-1).add(this.chosenPlane.position.clone());
-            this.XRManager.disConnectCameraControl();
-        }
+
     }
 
     onTouchmove = (event) => {
         if (this.isUserInteracting === true) {
             let touch = event.targetTouches[0];
+            this.lastTouchX = touch.pageX;
+            this.lastTouchY = touch.pageY;
             let intersects = this.getIntersects(touch.pageX, touch.pageY, [this.XRManager.sceneMesh]);
             if (intersects.length > 0) {
                 let newPosition = intersects[0].point.clone().add(this.deltaPosition);
@@ -188,23 +200,23 @@ class EmbeddedBoxManager {
     }
 
     onTouchend = (event) => {
-        let touch = event.targetTouches[0];
-        if (this.isUserInteracting === true) {
-            this.isUserInteracting = false;
-            this.chosenPlane = null;
-            this.XRManager.connectCameraControl();
-        }
-        else {  //只有当不被拖拽时才能触发点击回调，防止误触
+        if (!this.isDragging) {  //只有当不被拖拽时才能触发点击回调，防止误触
             let array = [];
-            for (let box in this.embeddedBoxes) {
-                if (box.callback !== null)
-                    array.push(box.planeMesh);
-            }
-            let intersects = this.getIntersects(touch.pageX, touch.pageY, array);
+            this.embeddedBoxes.forEach(value => {
+                if (value.callback !== null)
+                    array.push(value.planeMesh);
+            });
+            let intersects = this.getIntersects(this.lastTouchX, this.lastTouchY, array);
             if (intersects.length > 0) {
                 let box = this.getEmbeddedBox(intersects[0].object.name);
                 box.callback();
             }
+        }
+        if (this.isUserInteracting === true) {
+            this.isUserInteracting = false;
+            this.chosenPlane = null;
+            this.XRManager.connectCameraControl();
+            this.isDragging = false;
         }
     }
 }

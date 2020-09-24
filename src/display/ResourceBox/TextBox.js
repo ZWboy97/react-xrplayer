@@ -1,7 +1,11 @@
 import * as THREE from "three";
 
-class EmbeddedResourceBox {
-    constructor(param) {
+class TextBox {
+    constructor(param, container, camera) {
+
+        //2d的拖拽
+
+        //通用设置
         this.message = "请输入文字";                                  //文字
         this.font = "Arial";                                        //字体
         this.fontSize = 36;                                         //字体大小
@@ -17,21 +21,31 @@ class EmbeddedResourceBox {
         this.scaleY = 0.8;                                          //文本框缩放比例Y
         this.position = new THREE.Vector3(0,0,0);          //文本框位置
         this.cameraPosition = null;                                 //文本框初始朝向
-        this.canvasWidth = 1024;                                    //画布宽度
-        this.canvasHeight = 150;                                    //画布高度
-        this.depthTest = false;                                     //是否会被其它物体（如模型，视频背景）遮挡
-        this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
-        this.inputCanvas = null;                                    //用户输入的canvas
-        this.inputVideoURL = null;                                  //用户输入的video的地址
-        this.context = null;                                        //具体的内容对象
-        this.planeMesh = null;                                      //也可以通过Plane呈现
-        this.draggable = false;                                     //可拖拽改变位置
-        this.videoElement = null;                                   //HTML Video元素
         this.widthAdaptation = false;                               //根据文本自适应设置borderWidth，borderHeight。若关闭，则根据设定borderWidth自动换行，自适应borderHeight
+        this.draggable = false;                                     //可拖拽改变位置
+
+        //3d设置
+        this.depthTest = false;                                     //3D场景下是否会被其它物体（如模型，视频背景）遮挡
+
+        //通用控件
+        this.canvas = null;                                         //通过画布创建three.js Sprite实现文字现实
+        this.context = null;                                        //具体的内容对象
+        this.canvasWidth = 0;                                       //画布宽度
+        this.canvasHeight = 0;                                      //画布高度
+        this.showType = "2d";                                       //默认显示2d标签，另一种：this.showType = "embedded"
+        this.hidden = false;
+
+        //3d控件
+        this.planeMesh = null;                                      //通过Plane呈现
+
+        //2d控件
+        this.container = container;
+        this.camera = camera;
 
         this.init(param);
         this.createCanvas();
-        this.createPlane();
+        this.createPlane();                                         //创建3d标签
+        this.init2DCanvas();                                        //2d标签同样基于该canvas，做一些初始设定
     }
 
     init = (parameters) => {
@@ -95,17 +109,11 @@ class EmbeddedResourceBox {
         if (parameters.hasOwnProperty("position")) {
             this.position = parameters.position;
         }
+        else {
+            this.position = this.planeMesh.position;
+        }
         if (parameters.hasOwnProperty("cameraPosition")) {
             this.cameraPosition = parameters.cameraPosition;
-        }
-        if (parameters.hasOwnProperty("inputCanvas")) {
-            this.inputCanvas = parameters.inputCanvas;
-            this.canvas = this.inputCanvas;
-            needNewMaterial = true;
-        }
-        if (parameters.hasOwnProperty("inputVideoURL")) {
-            this.inputVideoURL = parameters.inputVideoURL;
-            needNewMaterial = true;
         }
         //其它设置
         if (parameters.hasOwnProperty("depthTest")) {
@@ -120,21 +128,17 @@ class EmbeddedResourceBox {
             needNewMaterial = true;
             needNewGeometry = true;
         }
+
         return {needNewMaterial, needNewGeometry};
     }
 
     createCanvas = () => {
-        if (this.inputCanvas === null && this.inputVideoURL === null) {
-            this.canvas = document.createElement('canvas');
-            this.context = this.canvas.getContext('2d');
-            this.updateCanvas();
-        }
+        this.canvas = document.createElement('canvas');
+        this.context = this.canvas.getContext('2d');
+        this.updateCanvas();
     }
 
     updateCanvas = () => {
-        if (this.inputCanvas !== null || this.inputVideoURL !== null) {
-            return;
-        }
         const r = 12;//圆角矩形的圆半径
         this.adjustWidthAndHeight(r);
         this.roundRect(0,0,this.borderWidth,this.borderHeight,r);
@@ -173,10 +177,6 @@ class EmbeddedResourceBox {
     }
 
     fillMessage = () => {
-        if (this.inputCanvas !== null || this.inputVideoURL !== null) {
-            return;
-        }
-
         this.context.font = "Bold " + this.fontSize + "px " + this.font;
         this.context.fillStyle = "rgba(" + this.fontColor.r + "," + this.fontColor.g + ","
             + this.fontColor.b + "," + this.fontColor.a + ")";
@@ -229,27 +229,15 @@ class EmbeddedResourceBox {
     createPlane = () => {
         let planeMaterial = this.newPlaneMaterial();
         let planeGeometry = new THREE.PlaneGeometry(this.borderWidth, this.borderHeight);
-        let visible = this.planeMesh === null ? true : this.planeMesh.visible;
+        let visible = this.planeMesh === null ? false : this.planeMesh.visible;
         this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
         this.planeMesh.visible = visible;
         this.updatePlane();
     }
 
     newPlaneMaterial = () => {
-        let texture = null;
-        if (this.inputVideoURL !== null) {
-            this.videoElement = document.createElement("video");
-            this.videoElement.src = this.inputVideoURL;
-            this.videoElement.autoplay = 'autoplay';
-            texture = new THREE.VideoTexture(this.videoElement);
-            texture.minFilter = THREE.LinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.format = THREE.RGBFormat;
-        }
-        else {
-            texture = new THREE.Texture(this.canvas);
-            texture.needsUpdate = true;
-        }
+        let texture = new THREE.Texture(this.canvas);
+        texture.needsUpdate = true;
         let planeMaterial = new THREE.MeshBasicMaterial({map: texture});
         planeMaterial.depthTest = this.depthTest;
         planeMaterial.needsUpdate = true;
@@ -278,6 +266,50 @@ class EmbeddedResourceBox {
         this.updatePlane();
     }
 
+    init2DCanvas = () => {
+        this.canvas.display = "block";
+        this.canvas.style.position = 'absolute';
+        this.container.appendChild(this.canvas);
+
+        this.update2DCanvas();
+    }
+
+    update2DCanvas = () => {
+        this.canvas.style.transform = "scale("+this.scaleX+","+this.scaleY+")";
+    }
+
+    update2DPosition = () => {
+        let tip = this.canvas;
+        if (tip) {
+            let wpPosition = new THREE.Vector3();
+            let pos = this.planeMesh.getWorldPosition(wpPosition).applyMatrix4(this.camera.matrixWorldInverse).applyMatrix4(this.camera.projectionMatrix);
+            if ((pos.x >= -1 && pos.x <= (1 - this.canvas.width/this.container.clientWidth)) && (pos.y >= -(1 - this.canvas.height/this.container.clientHeight) && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+                if (this.hidden === false && this.showType === '2d')
+                    tip.style.display = "block";
+                let screenPos = this.objectPosToScreenPos(this.planeMesh, this.container, this.camera);
+                tip.style.left = screenPos.x - tip.clientWidth / 2 + "px";
+                tip.style.top = screenPos.y - tip.clientHeight + 0.5 * this.canvas.height + "px";
+            }
+            else {
+                tip.style.display = "none";
+            }
+        }
+
+    }
+
+    objectPosToScreenPos = (object, container, camera) => {
+        var vector = new THREE.Vector3();
+        vector.setFromMatrixPosition(object.matrixWorld).project(camera);
+        var x2hat = vector.x,
+            y2hat = vector.y;
+        var W = container.clientWidth;
+        var H = container.clientHeight;
+        var pos = new THREE.Vector2();
+        pos.x = (W / 2) * (x2hat + 1);
+        pos.y = (H / 2) * (1 - y2hat);
+        return pos;
+    }
+
     addTo = (scene) => {
         scene.add(this.planeMesh);
     }
@@ -287,22 +319,49 @@ class EmbeddedResourceBox {
     }
 
     show = () => {
-        if (this.planeMesh !== null) {
+        if (this.planeMesh === null) return;
+        this.hidden = false;
+        if (this.showType === "embedded") {
             this.planeMesh.visible = true;
+            this.canvas.style.display = "none";
+        }
+        else if (this.showType === "2d") {
+            this.planeMesh.visible = false;
+            this.canvas.style.display = "block";
         }
     }
 
     hide = () => {
         if (this.planeMesh !== null) {
+            this.hidden = true;
             this.planeMesh.visible = false;
+            this.canvas.style.display = "none";
+            console.log("hide");
+        }
+    }
+
+    setType = (type) => {
+        if (type === "embedded") {
+            this.showType = type;
+            if (this.hidden === false) {
+                this.planeMesh.visible = true;
+                this.canvas.style.display = "none";
+                console.log("set embedded");
+            }
+        }
+        else if (type === "2d") {
+            this.showType = type;
+            if (this.hidden === false) {
+                this.planeMesh.visible = false;
+                this.canvas.style.display = "block";
+                console.log("set 2d");
+            }
         }
     }
 
     kill = () => {
-        if (this.videoElement !== null) {
-            this.videoElement.setAttribute("src","");
-        }
+        this.container.removeChild(this.canvas);
     }
 }
 
-export default EmbeddedResourceBox;
+export default TextBox;

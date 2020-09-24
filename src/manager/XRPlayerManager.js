@@ -10,11 +10,14 @@ import ViewConvertHelper from '../action/ViewConvertHelper';
 import TextureHelper from '../texture/TextureHelper';
 import SpriteParticleHelper from '../display/SpriteParticleHelper';
 import VRHelper from "./VRHelper";
-import ResourceBoxHelper from "../display/ResourceBox/ResourceBoxHelper";
 import CameraMoveAction from "../action/CameraMoveAction";
 
 import HotSpotHelper from '../display/HotSpotHelper';
 import { CameraTween, CameraTweenGroup } from "../controls/CameraTween";
+import EmbeddedBoxManager from "../display/ResourceBox/EmbeddedResource/EmbeddedBoxManager";
+import EmbeddedTextBox from "../display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
+import EmbeddedImageBox from "../display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
+import EmbeddedVideoBox from "../display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
 
 class XRPlayerManager {
 
@@ -138,7 +141,8 @@ class XRPlayerManager {
     }
 
     initTextHelper = () => {
-        this.textHelper = new ResourceBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls);
+        // this.textHelper = new ResourceBoxHelper(this.innerViewControls.camera, this.renderer, this.sceneMesh, this.innerViewControls, this.mount);
+        this.embeddedBoxManager = new EmbeddedBoxManager(this);
     }
 
     animate = (time) => {
@@ -170,6 +174,7 @@ class XRPlayerManager {
             this.spriteShapeHelper.update();
         }
         this.textHelper && this.textHelper.update();
+        this.embeddedBoxManager && this.embeddedBoxManager.update();
     }
 
     /*****************************全局接口************************************ */
@@ -419,14 +424,63 @@ class XRPlayerManager {
         }
     }
 
-    /*******************************文本框接口********************************** */
-    simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
-        var params = {};
-        params.cameraPosition = this.getCameraPosition();
-        params.position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
-        return this.textHelper.createTextBox(boxId, params, this.scene);
+    /*******************************嵌入式文本框接口***************************** */
+    getEmbeddedBoxManager = () => {
+        return this.embeddedBoxManager;
     }
 
+    simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
+        let textBox = new EmbeddedTextBox(boxId);
+        textBox.setText('简易文本框');
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let lon = 90 - THREE.Math.radToDeg(theta);
+        let lat = 90 - THREE.Math.radToDeg(phi);
+        textBox.setPosition(lat, lon);
+        return textBox;
+    }
+
+    simpleCreateImageBox = (boxId) => { //在相机聚焦位置创建一个初始图片框
+        let textBox = new EmbeddedImageBox(boxId);
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let lon = 90 - THREE.Math.radToDeg(theta);
+        let lat = 90 - THREE.Math.radToDeg(phi);
+        textBox.setPosition(lat, lon);
+        return textBox;
+    }
+
+    simpleCreateVideoBox = (boxId) => { //在相机聚焦位置创建一个初始视频框
+        let textBox = new EmbeddedVideoBox(boxId);
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        const spherical = new THREE.Spherical();
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let lon = 90 - THREE.Math.radToDeg(theta);
+        let lat = 90 - THREE.Math.radToDeg(phi);
+        textBox.setPosition(lat, lon);
+        return textBox;
+    }
+
+    //快捷设置嵌入文本框的点击事件，如展示图片、视频、网页
+    simpleSetEmbeddedBoxEvent = (boxId, data) => {
+        let textBox = this.getEmbeddedBoxManager().getEmbeddedBox(boxId);
+        if (!!!textBox) return;
+        textBox.onClick(() => {
+            this.handler(data.type, { data }, () => {
+                this.closeEffectContainer();
+            });
+        });
+    }
+
+    /*******************************文本框接口********************************** */
     setTextBoxText = (boxId, message) => {    //改变文本框的内容
         var params = {};
         params.message = message;

@@ -16,6 +16,7 @@ class EmbeddedBox {
         this.height = 0;
         this.manager = null;
         this.meshReady = false;
+        this.visible = true;
     }
 
     //外部接口
@@ -66,14 +67,14 @@ class EmbeddedBox {
     createPlane = () => {
         let planeMaterial = this.newPlaneMaterial();
         let planeGeometry = new THREE.PlaneGeometry(this.width, this.height);
-        let visible = this.planeMesh === null ? true : this.planeMesh.visible;
+        // let visible = this.planeMesh === null ? true : this.planeMesh.visible;
         this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-        this.planeMesh.visible = visible;
 
         let pos = this.Sph2Cart(this.lat, this.lon);
         this.planeMesh.position.set(pos.x, pos.y, pos.z);
         this.planeMesh.lookAt(0, 0, 0);
         this.planeMesh.name = this.id;
+        this.planeMesh.visible = this.visible;
         this.meshReady = true;
     }
 
@@ -99,6 +100,18 @@ class EmbeddedBox {
             500 * Math.sin(phi) * Math.sin(theta)
         );
     };
+
+    setVisible = (visible) => {
+        this.visible = visible;
+        if (this.meshReady === false) return;
+        if (this.planeMesh !== null) {
+            this.planeMesh.visible = visible;
+        }
+    }
+
+    getVisible = () => {
+        return this.visible;
+    }
 
     kill = () => {
 

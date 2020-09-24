@@ -31,8 +31,8 @@
                 "lon": -40,
                 "position": "top",
                 "animate": true,
-                "name": "中山社区",
-                "title": "中山社区",
+                "name": "热点",
+                "title": "热点",
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_she_qu.jpg",
                 "img_height": 100,
@@ -45,8 +45,8 @@
                 "lat": 310,
                 "lon": -60,
                 "animate": true,
-                "name": "福州中山纪念堂",
-                "title": "福州中山纪念堂",
+                "name": "热点",
+                "title": "热点",
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_ji_nian_tang.jpg",
                 "img_height": 100,
@@ -60,8 +60,8 @@
                 "lon": 55,
                 "animate": true,
                 "position": "top",
-                "name": "林则徐出生地",
-                "title": "林则徐出生地",
+                "name": "热点",
+                "title": "热点",
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/lin_ze_xu_chu_sheng_di.jpg",
                 "img_height": 100,
@@ -74,8 +74,8 @@
                 "lat": 320,
                 "lon": 20,
                 "animate": true,
-                "name": "唐代马球场遗址",
-                "title": "唐代马球场遗址",
+                "name": "热点",
+                "title": "热点",
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/tang_dai_ma_qiu_chang_yi_zhi.jpg",
                 "img_height": 100,
@@ -88,8 +88,8 @@
                 "lat": 360,
                 "lon": 20,
                 "animate": true,
-                "name": "泉山仁寿堂萨镇冰故居",
-                "title": "泉山仁寿堂萨镇冰故居",
+                "name": "热点",
+                "title": "热点",
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.jpg",
                 "img_height": 100,
@@ -103,8 +103,8 @@
                 "lon": 40,
                 "animate": true,
                 "position": "top",
-                "name": "欧冶池遗址",
-                "title": "欧冶池遗址",
+                "name": "热点",
+                "title": "热点",
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ou_ye_chi_yi_zhi.jpg",
                 "img_height": 100,
@@ -116,57 +116,23 @@
         [
             "zhong_shan_she_qu",
             {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_she_qu.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
+                "type": "image",
+                "imageUrl": "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+                "jumpUrl": "http://www.youmuvideo.com"
             }
         ],
         [
             "zhong_shan_ji_nian_tang",
             {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/fu_zhou_zhong_shan_tang.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
-            }
-        ],
-        [
-            "yi_shi_ting",
-            {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/ah_04_wms_khfh_800.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
+                "type": "video",
+                "videoUrl": "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4"
             }
         ],
         [
             "ling_ze_xu",
             {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/lin_ze_xu_gu_ku.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
+                "type": "infocard",
+                "iframeUrl": "https://gs.ctrip.com/html5/you/place/14.html"
             }
         ],
         [
@@ -174,7 +140,7 @@
             {
                 "id": "video",
                 "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ma_qiu_chang.mp4",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
                 "width": "60vw",
                 "height": "60vw",
                 "enableClose": true,
@@ -188,7 +154,7 @@
             {
                 "id": "video",
                 "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ou_ye_chi.mp4",
+                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
                 "width": "60vw",
                 "height": "60vw",
                 "enableClose": true,

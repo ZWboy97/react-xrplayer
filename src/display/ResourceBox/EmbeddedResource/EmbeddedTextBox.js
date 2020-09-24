@@ -1,5 +1,4 @@
 import EmbeddedBox from "./EmbeddedBox";
-import * as THREE from "three";
 
 class EmbeddedTextBox extends EmbeddedBox {
     constructor(id) {
@@ -14,9 +13,9 @@ class EmbeddedTextBox extends EmbeddedBox {
         this.maxWidth = 100;     //一行中文字占用的最多像素，超过就换行
         this.borderDistanceX = 15;  //左边距
         this.borderDistanceY = 15;  //上边距
-        this.fontColor = { r:255, g:255, b:255, a:1.0 };    //字体颜色（默认白色不透明）
-        this.borderColor = { r:100, g:100, b:100, a:0.5 };  //边框颜色（默认灰色半透明）
-        this.backgroundColor = { r:100, g:100, b:100, a:0.5 };  //背景颜色（默认灰色半透明）
+        this.fontColor = { r: 255, g: 255, b: 255, a: 1.0 };    //字体颜色（默认白色不透明）
+        this.borderColor = { r: 100, g: 100, b: 100, a: 0.5 };  //边框颜色（默认灰色半透明）
+        this.backgroundColor = { r: 100, g: 100, b: 100, a: 0.5 };  //背景颜色（默认灰色半透明）
 
         this.update();
     }
@@ -46,7 +45,7 @@ class EmbeddedTextBox extends EmbeddedBox {
     }
 
     getTextInfo = () => {
-        return {text: this.text};
+        return { text: this.text };
     }
 
     //内部控件
@@ -65,7 +64,7 @@ class EmbeddedTextBox extends EmbeddedBox {
     updateCanvas = () => {
         const r = 12;//圆角矩形的圆半径
         this.adjustWidthAndHeight(r);//根据文本生成文本框和画布的宽度和高度
-        this.roundRect(0,0, this.borderWidth, this.borderHeight, r);
+        this.roundRect(0, 0, this.borderWidth, this.borderHeight, r);
         this.fillText();
     }
 
@@ -83,7 +82,7 @@ class EmbeddedTextBox extends EmbeddedBox {
             let lineWidth = this.borderDistanceX * 2;
             let canvasWidth = this.canvas.width;
             let deltaHeight = this.fontSize + 2 + this.borderDistanceY; //当前行距边框顶部的距离(2是行间距)
-            for(let i = 0; i < this.text.length; i++) {
+            for (let i = 0; i < this.text.length; i++) {
                 let dLength = this.context.measureText(this.text[i]).width;
                 lineWidth += dLength;
                 if (lineWidth > canvasWidth) {
@@ -101,7 +100,7 @@ class EmbeddedTextBox extends EmbeddedBox {
     //在画布上画一个圆角矩形，x0,y0:起始坐标，x,y:除去半径的宽和高, r:半径
     roundRect = (x0, y0, x, y, r) => {
         let ctx = this.context;
-        ctx.fillStyle   = "rgba(" + this.backgroundColor.r + "," + this.backgroundColor.g + ","
+        ctx.fillStyle = "rgba(" + this.backgroundColor.r + "," + this.backgroundColor.g + ","
             + this.backgroundColor.b + "," + this.backgroundColor.a + ")";
         // 边框的颜色
         ctx.strokeStyle = "rgba(" + this.borderColor.r + "," + this.borderColor.g + ","
@@ -110,15 +109,15 @@ class EmbeddedTextBox extends EmbeddedBox {
         let lineW = ctx.lineWidth;
         //先使用圆角矩形作为文本框，以后有需求可以设计更多文本框样式
         ctx.beginPath();
-        ctx.moveTo(x0+r+lineW/2, y0+lineW/2);
-        ctx.lineTo(x0+x+r+lineW/2, y0+lineW/2);
-        ctx.arc(x0+x+r+lineW/2, y0+lineW/2+r, r, -Math.PI/2, 0);
-        ctx.lineTo(x0+x+2*r+lineW/2, y0+y+r+lineW/2);
-        ctx.arc(x0+x+r+lineW/2, y0+y+r+lineW/2, r, 0, Math.PI/2);
-        ctx.lineTo(x0+r+lineW/2, y0+y+2*r+lineW/2);
-        ctx.arc(x0+r+lineW/2, y0+y+r+lineW/2, r, Math.PI/2, Math.PI);
-        ctx.lineTo(x0+lineW/2, y0+r+lineW/2);
-        ctx.arc(x0+r+lineW/2, y0+r+lineW/2, r, Math.PI, 1.5*Math.PI);
+        ctx.moveTo(x0 + r + lineW / 2, y0 + lineW / 2);
+        ctx.lineTo(x0 + x + r + lineW / 2, y0 + lineW / 2);
+        ctx.arc(x0 + x + r + lineW / 2, y0 + lineW / 2 + r, r, -Math.PI / 2, 0);
+        ctx.lineTo(x0 + x + 2 * r + lineW / 2, y0 + y + r + lineW / 2);
+        ctx.arc(x0 + x + r + lineW / 2, y0 + y + r + lineW / 2, r, 0, Math.PI / 2);
+        ctx.lineTo(x0 + r + lineW / 2, y0 + y + 2 * r + lineW / 2);
+        ctx.arc(x0 + r + lineW / 2, y0 + y + r + lineW / 2, r, Math.PI / 2, Math.PI);
+        ctx.lineTo(x0 + lineW / 2, y0 + r + lineW / 2);
+        ctx.arc(x0 + r + lineW / 2, y0 + r + lineW / 2, r, Math.PI, 1.5 * Math.PI);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
@@ -132,8 +131,8 @@ class EmbeddedTextBox extends EmbeddedBox {
         let lineWidth = this.borderDistanceX * 2;
         let canvasWidth = this.canvas.width;
         let deltaHeight = this.fontSize + 2 + this.borderDistanceY; //当前行距边框顶部的距离
-        let lastSubStrIndex= 0; //每次开始截取的字符串的索引
-        for(let i = 0; i < this.text.length; i++) {
+        let lastSubStrIndex = 0; //每次开始截取的字符串的索引
+        for (let i = 0; i < this.text.length; i++) {
             let dLength = this.context.measureText(this.text[i]).width;
             lineWidth += dLength;
             if (lineWidth > canvasWidth) {

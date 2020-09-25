@@ -11,3 +11,4 @@ public
 scripts
 Dockerfile
 yarn.lock
+/jsdoc

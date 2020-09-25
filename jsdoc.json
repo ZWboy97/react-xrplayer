@@ -1,0 +1,47 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": [
+            "jsdoc",
+            "closure"
+        ]
+    },
+    "source": {
+        "include": [
+            "src/manager",
+            "src/display"
+        ],
+        "includePattern": ".js$",
+        "exclude": []
+    },
+    "opts": {
+        "encoding": "utf8",
+        "destination": "./jsdoc/",
+        "readme": "./README.md",
+        "recurse": true,
+        "verbose": true,
+        "template": "node_modules/clean-jsdoc-theme",
+        "theme_opts": {
+            "title": "react-xrplayer",
+            "menu": [
+                {
+                    "title": "Website",
+                    "link": "http://blog.zwboy.cn/react-xrplayer/",
+                    "target": "_blank",
+                    "class": "some-class",
+                    "id": "some-id"
+                },
+                {
+                    "title": "Github",
+                    "link": "https://github.com/ZWboy97/react-xrplayer",
+                    "target": "_blank",
+                    "class": "some-class",
+                    "id": "some-id"
+                }
+            ]
+        }
+    },
+    "plugins": [
+        "plugins/markdown"
+    ]
+}

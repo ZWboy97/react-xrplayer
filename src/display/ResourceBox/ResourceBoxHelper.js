@@ -1,12 +1,15 @@
 import * as THREE from 'three';
-import EmbeddedResourceBox from './EmbeddedResourceBox';
+// import EmbeddedResourceBox from './EmbeddedResourceBox';
+import TextBox from "./TextBox";
 
 class ResourceBoxHelper {
-    constructor(camera, renderer, sceneMesh, cameraControl) {
+    constructor(camera, renderer, sceneMesh, cameraControl, container) {
         this.camera = camera;
         this.renderer = renderer;
         this.cameraControl = cameraControl;
-        this.textBoxes = new Map();
+        this.container = container;
+
+        this.embeddedTextBoxes = new Map();
 
         //拖拽标签控件
         this.dragBoxes = new Set();
@@ -14,34 +17,40 @@ class ResourceBoxHelper {
         this.sceneMesh = sceneMesh;
         this.chosenPlane = null;
 
+        //切换类型控件
+        this.showType = "2d";
+
         this.initControlsListener();
     }
 
     createTextBox = (boxId, params, scene) => {
-        if (this.textBoxes.has(boxId)) return 1;    //Id重复
-        let textBox = new EmbeddedResourceBox(params);
+
+        if (this.embeddedTextBoxes.has(boxId)) return 1;    //Id重复
+
+        let textBox = new TextBox(params, this.container, this.camera);
         textBox.addTo(scene);
-        this.textBoxes.set(boxId, textBox);
+        this.embeddedTextBoxes.set(boxId, textBox);
         if (params.hasOwnProperty("draggable") && params.draggable === true) {
             this.dragBoxes.add(textBox.planeMesh);
         }
+
         return 0;
     }
 
     showTextBox = (boxId) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         if (!!!textBox) return;
         textBox.show();
     }
 
     hideTextBox = (boxId) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         if (!!!textBox) return;
         textBox.hide();
     }
 
     changeTextBox = (boxId, params, scene) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         if (!!!textBox) return;
         const draggable = textBox.draggable;
         textBox.removeFrom(scene);
@@ -62,34 +71,35 @@ class ResourceBoxHelper {
     }
 
     removeTextBox = (boxId, scene) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         if (!!!textBox) return;
         textBox.removeFrom(scene);
-        this.textBoxes.delete(boxId);
-        textBox.kill();
+        this.embeddedTextBoxes.delete(boxId);
+        (textBox.kill) && textBox.kill();
         textBox = null;
     }
 
     playVideo = (boxId) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         textBox.videoElement && textBox.videoElement.play();
     }
 
     pauseVideo = (boxId) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         textBox.videoElement && textBox.videoElement.pause();
     }
 
     setVideoVolume = (boxId, volume) => {
-        let textBox = this.textBoxes.get(boxId);
+        let textBox = this.embeddedTextBoxes.get(boxId);
         textBox.videoElement && (textBox.videoElement.volume = volume);
     }
 
     update = () => {
         const x = this.camera.position.x, z = this.camera.position.z;
-        this.textBoxes.forEach(textBox => {
+        this.embeddedTextBoxes.forEach(textBox => {
             textBox.planeMesh.lookAt(x, textBox.planeMesh.position.y, z);
-        })
+            textBox.update2DPosition();
+        });
     }
 
     initControlsListener = () => {
@@ -175,6 +185,22 @@ class ResourceBoxHelper {
         if (this.isUserInteracting === true) {
             this.isUserInteracting = false;
             this.cameraControl.connect();
+        }
+    }
+
+    setTextBoxType = (type) => {
+        if (type === this.showType) return;
+        if (type === "2d") {
+            this.showType = type;
+            this.embeddedTextBoxes.forEach(textBox => {
+               textBox.setType(type);
+            });
+        }
+        else if (type === "embedded") {
+            this.showType = type;
+            this.embeddedTextBoxes.forEach(textBox => {
+                textBox.setType(type);
+            });
         }
     }
 }

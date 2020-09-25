@@ -1,5 +1,5 @@
 {
-  "name": "@zwboy97/react-xrplayer",
+  "name": "react-xrplayer",
   "version": "0.1.2",
   "description": "A excellent xr player for react",
   "main": "src/index.js",
@@ -94,7 +94,8 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "compile": "npx babel src --out-dir lib --copy-files",
-    "prepublishOnly": "npm run compile"
+    "prepublishOnly": "npm run compile",
+    "jsdoc": "rm -rf ./jsdoc && jsdoc -c jsdoc.json"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -162,7 +163,9 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.8.3"
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "clean-jsdoc-theme": "^2.2.11",
+    "jsdoc": "^3.6.6"
   },
   "homepage": "http://blog.zwboy.cn/react-xrplayer/",
   "publishConfig": {

@@ -8,6 +8,8 @@ import TWEEN from '@tweenjs/tween.js';
 class SpriteShapeHelper {
 
     constructor(scene, camera, renderer, container) {
+
+        console.log("o",container);
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
@@ -84,12 +86,6 @@ class SpriteShapeHelper {
         if (label) {
             this.pointGroup.remove(label);
         }
-        /*废弃方案
-        var tip = document.getElementById(hot_spot_key);
-        if (tip) {
-            this.container.removeChild(tip);
-        }
-        */
     }
 
     contertSph2Rect = (lat, lon) => {

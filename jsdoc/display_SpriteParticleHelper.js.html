@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>display/SpriteParticleHelper.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/search.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.5/fuse.min.js"></script> -->
+    <script src="scripts/fuse.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme.css">
+    
+    
+    
+<svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none">
+    <defs>
+        <symbol id="copy-icon" viewbox="0 0 488.3 488.3">
+            <g>
+                <path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/>
+                <path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/>
+            </g>
+        </symbol>
+    </defs>
+</svg>
+
+</head>
+<body>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li></ul></li></ul></div>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">display/SpriteParticleHelper.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as THREE from 'three';
+
+/**
+ * 例子特效展示
+ */
+class SpriteParticleHelper {
+
+    /**
+     * scene:   当前场景
+     * url:     贴图文件地址
+     * num:     粒子个数
+     * range:   粒子所处范围，范围为立方体，range为立方体边长，立方体中心为(0,0,0)
+     * color:   粒子颜色
+     * sizeAttenuation: 是否随摄像机远近调整大小，true随远近缩放
+     */
+    constructor(scene) {
+        this.scene = scene;
+        this.url = null;
+        this.num = 5000;
+        this.range = 500;
+        this.color = 0xffffff;
+        this.sizeAtEtenuation = true;
+        this.isEnableDisplay = false
+
+        this.group = null;
+    }
+
+    setResource = (res) => {
+        const { url = "", num = 5000, range = 500,
+            color = 0xffffff, sizeAttenuation = true } = res;
+        this.url = url;
+        this.num = num;
+        this.range = range;
+        this.color = color;
+        this.sizeAttenuation = sizeAttenuation;
+        this.initGroup();
+    }
+
+    initGroup = () => {
+        if (this.group) {
+            this.scene.remove(this.group);
+        }
+        this.group = new THREE.Group();
+        var textureLoader = new THREE.TextureLoader();
+        var spriteMap = textureLoader.load(this.url);
+        var spriteMaterial = new THREE.SpriteMaterial({
+            map: spriteMap,
+            color: this.color,
+            sizeAttenuation: this.sizeAttenuation,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+        })
+        for (var i = 0; i &lt; this.num; i++) {
+            var sprite = new THREE.Sprite(spriteMaterial);
+            sprite.x = Math.random() * this.range - this.range / 2;
+            sprite.y = Math.random() * this.range - this.range / 2;
+            sprite.z = Math.random() * this.range - this.range / 2;
+            sprite.position.set(sprite.x, sprite.y, sprite.z);
+            sprite.velocityY = 0.1 + Math.random() / 5;
+            sprite.velocityX = (Math.random() - 0.5) / 3;
+            sprite.velocityZ = (Math.random() - 0.5) / 3;
+            this.group.add(sprite);
+        }
+    }
+
+    getEnableDisplay = () => {
+        return this.isEnableDisplay;
+    }
+
+    enableDisplay = () => {
+        if (this.group) {
+            this.scene.add(this.group);
+            this.isEnableDisplay = true;
+        }
+    }
+
+    disableDisplay = () => {
+        if (this.group) {
+            this.scene.remove(this.group);
+            this.isEnableDisplay = false;
+        }
+    }
+
+    update = () => {
+        var range = this.range;
+        this.group.children.forEach(function (u) {
+            u.y = u.y - u.velocityY;
+            u.x = u.x - u.velocityX;
+            u.z = u.z - u.velocityZ;
+
+            if (u.y &lt;= -range / 2) u.y = range;
+            if (u.x &lt;= -range / 2 || u.x >= range / 2) u.velocityX = u.velocityX * -1;
+            if (u.z &lt;= -range / 2 || u.z >= range / 2) u.velocityZ = u.velocityZ * -1;
+
+            u.position.set(u.x, u.y, u.z);
+        });
+    }
+}
+
+export default SpriteParticleHelper;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+  
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script>
+var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"}];
+setupSearch(list)
+</script>
+
+ 
+<script type="text/javascript" src="scripts/misc.js"></script>
+</body>
+</html>

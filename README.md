@@ -83,7 +83,13 @@ export default App;
 ```
 
 #### 3. 详细接入与开发文档
-对于更多丰富的功能实现，请查阅react-xrplayer的[接口设计与开发文档](./doc/api-doc.md)
+
+更多丰富的功能实现，请查阅react-xrplayer的[接口设计与开发文档](./doc/api-doc.md)
+
+我们开始使用JSdoc来自动生成API文档，[API](./jsdoc/index.html)， 生成JSDoc文档
+```js
+npm run jsdoc
+```
 
 ## 四、播放器架构
 （播放器的架构设计图,待定）

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Home</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/search.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.5/fuse.min.js"></script> -->
+    <script src="scripts/fuse.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme.css">
+    
+    
+    
+<svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none">
+    <defs>
+        <symbol id="copy-icon" viewbox="0 0 488.3 488.3">
+            <g>
+                <path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/>
+                <path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/>
+            </g>
+        </symbol>
+    </defs>
+</svg>
+
+</head>
+<body>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li></ul></li></ul></div>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>XRPlayer XR全景互动直播React组件</h1>
+<p><img src="https://img.shields.io/npm/v/react-xrplayer.svg" alt="">
+<img src="https://img.shields.io/npm/dt/react-xrplayer.svg" alt="downloads">
+<img src="https://windard-visitor-badge.glitch.me/badge?page_id=zwboy97.github.profile" alt="profileviews">
+<img src="https://img.shields.io/npm/l/express.svg" alt="">
+<img src="https://img.shields.io/badge/language-javascript-yellow.svg" alt="">
+<img src="https://img.shields.io/badge/support-chrome-lightgrey.svg" alt="">
+<img src="https://img.shields.io/badge/status-dev-red.svg" alt="status"></p>
+<h2>一、关于</h2>
+<hr>
+<p>react-xrplayer 是一款功能丰富、架构合理的Web全景互动直播播放器。基于React以及Three.js等框架，以React组件方式输出能力。支持常见的全景直播能力，比如全景图片、点播以及直播，双目VR，热点标签点击、全景漫游等能力。</p>
+<hr>
+<p><img src="./doc/imgs/react-xrplayer-preview.png" alt=""></p>
+<h4>动机与愿景</h4>
+<p>目前常见的全景主要以全景图片或者全景视频为主，常用在静态的讲解介绍等场景，观完即走，互动性不足。</p>
+<p>react-xrplayer 旨在将更多的内容和互动形式融合到全景中，支持全景视频直播、三维动画、三维模型、AR、WebVR等更丰富的XR能力。同时，react-xrplayer 不仅仅只是简单的全景播放器，同时还具备全景编辑能力，react-xrplayer在设计中还会充分考虑对编辑器的支持能力。</p>
+<h4>关联项目</h4>
+<p>基于react-xrplayer的关联项目</p>
+<ul>
+<li>基于react-xrplayer开发的全景互动编辑器</li>
+<li>基于react-xrplayer开发的全景互动观看端</li>
+</ul>
+<h2>二、特性与规划</h2>
+<ul>
+<li>支持全景图片、全景视频、全景直播。</li>
+<li>支持多种全景视角控制</li>
+<li>支持PC与移动端浏览器</li>
+<li>支持多种全景展示效果</li>
+<li>支持3D模型展示</li>
+<li>支持热点标签、视频弹窗、文本弹窗等</li>
+<li>支持双目VR展示与交互</li>
+<li>支持全景漫游</li>
+<li>支持标准化、格式化的参数编辑与导入导出（配套项目）</li>
+<li>支持远程实时控制（配套项目）</li>
+</ul>
+<p>在线DEMO展示地址: <a href="http://client.youmuvideo.com/react-xrplayer/">react-xrplayer</a></p>
+<p>P.S. 目前react-xrplayer仍处于原型开发阶段，不建议直接在生产环境中直接集成使用，敬请期待V1.0版本的发布。同时也欢迎一起讨论、设计以及贡献代码。</p>
+<p><a href="./doc/feature-and-todo.md">features-and-todos</a> 这里更详细地记录了react-xrplayer的能力规划以及目前的支持情况，你可以查看相关feature的完成情况，同时也方便你了解当前react-xrplayer的开发进展，pick你感兴趣的todo，并贡献你的代码。</p>
+<h2>三、快速集成使用</h2>
+<h4>1. 安装react-xrplayer库</h4>
+<pre class="prettyprint source lang-js"><code>npm install react-xrplayer
+</code></pre>
+<h4>2. 以组件方式使用</h4>
+<pre class="prettyprint source lang-js"><code>import React from 'react';
+import XRPlayer from 'react-xrplayer'
+class App extends React.Component {
+    render() {
+        return (
+            &lt;div>
+                &lt;XRPlayer
+                    width=&quot;100vw&quot;
+                    height=&quot;100vh&quot;
+                    scene_texture_resource={{
+                        type: 'hls',
+                        res_url: 'http://cache.utovr.com/s1e3tzoku70yk8mpa3/L3_5dxsrk4kh56gc4l1_v2.m3u8'
+                    }}
+                >&lt;/XRPlayer>
+            &lt;/div>
+        )
+    }
+}
+export default App;
+</code></pre>
+<h4>3. 详细接入与开发文档</h4>
+<p>更多丰富的功能实现，请查阅react-xrplayer的<a href="./doc/api-doc.md">接口设计与开发文档</a></p>
+<p>我们开始使用JSdoc来自动生成API文档，<a href="./jsdoc/index.html">API</a>， 生成JSDoc文档</p>
+<pre class="prettyprint source lang-js"><code>npm run jsdoc
+</code></pre>
+<h2>四、播放器架构</h2>
+<p>（播放器的架构设计图,待定）</p>
+<h2>五、运行代码</h2>
+<h4>1. 安装依赖</h4>
+<pre class="prettyprint source lang-js"><code>npm install
+</code></pre>
+<h4>2. 本地运行example</h4>
+<pre class="prettyprint source lang-js"><code>npm run start
+</code></pre>
+<p>浏览器打开地址<code>http://localhost:3000/react-xrplayer</code></p>
+<h4>3. 编译React库</h4>
+<pre class="prettyprint source lang-js"><code>npm run compile
+</code></pre>
+<p>可选，生成的可发布到npm库位于<code>/lib</code>文件夹中</p>
+<h4>4. 打包项目</h4>
+<pre class="prettyprint source lang-js"><code>npm run build
+</code></pre>
+<p>可选，打包好的项目位于<code>/build</code>文件夹中</p>
+<h2>六、贡献代码</h2>
+<h4>如何贡献您的代码</h4>
+<ol>
+<li>Fork代码到您的github，并 git clone 到本地。</li>
+<li>在添加您的代码之前，先切换到dev分支，并以dev分支为基，创建您的feature分支。</li>
+<li>在feature分支上完成您的feature开发，提交到您的github，并merge到dev分支。</li>
+<li>同步主仓库dev分支上的更新到您的dev分支。</li>
+<li>检查是否存在冲突，如果存在，解决冲突。</li>
+<li>从您的dev分支向主仓库的dev分支发起pull request。</li>
+<li>我们会尽快回复您的pul request。</li>
+</ol>
+<h4>contributors</h4>
+<p><a href="https://github.com/ZWboy97">@zwboy</a> <a href="https://github.com/bigint405">@bigint405</a></p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+  
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script>
+var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"}];
+setupSearch(list)
+</script>
+
+ 
+<script type="text/javascript" src="scripts/misc.js"></script>
+</body>
+</html>

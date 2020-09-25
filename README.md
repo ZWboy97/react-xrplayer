@@ -14,6 +14,8 @@ react-xrplayer 是一款功能丰富、架构合理的Web全景互动直播播�
 
 ----
 
+[主页](http://blog.zwboy.cn/react-xrplayer/) | [API](http://blog.zwboy.cn/react-xrplayer/jsdoc/index.html) | [Demo](http://client.youmuvideo.com/react-xrplayer/) | [Todos](./doc/feature-and-todo.md)
+
 ![](./doc/imgs/react-xrplayer-preview.png)
 
 
@@ -83,7 +85,15 @@ export default App;
 ```
 
 #### 3. 详细接入与开发文档
-对于更多丰富的功能实现，请查阅react-xrplayer的[接口设计与开发文档](./doc/api-doc.md)
+
+更多丰富的功能实现，请查阅react-xrplayer的[接口设计与开发文档](./doc/api-doc.md)
+
+我们开始使用JSdoc来自动生成API文档，[API](http://blog.zwboy.cn/react-xrplayer/jsdoc/index.html)， 
+
+使用如下命令，生成JSDoc文档
+```js
+npm run jsdoc
+```
 
 ## 四、播放器架构
 （播放器的架构设计图,待定）

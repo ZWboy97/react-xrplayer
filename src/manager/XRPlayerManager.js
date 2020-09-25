@@ -1,6 +1,3 @@
-/**
- * XR对外的交互通过Manager来提供
- */
 import * as THREE from 'three';
 import InnerViewControls from '../controls/InnerViewControls';
 import SpriteShapeHelper from '../display/SpriteShapeHelper';
@@ -18,6 +15,22 @@ import EmbeddedBoxManager from "../display/ResourceBox/EmbeddedResource/Embedded
 import EmbeddedTextBox from "../display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
 import EmbeddedImageBox from "../display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
 import EmbeddedVideoBox from "../display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
+
+/**
+ * @class
+ * @name XRPlayerManager
+ * @description  XR对外的交互通过Manager来提供
+ * @param {Element} mount Three.js 渲染过载节点
+ * @param {Object} initProps 初始化参数
+ * @param {Function} handler 统一的事件处理
+ * @return {XRPlayerManger} 管理器实例
+ * @example
+ * // 将在播放器创建完成之后，回调onCreated方法，参数为xrManager实例
+ * // 之后便可以在应用中通过xrManager来操作播放器
+ * <XRPlayer>
+ *      onCreated={(xrManager)=>{this.manager = xrManager}}
+ * </XRPlayer>
+ */
 
 class XRPlayerManager {
 
@@ -178,9 +191,21 @@ class XRPlayerManager {
     }
 
     /*****************************全局接口************************************ */
+    /**
+     * @function
+     * @name XRPlayerManager#setGlobalMuted
+     * @description 设置全局静音，会生成global_muted事件
+     * @param {boolean} muted 是否静音
+     */
     setGlobalMuted = (muted) => {
         this.handler('global_muted', { muted: muted });
     }
+    /**
+     * @function
+     * @name XRPlayerManager#setGlobalVolume
+     * @description 设置全局音量大小，会生成global_volume事件
+     * @param {int} volume 音量大小
+     */
     setGlobalVolume = (volume) => {
         this.handler('global_volume', { volume: volume });
     }

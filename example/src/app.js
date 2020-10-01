@@ -208,6 +208,7 @@ class App extends React.Component {
 
         let textBox = this.boxManager.getEmbeddedBox('box1');
         textBox && textBox.setTextSize('large');
+        textBox && textBox.setDraggable(true);
         /*textBox.onClick(() => {
             console.log("点击了标签");
         });*/
@@ -219,6 +220,7 @@ class App extends React.Component {
         let imageBox = this.boxManager.getEmbeddedBox('box2');
         imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
         imageBox.setDraggable(true);
+        imageBox.setScale(0.3, 0.3);
         this.xrManager.simpleSetEmbeddedBoxEvent('box2', {
             type: 'image',
             imageUrl: "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
@@ -238,18 +240,27 @@ class App extends React.Component {
 
     onShowTextBox = () => {
         let boxManager = this.xrManager.getEmbeddedBoxManager();
+        let boxes = [];
         let textBox = boxManager.getEmbeddedBox('box1');
-        if (!!!textBox) {
-            alert("请先点击“创建文本框”按钮");
-            return;
-        }
-        if (this.TextBoxHidden) {
-            textBox.setVisible(true);
-            this.TextBoxHidden = false;
-        }
-        else {
-            textBox.setVisible(false);
-            this.TextBoxHidden = true;
+        boxes.push(textBox);
+        textBox = boxManager.getEmbeddedBox('box2');
+        boxes.push(textBox);
+        textBox = boxManager.getEmbeddedBox('box3');
+        boxes.push(textBox);
+        for (let textBox of boxes) {
+            if (!!!textBox) {
+                alert("请先点击“创建文本框”按钮");
+                continue;
+            }
+            let visible = textBox.getVisible();
+            if (!visible) {
+                textBox.setVisible(true);
+                this.TextBoxHidden = false;
+            }
+            else {
+                textBox.setVisible(false);
+                this.TextBoxHidden = true;
+            }
         }
     }
 
@@ -257,17 +268,37 @@ class App extends React.Component {
         let boxManager = this.xrManager.getEmbeddedBoxManager();
         if (!boxManager.removeEmbeddedBox('box1')) {
             alert("请先点击“创建文本框”按钮");
+            return;
+        }
+        if (!boxManager.removeEmbeddedBox('box2')) {
+            alert("请先点击“创建文本框”按钮");
+            return;
+        }
+        if (!boxManager.removeEmbeddedBox('box3')) {
+            alert("请先点击“创建文本框”按钮");
         }
     }
 
     onChangeTextBoxType = () => {
-        if (this.textBoxType === '2d') {
-            this.textBoxType = 'embedded';
+        let manager = this.xrManager.getEmbeddedBoxManager();
+        let boxes = [];
+        let boxx = manager.getEmbeddedBox('box1');
+        boxes.push(boxx);
+        boxx = manager.getEmbeddedBox('box2');
+        boxes.push(boxx);
+        boxx = manager.getEmbeddedBox('box3');
+        boxes.push(boxx);
+        for (let box of boxes) {
+            if (!!!box) return;
+            let showType = box.getShowType();
+            if (showType === '2d') {
+                showType = 'embed';
+            }
+            else {
+                showType = '2d';
+            }
+            box.setShowType(showType);
         }
-        else {
-            this.textBoxType = '2d';
-        }
-        this.xrManager.textHelper.setTextBoxType(this.textBoxType);
     }
 
     onSimpleCreateTextBox = () => {
@@ -360,7 +391,7 @@ class App extends React.Component {
                     <button onClick={this.onShowTextBox}>显示/隐藏文本框</button>
                     <button onClick={this.onChangeTextBox}>修改文本框</button>
                     <button onClick={this.onRemoveTextBox}>移除文本框</button>
-                    {/*<button onClick={this.onChangeTextBoxType}>改变文本框类型</button>*/}
+                    <button onClick={this.onChangeTextBoxType}>改变文本框类型</button>
                     <button onClick={this.onSimpleCreateTextBox}>在相机注视位置创建文本框</button>
                     <button onClick={this.onSimpleChangeTextBox}>修改文本框内容</button>
                     <button onClick={() => { this.xrManager.getAudioPaused() ? this.xrManager.playAudio() : this.xrManager.pauseAudio(); }}>播放/暂停音频</button>

@@ -9,14 +9,12 @@ class EmbeddedBox {
         this.lon = 0;
         this.draggable = false;
         this.visible = true;
-
-        //控制信息
-        this.planeMesh = null;
-        this.canvas = null;
-        this.width = 0;
-        this.height = 0;
-        this.manager = null;
+        this.scale2DX = 1;
+        this.scale2DY = 1;
         this.meshReady = false;
+        this.showTypeChangable = false;
+
+        this.showType = 'embed';
     }
 
     //外部接口
@@ -44,8 +42,7 @@ class EmbeddedBox {
             if (enable) {
                 this.manager.dragMeshes.add(this.planeMesh);
             }
-            else
-            {
+            else {
                 this.manager.dragMeshes.delete(this.planeMesh);
             }
         }
@@ -56,10 +53,19 @@ class EmbeddedBox {
     }
 
     setVisible = (visible) => {
+        if (this.visible === visible) return;
         this.visible = visible;
-        if (this.meshReady === false) return;
-        if (this.planeMesh !== null) {
-            this.planeMesh.visible = visible;
+        if (visible) {
+            if (this.showType === '2d') {
+                this.showTypeChangable && (this.canvas.style.display = 'block');
+            }
+            else if (this.meshReady && this.showType === 'embed') {
+                this.planeMesh.visible = true;
+            }
+        }
+        else {
+            if (this.meshReady) this.planeMesh.visible = false;
+            this.showTypeChangable && (this.canvas.style.display = 'none');
         }
     }
 
@@ -67,11 +73,50 @@ class EmbeddedBox {
         return this.visible;
     }
 
+    setShowType = (showType) => {
+        if (this.showType === showType) return;
+        if (!this.showTypeChangable) return;
+        if (showType === '2d') {
+            this.showType = showType;
+            if (this.visible) {
+                if (this.meshReady) this.planeMesh.material.opacity = 0;
+                this.canvas.style.display = 'block';
+            }
+        }
+        else if (showType === 'embed') {
+            this.showType = showType;
+            if (this.visible) {
+                if (this.meshReady) this.planeMesh.material.opacity = 1;
+                this.canvas.style.display = 'none';
+            }
+        }
+    }
+
+    getShowType = () => {
+        return this.showType;
+    }
+
+    setScale = (x, y) => {
+        this.scale2DX = x;
+        this.scale2DY = y;
+        this.canvas && (this.canvas.style.transform = "scale("+this.scale2DX+","+this.scale2DY+")");
+    }
+
     onClick = (callback) => {
         this.callback = callback;
     }
 
     //内部控制函数
+    initCanvas = () => {
+        this.canvas.id = "canvas_of_box_" + this.id;
+        this.canvas.display = "block";
+        this.canvas.style.position = 'absolute';
+        this.canvas.style.left = "50px";
+        this.canvas.style.top = "100px";
+        this.canvas.style.transform = "scale("+this.scale2DX+","+this.scale2DY+")";
+        // document.body.appendChild(this.canvas)
+    }
+
     updateDisplay = () => {
         this.manager && this.manager.updateDisplay(this);
     }
@@ -79,14 +124,13 @@ class EmbeddedBox {
     createPlane = () => {
         let planeMaterial = this.newPlaneMaterial();
         let planeGeometry = new THREE.PlaneGeometry(this.width, this.height);
-        // let visible = this.planeMesh === null ? true : this.planeMesh.visible;
         this.planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 
         let pos = this.Sph2Cart(this.lat, this.lon);
         this.planeMesh.position.set(pos.x, pos.y, pos.z);
         this.planeMesh.lookAt(0, 0, 0);
         this.planeMesh.name = this.id;
-        this.planeMesh.visible = this.visible;
+        this.planeMesh.visible = true;
         this.meshReady = true;
     }
 
@@ -98,7 +142,7 @@ class EmbeddedBox {
         planeMaterial.needsUpdate = true;
         planeMaterial.map.needsUpdate = true;
         planeMaterial.transparent = true;
-        planeMaterial.opacity = 1;
+        planeMaterial.opacity = this.visible && this.showType === 'embed' ? 1 : 0;
 
         return planeMaterial;
     }

@@ -50,6 +50,7 @@ class TextureHelper {
     onVideoStarted = () => {
         this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
         console.log('视频可以播放播放');
+        this.containerNode.play();
     }
 
     onVideoStartDisplay = () => {
@@ -60,7 +61,8 @@ class TextureHelper {
         let texture = new THREE.VideoTexture(video);
         texture.minFilter = THREE.LinearFilter;
         texture.format = THREE.RGBFormat;
-        return texture;
+        let material = new THREE.MeshBasicMaterial({ map: texture });
+        return material;
     }
 
     loadFlvVideo = (resUrl) => {
@@ -102,13 +104,17 @@ class TextureHelper {
         } else {
             console.log('设备不支持HLS')
             if (OS.isiOS()) {
-                if (OS.isSafari()) {
+                if (OS.isWeixin()) {
+                    console.log("ios weixin")
+                    return this.loadByCanvasInIOS(resUrl)
+                } else if (OS.isSafari()) {
                     console.log('IOS，Safari浏览器', '尝试IOS原生播放HLS');
                     var source = this.createTag("source", {
                         src: resUrl,
                         type: 'application/x-mpegURL'
                     }, null);
                     this.containerNode.appendChild(source);
+                    this.containerNode.load();
                     this.containerNode.play();
                 } else {
                     console.log("IOS设备，第三方浏览器，", '推荐使用原生浏览器播放');
@@ -144,6 +150,39 @@ class TextureHelper {
             }
         }
         return oMeta;
+    }
+
+    loadByCanvasInIOS = (resUrl) => {
+        this.resUrl = resUrl;
+        this.initVideoNode();
+        // var hls = new Hls();
+        // this.videoLoader = hls;
+        // hls.loadSource(resUrl);
+        // hls.attachMedia(this.containerNode);
+        // hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        //     this.containerNode.play();
+        //     this.onLoadSuccessHandler();
+        //     console.log('HLS', '加载成功');
+        // });
+        var source = this.createTag("source", {
+            src: resUrl,
+            type: 'application/x-mpegURL'
+        }, null);
+        this.containerNode.appendChild(source);
+        this.containerNode.load();
+        this.containerNode.play();
+        this.canvas = document.getElementById("ios_canvas");
+        this.initCanvas();
+        this.texture = new THREE.CanvasTexture(this.canvas);
+        this.texture.needsUpdate = true;
+        this.material = new THREE.MeshBasicMaterial({ map: this.texture });
+        return this.material;
+    }
+
+    initCanvas = () => {
+        this.ctx = this.canvas.getContext("2d");
+        this.ctx.scale(2, 2);
+        this.ctx.imageSmoothingQuality = 'high';
     }
 
     loadMp4Video = (resUrl) => {
@@ -239,6 +278,15 @@ class TextureHelper {
                 return null;
         }
         this.containerNode.removeEventListener('canplay', this.onVideoStarted);
+    }
+
+    update = () => {
+        if (this.material != null) {
+            this.material.map.needsUpdate = true;
+        }
+        if (this.ctx) {
+            this.ctx.drawImage(this.containerNode, 0, 0, 1280, 720);
+        }
     }
 }
 

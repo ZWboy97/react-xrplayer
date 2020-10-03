@@ -102,8 +102,8 @@ class XRPlayerManager {
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
         this.sceneTextureHelper.onCanPlayHandler = (resUrl) => this.handler('sence_res_ready', { resUrl: resUrl });
         this.sceneTextureHelper.onStartDisplay = () => this.handler('sence_video_start_display', {});
-        let texture = this.sceneTextureHelper.loadTexture(textureResource);
-        let material = new THREE.MeshBasicMaterial({ map: texture });
+        let material = this.sceneTextureHelper.loadTexture(textureResource);
+        //let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh = new THREE.Mesh(geometry, material);
         this.scene = new THREE.Scene();
         this.scene.add(this.sceneMesh);
@@ -163,7 +163,9 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
-
+        if (this.sceneTextureHelper) {
+            this.sceneTextureHelper.update();
+        }
     }
 
     /*****************************全局接口************************************ */

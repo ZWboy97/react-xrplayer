@@ -156,6 +156,13 @@ class XRPlayer extends Component {
             id="display"
             style={{ display: "none" }}>
           </div>
+          <div>
+            <canvas
+              id="ios_canvas"
+              width="2560" height="1440"
+              style={{ width: "1280px", height: "720px" }}
+            ></canvas>
+          </div>
           {
             is_effect_displaying ?
               <EffectContainer

@@ -6,7 +6,7 @@ class EmbeddedImageBox extends EmbeddedBox{
         this.url = '';
         this.width = 30;
         this.height = 30
-
+        this.showTypeChangable = true;
         this.update();
     }
 
@@ -35,6 +35,7 @@ class EmbeddedImageBox extends EmbeddedBox{
         let img = document.createElement("img");
         img.src = this.url;
         this.canvas = document.createElement('canvas');
+        this.initCanvas();
         this.canvas.width = this.width;
         this.canvas.height = this.height;
         let context = this.canvas.getContext('2d');

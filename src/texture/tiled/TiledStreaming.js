@@ -1,5 +1,7 @@
 import { MediaPlayer } from 'dashjs';
 import * as THREE from 'three';
+import TIMINGSRC from 'TIMINGSRC';
+import MCorp from 'MCorp';
 
 /**
  * @class
@@ -12,12 +14,14 @@ class TiledStreaming {
         this.baseDash = null;
         this.enhanceVideos = [];
         this.enhanceDash = [];
+        this.videoMediaAsyns = [];
         this.canvas = null;
+        this.timingAsynSrc = null;
         this.createEnhanceLay();
     }
 
     createEnhanceLay = () => {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 12; i++) {
             let video = document.createElement('video');
             video.style.background = 'black';
             this.enhanceVideos.push(video);
@@ -31,6 +35,9 @@ class TiledStreaming {
         this.baseDash.initialize(this.baseVideo, resUrl, true);
         this.baseVideo.load();
         this.baseVideo.play();
+        this.timingAsynSrc = new TIMINGSRC.TimingObject({
+            position: this.baseVideo.currentTime,
+        });
         for (let i = 0; i < this.enhanceVideos.length; i++) {
             let videoNode = this.enhanceVideos[i];
             let dash = MediaPlayer().create();
@@ -38,12 +45,14 @@ class TiledStreaming {
             videoNode.load();
             videoNode.play();
             this.enhanceDash.push(dash);
+            let asyn = new MCorp.mediaSync(this.enhanceVideos[i], this.timingAsynSrc);
+            this.videoMediaAsyns.push(asyn);
         }
         this.initCanvas();
         return this.getTextureFromVideo(this.baseVideo);
     }
 
-    getTextureFromVideo = (video) => {
+    getTextureFromVideo = () => {
         this.texture = new THREE.CanvasTexture(this.canvas);
         this.texture.needsUpdate = true;
         return this.texture;
@@ -68,7 +77,16 @@ class TiledStreaming {
         videoInstance.setAttribute('x5-video-orientation', 'portrait')
         videoInstance.setAttribute('style', 'object-fit: fill')
         videoInstance.setAttribute('loop', "loop")
-        //videoInstance.addEventListener('canplay', this.onVideoStarted, false);
+        videoInstance.addEventListener('canplay', this.onVideoStarted, false);
+    }
+
+    onVideoStarted = () => {
+        if (this.timingAsynSrc) {
+            this.timingAsynSrc.update({
+                position: this.baseVideo.currentTime,
+                velocity: 1.0
+            });
+        }
     }
 
     initCanvas = () => {
@@ -94,6 +112,14 @@ class TiledStreaming {
         this.ctx.drawImage(this.enhanceVideos[1], 256, 0, 256, 170);
         this.ctx.drawImage(this.enhanceVideos[2], 512, 0, 256, 170);
         this.ctx.drawImage(this.enhanceVideos[3], 768, 0, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[0], 0, 170, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[1], 256, 170, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[2], 512, 170, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[3], 768, 170, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[0], 0, 340, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[1], 256, 340, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[2], 512, 340, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[3], 768, 340, 256, 170);
     }
 
     update = () => {

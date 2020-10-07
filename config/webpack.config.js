@@ -530,6 +530,10 @@ module.exports = function (webpackEnv) {
         },
       ],
     },
+    externals: {
+      'TIMINGSRC': 'TIMINGSRC',
+      'MCorp': 'MCorp'
+    },
     plugins: [
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(

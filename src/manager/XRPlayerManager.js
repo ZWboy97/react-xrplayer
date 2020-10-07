@@ -186,6 +186,7 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
+        this.sceneTextureHelper && this.sceneTextureHelper.update();
         this.textHelper && this.textHelper.update();
         this.embeddedBoxManager && this.embeddedBoxManager.update();
     }

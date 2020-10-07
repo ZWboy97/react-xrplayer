@@ -6,6 +6,8 @@ import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
 import { OS } from '../utils/osuitls';
+import { MediaPlayer } from 'dashjs';
+import TiledStreaming from './tiled/TiledStreaming';
 
 class TextureHelper {
 
@@ -21,6 +23,7 @@ class TextureHelper {
         this.videoLoader = null;
         this.resType = 'image'
         this.resUrl = '';
+        this.tiledStreaming = null;
     }
 
     initVideoNode = () => {
@@ -133,6 +136,23 @@ class TextureHelper {
         return texture;
     }
 
+    loadDash = (resUrl) => {
+        this.resUrl = resUrl;
+        this.initVideoNode();
+        this.baseDashPlayer = MediaPlayer().create();
+        this.baseDashPlayer.initialize(this.containerNode, resUrl, true);
+        this.containerNode.load();
+        this.containerNode.play();
+        return this.getTextureFromVideo(this.containerNode);
+    }
+
+    loadTiledDash = (resUrls) => {
+        this.resUrl = resUrls;
+        this.initVideoNode();
+        this.tiledStreaming = new TiledStreaming(this.containerNode);
+        return this.tiledStreaming.loadTiledDash(resUrls);
+    }
+
     loadTexture = (resource) => {
         const { type, res_url } = resource;
         this.resType = type;
@@ -146,6 +166,10 @@ class TextureHelper {
                 return this.loadMp4Video(res_url);
             case 'image':
                 return this.loadImage(res_url);
+            case 'dash':
+                return this.loadDash(res_url);
+            case 'tiled-dash':
+                return this.loadTiledDash(res_url);
             default:
                 return null;
         }
@@ -160,6 +184,12 @@ class TextureHelper {
             case 'flv':
                 this.videoLoader && this.videoLoader.play();
                 break;
+            case 'dash':
+                this.baseDashPlayer && this.baseDashPlayer.play();
+                break;
+            case 'tiled-dash':
+                this.tiledStreaming && this.tiledStreaming.play();
+                break;
             default:
                 break;
         }
@@ -173,6 +203,12 @@ class TextureHelper {
                 break;
             case 'flv':
                 this.videoLoader && this.videoLoader.pause();
+                break;
+            case 'dash':
+                this.baseDashPlayer && this.baseDashPlayer.pause();
+                break;
+            case 'tiled-dash':
+                this.tiledStreaming && this.tiledStreaming.pause();
                 break;
             default:
                 break;
@@ -194,6 +230,13 @@ class TextureHelper {
         }
     }
 
+    unloadTiledStream = () => {
+        if (this.tiledStreaming) {
+            this.tiledStreaming.reset();
+            this.tiledStreaming = null;
+        }
+    }
+
     unloadResource = () => {
         switch (this.resType) {
             case 'hls':
@@ -206,10 +249,19 @@ class TextureHelper {
             case 'image':
                 // TODO 是否需要释放资源？？
                 break;
+            case 'tiled-dash':
+                this.unloadTiledStream();
+                break;
             default:
                 return null;
         }
         this.containerNode.removeEventListener('canplay', this.onVideoStarted);
+    }
+
+    update = () => {
+        if (this.tiledStreaming) {
+            this.tiledStreaming.update();
+        }
     }
 }
 

@@ -131,7 +131,7 @@ class XRPlayer extends Component {
         >
           <div
             id="canvas"
-            style={{ width: '100%', height: '100%', background: '#fff', display: 'none' }}
+            style={{ width: '100%', height: '100%', background: '#fff' }}
             ref={(mount) => { this.mount = mount }}
           >
           </div>

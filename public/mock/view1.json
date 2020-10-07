@@ -6,8 +6,8 @@
     "muted": true,
     "res_urls": [
         {
-            "type": "tiled-dash",
-            "res_url": "https://dash.akamaized.net/dash264/TestCases/1a/sony/SNE_DASH_SD_CASE1A_REVISED.mpd",
+            "type": "hls",
+            "res_url": "https://cache2.utovr.com/7c74396d99b247eab358a3b93d784c85/L2_m420in607jbt3xjy.m3u8",
             "panoramic_type": "360",
             "radius": 500
         }

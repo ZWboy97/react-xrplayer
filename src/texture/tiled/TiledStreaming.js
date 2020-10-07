@@ -17,11 +17,9 @@ class TiledStreaming {
     }
 
     createEnhanceLay = () => {
-        let xrContainer = document.getElementById("xr-container");
         for (let i = 0; i < 4; i++) {
             let video = document.createElement('video');
             video.style.background = 'black';
-            xrContainer.appendChild(video);
             this.enhanceVideos.push(video);
             this.initVideoNode(video, 320, 180);
         }
@@ -46,10 +44,9 @@ class TiledStreaming {
     }
 
     getTextureFromVideo = (video) => {
-        let texture = new THREE.VideoTexture(video);
-        texture.minFilter = THREE.LinearFilter;
-        texture.format = THREE.RGBFormat;
-        return texture;
+        this.texture = new THREE.CanvasTexture(this.canvas);
+        this.texture.needsUpdate = true;
+        return this.texture;
     }
 
     initVideoNode = (videoInstance, width, height) => {
@@ -58,6 +55,7 @@ class TiledStreaming {
         videoInstance.loop = true;
         videoInstance.crossOrigin = "anonymous";
         videoInstance.autoplay = true;
+        videoInstance.muted = true;
         videoInstance.allowsInlineMediaPlayback = true;
         videoInstance.setAttribute('webkit-playsinline', 'webkit-playsinline');
         videoInstance.setAttribute('webkit-playsinline', true);
@@ -75,11 +73,12 @@ class TiledStreaming {
 
     initCanvas = () => {
         this.canvas = document.createElement('canvas');
-        this.canvas.width = 2560;
-        this.canvas.height = 1440;
-        this.canvas.style.width = '1280px';
-        this.canvas.style.height = '720px';
-        let xrContainer = document.getElementById("xr-container");
+        this.canvas.width = 2048;
+        this.canvas.height = 1024;
+        this.canvas.style.width = '1024px';
+        this.canvas.style.height = '512px';
+        // TODO 测试使用
+        let xrContainer = document.getElementById("operation");
         xrContainer.appendChild(this.canvas);
         this.ctx = this.canvas.getContext("2d");
         this.ctx.scale(2, 2);
@@ -90,15 +89,18 @@ class TiledStreaming {
         if (!this.ctx) {
             return;
         }
-        this.ctx.drawImage(this.baseVideo, 0, 0, 1280, 720);
-        this.ctx.drawImage(this.enhanceVideos[0], 0, 0, 320, 180);
-        this.ctx.drawImage(this.enhanceVideos[1], 320, 0, 320, 180);
-        this.ctx.drawImage(this.enhanceVideos[2], 640, 0, 320, 180);
-        this.ctx.drawImage(this.enhanceVideos[3], 960, 0, 320, 180);
+        this.ctx.drawImage(this.baseVideo, 0, 0, 1024, 512);
+        this.ctx.drawImage(this.enhanceVideos[0], 0, 0, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[1], 256, 0, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[2], 512, 0, 256, 170);
+        this.ctx.drawImage(this.enhanceVideos[3], 768, 0, 256, 170);
     }
 
     update = () => {
         this.updateCanvas();
+        if (this.texture) {
+            this.texture.needsUpdate = true;
+        }
     }
 
     play = () => {

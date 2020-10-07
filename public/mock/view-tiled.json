@@ -1,0 +1,15 @@
+{
+    "camera_fov": 100,
+    "auto_rotate_speed": 1.0,
+    "enable_auto_rotate": false,
+    "volume": 90,
+    "muted": true,
+    "res_urls": [
+        {
+            "type": "tiled-dash",
+            "res_url": "https://dash.akamaized.net/dash264/TestCases/1a/sony/SNE_DASH_SD_CASE1A_REVISED.mpd",
+            "panoramic_type": "360",
+            "radius": 500
+        }
+    ]
+}

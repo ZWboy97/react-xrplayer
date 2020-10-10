@@ -49,11 +49,11 @@ class InnerViewControls {
         this.onKeyDown = false;
         this.onKeyShift = false;
 
-        this.initControlsListener();
-
         //重力交互控件
-        this.orientationControls = new DeviceOrientationControls(this.camera);
+        this.orientationControls = null;
         this.orientationEnable = false;
+
+        this.initControlsListener();
     }
 
     /******************************对外接口************************* */
@@ -61,10 +61,12 @@ class InnerViewControls {
     // 相机控制器开关
     connect = () => {
         this.isConnected = true;
+        this.initControlsListener();
         this.initSphericalData();
     };
     disConnect = () => {
         this.isConnected = false;
+        this.removeControlsListener();
     };
 
     // 方向传感器开关
@@ -73,12 +75,18 @@ class InnerViewControls {
     }
     enableOrientationControls = () => {
         if (this.orientationEnable === false) {
+            if (this.orientationControls == null) {
+                this.orientationControls = new DeviceOrientationControls(this.camera);
+            }
             this.orientationControls.connect(THREE.MathUtils.degToRad(this.lon - 90));
             this.orientationEnable = true;
         }
     }
     disableOrientationControls = () => {
         if (this.orientationEnable === true) {
+            if (this.orientationControls == null) {
+                this.orientationControls = new DeviceOrientationControls(this.camera);
+            }
             this.orientationControls.disConnect();
             this.orientationEnable = false;
             this.initSphericalData();
@@ -145,6 +153,17 @@ class InnerViewControls {
         this.enableFovChange = enable;
     }
 
+    // 键盘控制开关
+    enableKeyControl = (enable) => {
+        if (enable) {
+            document.addEventListener('keydown', this.onDocumentKeyDown, false);
+            document.addEventListener('keyup', this.onDocumentKeyUp, false);
+        } else {
+            document.removeEventListener('keydown', this.onDocumentKeyDown, false);
+            document.removeEventListener('keyup', this.onDocumentKeyUp, false);
+        }
+    }
+
     /*******************************内部方法实现******************************** */
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
@@ -161,23 +180,31 @@ class InnerViewControls {
     };
 
     initControlsListener = () => {
-        this.browser = window.navigator.userAgent.toLowerCase();
         const container = document.getElementById('xr-container')
-        if (this.browser.indexOf('mobile') > 0) {
-            container.addEventListener('touchstart', this.onTouchstart, false);
-            container.addEventListener('touchmove', this.onTouchmove, false);
-            container.addEventListener('touchend', this.onTouchend, false);
-            container.addEventListener('wheel', this.onDocumentMouseWheel, false);
-        } else {
-            container.addEventListener('mousedown', this.onDocumentMouseDown, false);
-            container.addEventListener('mousemove', this.onDocumentMouseMove, false);
-            container.addEventListener('mouseup', this.onDocumentMouseUp, false);
-            container.addEventListener('wheel', this.onDocumentMouseWheel, false);
-            //添加键盘监听
-            document.addEventListener('keydown', this.onDocumentKeyDown, false);
-            document.addEventListener('keyup', this.onDocumentKeyUp, false);
-        }
+
+        container.addEventListener('touchstart', this.onTouchstart, false);
+        container.addEventListener('touchmove', this.onTouchmove, false);
+        container.addEventListener('touchend', this.onTouchend, false);
+        container.addEventListener('wheel', this.onDocumentMouseWheel, false);
+
+        container.addEventListener('mousedown', this.onDocumentMouseDown, false);
+        container.addEventListener('mousemove', this.onDocumentMouseMove, false);
+        container.addEventListener('mouseup', this.onDocumentMouseUp, false);
+        container.addEventListener('wheel', this.onDocumentMouseWheel, false);
     };
+
+    removeControlsListener = () => {
+        const container = document.getElementById('xr-container')
+        container.removeEventListener('touchstart', this.onTouchstart, false);
+        container.removeEventListener('touchmove', this.onTouchmove, false);
+        container.removeEventListener('touchend', this.onTouchend, false);
+        container.removeEventListener('wheel', this.onDocumentMouseWheel, false);
+
+        container.removeEventListener('mousedown', this.onDocumentMouseDown, false);
+        container.removeEventListener('mousemove', this.onDocumentMouseMove, false);
+        container.removeEventListener('mouseup', this.onDocumentMouseUp, false);
+        container.removeEventListener('wheel', this.onDocumentMouseWheel, false);
+    }
 
     update = () => {
         if (!this.isConnected) {

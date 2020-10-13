@@ -58,6 +58,26 @@ class TiledDemo extends React.Component {
                         <div>加载中</div>
                 }
                 <div id="operation" style={{ "position": "fixed", "bottom": "0" }}>
+                    <table>
+                        <tr>
+                            <button id='tile0-0'>tile0-0</button>
+                            <button id='tile1-0'>tile1-0</button>
+                            <button id='tile2-0'>tile2-0</button>
+                            <button id='tile3-0'>tile3-0</button>
+                        </tr>
+                        <tr>
+                            <button id='tile0-1'>tile0-1</button>
+                            <button id='tile1-1'>tile1-1</button>
+                            <button id='tile2-1'>tile2-1</button>
+                            <button id='tile3-1'>tile3-1</button>
+                        </tr>
+                        <tr>
+                            <button id='tile0-2'>tile0-2</button>
+                            <button id='tile1-2'>tile1-2</button>
+                            <button id='tile2-2'>tile2-2</button>
+                            <button id='tile3-2'>tile3-2</button>
+                        </tr>
+                    </table>
                 </div>
             </div >
         )

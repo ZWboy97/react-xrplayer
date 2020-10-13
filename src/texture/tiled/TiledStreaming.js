@@ -21,18 +21,20 @@ class TiledStreaming {
     }
 
     createEnhanceLay = () => {
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 3; i++) {
             let video = document.createElement('video');
             video.style.background = 'black';
             this.enhanceVideos.push(video);
+            // let xrContainer = document.getElementById("operation");
+            // xrContainer.appendChild(video);
             this.initVideoNode(video, 320, 180);
         }
     }
 
-    loadTiledDash = (resUrl) => {
-        this.resUrl = resUrl;
+    loadTiledDash = (resUrls) => {
+        this.resUrl = resUrls;
         this.baseDash = MediaPlayer().create();
-        this.baseDash.initialize(this.baseVideo, resUrl, true);
+        this.baseDash.initialize(this.baseVideo, resUrls[0], true);
         this.baseVideo.load();
         this.baseVideo.play();
         this.timingAsynSrc = new TIMINGSRC.TimingObject({
@@ -41,7 +43,7 @@ class TiledStreaming {
         for (let i = 0; i < this.enhanceVideos.length; i++) {
             let videoNode = this.enhanceVideos[i];
             let dash = MediaPlayer().create();
-            dash.initialize(videoNode, resUrl, true);
+            dash.initialize(videoNode, resUrls[i + 5], true);
             videoNode.load();
             videoNode.play();
             this.enhanceDash.push(dash);
@@ -108,18 +110,18 @@ class TiledStreaming {
             return;
         }
         this.ctx.drawImage(this.baseVideo, 0, 0, 1024, 512);
-        this.ctx.drawImage(this.enhanceVideos[0], 0, 0, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[1], 256, 0, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[2], 512, 0, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[3], 768, 0, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[0], 0, 0, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[1], 256, 0, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[2], 512, 0, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[3], 768, 0, 256, 170);
         this.ctx.drawImage(this.enhanceVideos[0], 0, 170, 256, 170);
         this.ctx.drawImage(this.enhanceVideos[1], 256, 170, 256, 170);
         this.ctx.drawImage(this.enhanceVideos[2], 512, 170, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[3], 768, 170, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[0], 0, 340, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[1], 256, 340, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[2], 512, 340, 256, 170);
-        this.ctx.drawImage(this.enhanceVideos[3], 768, 340, 256, 170);
+        //this.ctx.drawImage(this.enhanceVideos[3], 768, 170, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[8], 0, 340, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[9], 256, 340, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[10], 512, 340, 256, 170);
+        // this.ctx.drawImage(this.enhanceVideos[11], 768, 340, 256, 170);
     }
 
     update = () => {

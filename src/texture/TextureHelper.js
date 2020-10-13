@@ -154,7 +154,7 @@ class TextureHelper {
     }
 
     loadTexture = (resource) => {
-        const { type, res_url } = resource;
+        const { type, res_url } = resource[0];
         this.resType = type;
         this.resUrl = res_url;
         switch (type) {

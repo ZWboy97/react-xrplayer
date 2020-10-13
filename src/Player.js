@@ -170,7 +170,7 @@ XRPlayer.protoTypes = {
   camera_far: Proptypes.number,
   camera_position: Proptypes.object,
   camera_target: Proptypes.object,
-  scene_texture_resource: Proptypes.object.isRequired,
+  scene_texture_resource: Proptypes.array,
   axes_helper_display: Proptypes.bool,
   hot_spot_list: Proptypes.array,
   event_list: Proptypes.array,

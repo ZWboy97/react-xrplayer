@@ -47,7 +47,7 @@ class TiledDemo extends React.Component {
                             }}
                             onCreated={this.onXRCreated}
                             scene_texture_resource={
-                                this.xrConfigure.res_urls[0]
+                                this.xrConfigure.res_urls
                             }
                             axes_helper_display={true}
                             is_full_screen={this.state.isFullScreen}

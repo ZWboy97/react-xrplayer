@@ -189,12 +189,12 @@ class App extends React.Component {
         this.boxManager.addEmbeddedBox(textBox);
 
         let imageBox = new EmbeddedImageBox('box2');
-        imageBox.setImage(process.env.PUBLIC_URL+'/logo192.png', 192, 192);
+        imageBox.setImage(process.env.PUBLIC_URL + '/logo192.png', 192, 192);
         imageBox.setPosition(0, 45);
         this.boxManager.addEmbeddedBox(imageBox);
 
         let videoBox = new EmbeddedVideoBox('box3');
-        videoBox.setVideo(process.env.PUBLIC_URL+'/shuttle.mp4', 426, 240);
+        videoBox.setVideo(process.env.PUBLIC_URL + '/shuttle.mp4', 426, 240);
         videoBox.setPosition(0, 120);
         // videoBox.setEnableAutoDisplay(true);
         this.boxManager.addEmbeddedBox(videoBox);
@@ -213,12 +213,12 @@ class App extends React.Component {
             console.log("点击了标签");
         });*/
         this.xrManager.simpleSetEmbeddedBoxEvent('box1', {
-                type: 'infocard',
-                iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
-            });
+            type: 'infocard',
+            iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+        });
 
         let imageBox = this.boxManager.getEmbeddedBox('box2');
-        imageBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
+        imageBox.setImage(process.env.PUBLIC_URL + '/logo512.png', 512, 512);
         imageBox.setDraggable(true);
         imageBox.setScale(0.3, 0.3);
         this.xrManager.simpleSetEmbeddedBoxEvent('box2', {
@@ -303,7 +303,7 @@ class App extends React.Component {
 
     onSimpleCreateTextBox = () => {
         let simpleBox = this.xrManager.simpleCreateImageBox('textBoxSimple');
-        simpleBox.setImage(process.env.PUBLIC_URL+'/logo512.png', 512, 512);
+        simpleBox.setImage(process.env.PUBLIC_URL + '/logo512.png', 512, 512);
         let boxManager = this.xrManager.getEmbeddedBoxManager();
         boxManager.addEmbeddedBox(simpleBox);
     }
@@ -359,7 +359,7 @@ class App extends React.Component {
                             }}
                             onCreated={this.onXRCreated}
                             scene_texture_resource={
-                                this.xrConfigure.res_urls[0]
+                                this.xrConfigure.res_urls
                             }
                             axes_helper_display={true}
                             is_full_screen={this.state.isFullScreen}

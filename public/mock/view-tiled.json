@@ -7,7 +7,21 @@
     "res_urls": [
         {
             "type": "tiled-dash",
-            "res_url": "https://dash.akamaized.net/dash264/TestCases/1a/sony/SNE_DASH_SD_CASE1A_REVISED.mpd",
+            "res_url": [
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/base_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_0_0/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_1_0/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_2_0/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_3_0/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_0_1/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_1_1/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_2_1/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_3_1/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_0_2/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_1_2/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_2_2/L0_dash.mpd",
+                "http://10.28.145.224:3000/react-xrplayer/res/1-1/tile_3_2/L0_dash.mpd"
+            ],
             "panoramic_type": "360",
             "radius": 500
         }

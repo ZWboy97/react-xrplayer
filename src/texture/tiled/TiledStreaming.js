@@ -19,7 +19,8 @@ class TiledStreaming {
         this.timingAsynSrc = null;
         this.buttons = [];
         this.selected = [];
-        this.resUrls = []
+        this.isReady = [];
+        this.resUrls = [];
         this.createEnhanceLay();
         this.initSelectedButton();
     }
@@ -35,6 +36,11 @@ class TiledStreaming {
             false, false, false, false,
             false, false, false, false
         ]
+        this.isReady = [
+            false, false, false, false,
+            false, false, false, false,
+            false, false, false, false
+        ]
         for (let i = 0; i < ids.length; i++) {
             let button = document.getElementById(ids[i]);
             button.onclick = () => {
@@ -46,10 +52,13 @@ class TiledStreaming {
 
     buttonClick = (id) => {
         this.selected[id] = !this.selected[id];
-        console.log('id=', id, ' status:', this.selected[id]);
         if (this.selected[id]) {
             let video = document.createElement('video');
             video.style.background = 'black';
+            video.currentTime = this.baseVideo.currentTime;
+            video.oncanplay = () => {
+                this.isReady[id] = true;
+            }
             this.initVideoNode(video, 320, 180);
             this.enhanceVideos[id] = video;
             let dash = MediaPlayer().create();
@@ -66,6 +75,7 @@ class TiledStreaming {
             dash.reset();
             this.enhanceDash[id] = null;
             this.videoMediaAsyns[id] = null;
+            this.isReady[id] = false;
         }
     }
 
@@ -161,40 +171,40 @@ class TiledStreaming {
             return;
         }
         this.ctx.drawImage(this.baseVideo, 0, 0, 1024, 512);
-        if (this.selected[0]) {
+        if (this.selected[0] && this.isReady[0]) {
             this.ctx.drawImage(this.enhanceVideos[0], 0, 0, 256, 170);
         }
-        if (this.selected[1]) {
+        if (this.selected[1] && this.isReady[1]) {
             this.ctx.drawImage(this.enhanceVideos[1], 256, 0, 256, 170);
         }
-        if (this.selected[2]) {
+        if (this.selected[2] && this.isReady[2]) {
             this.ctx.drawImage(this.enhanceVideos[2], 512, 0, 256, 170);
         }
-        if (this.selected[3]) {
+        if (this.selected[3] && this.isReady[3]) {
             this.ctx.drawImage(this.enhanceVideos[3], 768, 0, 256, 170);
         }
-        if (this.selected[4]) {
+        if (this.selected[4] && this.isReady[4]) {
             this.ctx.drawImage(this.enhanceVideos[4], 0, 170, 256, 170);
         }
-        if (this.selected[5]) {
+        if (this.selected[5] && this.isReady[5]) {
             this.ctx.drawImage(this.enhanceVideos[5], 256, 170, 256, 170);
         }
-        if (this.selected[6]) {
+        if (this.selected[6] && this.isReady[6]) {
             this.ctx.drawImage(this.enhanceVideos[6], 512, 170, 256, 170);
         }
-        if (this.selected[7]) {
+        if (this.selected[7] && this.isReady[7]) {
             this.ctx.drawImage(this.enhanceVideos[7], 768, 170, 256, 170);
         }
-        if (this.selected[8]) {
+        if (this.selected[8] && this.isReady[8]) {
             this.ctx.drawImage(this.enhanceVideos[8], 0, 340, 256, 170);
         }
-        if (this.selected[9]) {
+        if (this.selected[9] && this.isReady[9]) {
             this.ctx.drawImage(this.enhanceVideos[9], 256, 340, 256, 170);
         }
-        if (this.selected[10]) {
+        if (this.selected[10] && this.isReady[10]) {
             this.ctx.drawImage(this.enhanceVideos[10], 512, 340, 256, 170);
         }
-        if (this.selected[11]) {
+        if (this.selected[11] && this.isReady[11]) {
             this.ctx.drawImage(this.enhanceVideos[11], 768, 340, 256, 170);
         }
     }

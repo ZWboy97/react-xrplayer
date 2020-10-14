@@ -361,11 +361,30 @@ class XRPlayerManager {
 
     /**************************相机控制相关接口************************* */
     // 相机控制器开关
+    /**
+    * @function
+    * @name XRPlayerManager#connectCameraControl
+    * @description 连接相机视角控制器，视角可以通过鼠标等方式调整
+    */
     connectCameraControl = () => {
         this.innerViewControls.connect();
     }
+    /**
+    * @function
+    * @name XRPlayerManager#disConnectCameraControl
+    * @description 关闭连接器，无法通过鼠标方式调整视野
+    */
     disConnectCameraControl = () => {
         this.innerViewControls.disConnect();
+    }
+    /**
+     * @function
+     * @name XRPlayerManager#enableKeyControl
+     * @description 视口开启键盘控制相机视角
+     * @param {boolean} enable
+     */
+    enableKeyControl = (enable) => {
+        this.innerViewControls.enableKeyControl(enable);
     }
 
     // 方向传感器控制开关
@@ -392,8 +411,8 @@ class XRPlayerManager {
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         var phi = spherical.phi;
         var theta = spherical.theta;
-        var lon = 90 - THREE.Math.radToDeg(theta);
-        var lat = 90 - THREE.Math.radToDeg(phi);
+        var lon = THREE.Math.radToDeg(theta);
+        var lat = THREE.Math.radToDeg(phi);
         return {
             lat: lat,
             lon: lon
@@ -788,6 +807,16 @@ class XRPlayerManager {
     destroy = () => {
         this.mount.removeChild(this.renderer.domElement)
         this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();
+    }
+
+    spherical2Cartesian = (lat, lon, distance) => {
+        let pos = { x: 0, y: 0, z: 0 };
+        const phi = THREE.Math.degToRad(90 - lat);
+        const theta = THREE.Math.degToRad(lon);
+        pos.x = distance * Math.sin(phi) * Math.cos(theta);
+        pos.y = distance * Math.cos(phi);
+        pos.z = distance * Math.sin(phi) * Math.sin(theta);
+        return pos;
     }
 }
 

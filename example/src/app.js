@@ -42,7 +42,8 @@ class App extends React.Component {
         this.xrManager.toNormalView(5000, 1000);
         this.xrManager.setModels(this.xrConfigure.model_list);
         this.xrManager.connectCameraControl();
-        this.xrManager.setFovVerticalScope(-90, 90);
+        this.xrManager.setFovVerticalScope(0, 180);
+        this.xrManager.enableKeyControl(true);
         this.xrManager.enableChangeFov(true);
         this.xrManager.setParticleEffectRes(this.xrConfigure.particle_effect);
         this.onCameraAnimationSet();
@@ -159,8 +160,8 @@ class App extends React.Component {
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         var phi = spherical.phi;
         var theta = spherical.theta;
-        var lon = 90 - THREE.Math.radToDeg(theta);
-        var lat = 90 - THREE.Math.radToDeg(phi);
+        var lon = THREE.Math.radToDeg(theta);
+        var lat = THREE.Math.radToDeg(phi);
         alert(`fov:${fov}\nposition:\nx:${position.x}\ny:${position.y}\nz:${position.z}
              \nlon:${lon},lat:${lat}`)
     }

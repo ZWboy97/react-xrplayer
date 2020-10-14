@@ -34,11 +34,11 @@ class InnerViewControls {
         this.autoRotateDirection = 'left';      // 自动旋转方向，left、right、up、down
 
         // 视野范围
-        this.fovTopEdge = 90;
-        this.fovDownEdge = -90;
+        this.fovTopEdge = 180;
+        this.fovDownEdge = 0;
 
-        this.fovLeftEdge = -90;
-        this.fovRightEdge = 270;
+        this.fovLeftEdge = -180;
+        this.fovRightEdge = 180;
 
         this.enableFovChange = true;        // 是否允许用户调整fov大小
 
@@ -174,8 +174,8 @@ class InnerViewControls {
         this.phi = spherical.phi;
         this.theta = spherical.theta;
         this.distance = spherical.radius;
-        this.lon = 90 - THREE.Math.radToDeg(this.theta);
-        this.lat = 90 - THREE.Math.radToDeg(this.phi);
+        this.lon = THREE.Math.radToDeg(this.theta);
+        this.lat = THREE.Math.radToDeg(this.phi);
         return { lat: this.lat, lon: this.lon };
     };
 
@@ -221,11 +221,11 @@ class InnerViewControls {
             return;
         }
         if (this.isUserInteracting) {
-            var dLon = 2;
-            var dLat = 2;
+            var dLon = 1;
+            var dLat = 1;
             if (this.onKeyShift) {
-                dLon = 10;
-                dLat = 10;
+                dLon = 5;
+                dLat = 5;
             }
             if (this.onKeyLeft) {
                 this.lon -= dLon;
@@ -247,20 +247,23 @@ class InnerViewControls {
     };
 
     updateCameraPosition = () => {
-        if (this.fovLeftEdge !== -90 || this.fovRightEdge !== 270) { // 对水平fov做了限制
+        // 对水平fov做了限制
+        if (this.fovLeftEdge !== -180 || this.fovRightEdge !== 180) {
             this.lon = Math.max(this.fovLeftEdge, Math.min(this.fovRightEdge, this.lon));
         }
-        if (this.fovDownEdge !== -90 || this.fovTopEdge !== 90) {// 对垂直fov做了限制
-            this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
+        this.lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, this.lat));
+        if (this.lon > 180) {
+            this.lon = this.lon - 360;
+        } else if (this.lon < -180) {
+            this.lon = 360 + this.lon;
         }
-        this.phi = THREE.Math.degToRad(90 - this.lat);
+        this.phi = THREE.Math.degToRad(this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
-        // console.log('lat:', this.lat, ',lon:', this.lon, "phi:", this.phi, ",theta:", this.theta);
-        // console.log('fov', this.camera.fov);
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
+        console.log('lon,lat', this.lon, this.lat);
     }
 
     autoRotate = () => {
@@ -276,11 +279,11 @@ class InnerViewControls {
                 break;
             case 'up':
                 this.phi += this.autoRotateAngle;
-                this.lat = 90 - THREE.Math.radToDeg(this.phi);
+                this.lat = THREE.Math.radToDeg(this.phi);
                 break;
             case 'down':
                 this.phi -= this.autoRotateAngle;
-                this.lat = 90 - THREE.Math.radToDeg(this.phi);
+                this.lat = THREE.Math.radToDeg(this.phi);
                 break;
             default: break;
         }

@@ -384,8 +384,8 @@ class XRPlayerManager {
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         var phi = spherical.phi;
         var theta = spherical.theta;
-        var lon = 90 - THREE.Math.radToDeg(theta);
-        var lat = 90 - THREE.Math.radToDeg(phi);
+        var lon = THREE.Math.radToDeg(theta);
+        var lat = THREE.Math.radToDeg(phi);
         return {
             lat: lat,
             lon: lon

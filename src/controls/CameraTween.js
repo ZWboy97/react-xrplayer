@@ -112,7 +112,7 @@ class CameraTween {
     spherical2Cartesian = (lat, lon, distance) => {
         const pos = { x: 0, y: 0, z: 0 };
         lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
-        const phi = THREE.Math.degToRad(90 - lat);
+        const phi = THREE.Math.degToRad(lat);
         const theta = THREE.Math.degToRad(lon);
         pos.x = distance * Math.sin(phi) * Math.cos(theta);
         pos.y = distance * Math.cos(phi);

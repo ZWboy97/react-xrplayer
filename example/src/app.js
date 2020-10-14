@@ -43,6 +43,7 @@ class App extends React.Component {
         this.xrManager.setModels(this.xrConfigure.model_list);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(0, 180);
+        this.xrManager.enableKeyControl(true);
         this.xrManager.enableChangeFov(true);
         this.xrManager.setParticleEffectRes(this.xrConfigure.particle_effect);
         this.onCameraAnimationSet();

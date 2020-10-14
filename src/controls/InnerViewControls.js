@@ -234,10 +234,10 @@ class InnerViewControls {
                 this.lon += dLon;
             }
             if (this.onKeyUp) {
-                this.lat -= dLat;
+                this.lat += dLat;
             }
             if (this.onKeyDown) {
-                this.lat += dLat;
+                this.lat -= dLat;
             }
             this.updateCameraPosition();
         } else if (this.enableAutoRotate) {

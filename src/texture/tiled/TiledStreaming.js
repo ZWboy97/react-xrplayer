@@ -81,14 +81,9 @@ class TiledStreaming {
 
     createEnhanceLay = () => {
         for (let i = 0; i < 12; i++) {
-            // let video = document.createElement('video');
-            // video.style.background = 'black';
-            //this.initVideoNode(video, 320, 180);
             this.enhanceVideos.push(null);
             this.enhanceDash.push(null);
             this.videoMediaAsyns.push(null);
-            // let xrContainer = document.getElementById("operation");
-            // xrContainer.appendChild(video);
         }
     }
 
@@ -101,16 +96,6 @@ class TiledStreaming {
         this.timingAsynSrc = new TIMINGSRC.TimingObject({
             position: this.baseVideo.currentTime,
         });
-        // for (let i = 0; i < this.enhanceVideos.length; i++) {
-        //     let videoNode = this.enhanceVideos[i];
-        //     let dash = MediaPlayer().create();
-        //     dash.initialize(videoNode, resUrls[i + 5], true);
-        //     videoNode.load();
-        //     videoNode.play();
-        //     this.enhanceDash.push(dash);
-        //     let asyn = new MCorp.mediaSync(this.enhanceVideos[i], this.timingAsynSrc);
-        //     this.videoMediaAsyns.push(asyn);
-        // }
         this.initCanvas();
         return this.getTextureFromVideo();
     }
@@ -170,42 +155,55 @@ class TiledStreaming {
         if (!this.ctx) {
             return;
         }
+        this.ctx.strokeStyle = "rgb(102, 255, 102)";
         this.ctx.drawImage(this.baseVideo, 0, 0, 1024, 512);
         if (this.selected[0] && this.isReady[0]) {
             this.ctx.drawImage(this.enhanceVideos[0], 0, 0, 256, 170);
+            this.ctx.strokeRect(0, 0, 256, 170);
         }
         if (this.selected[1] && this.isReady[1]) {
             this.ctx.drawImage(this.enhanceVideos[1], 256, 0, 256, 170);
+            this.ctx.strokeRect(256, 0, 256, 170);
         }
         if (this.selected[2] && this.isReady[2]) {
             this.ctx.drawImage(this.enhanceVideos[2], 512, 0, 256, 170);
+            this.ctx.strokeRect(512, 0, 256, 170);
         }
         if (this.selected[3] && this.isReady[3]) {
             this.ctx.drawImage(this.enhanceVideos[3], 768, 0, 256, 170);
+            this.ctx.strokeRect(768, 0, 256, 170);
         }
         if (this.selected[4] && this.isReady[4]) {
             this.ctx.drawImage(this.enhanceVideos[4], 0, 170, 256, 170);
+            this.ctx.strokeRect(0, 170, 256, 170);
         }
         if (this.selected[5] && this.isReady[5]) {
             this.ctx.drawImage(this.enhanceVideos[5], 256, 170, 256, 170);
+            this.ctx.strokeRect(256, 170, 256, 170);
         }
         if (this.selected[6] && this.isReady[6]) {
             this.ctx.drawImage(this.enhanceVideos[6], 512, 170, 256, 170);
+            this.ctx.strokeRect(512, 170, 256, 170);
         }
         if (this.selected[7] && this.isReady[7]) {
             this.ctx.drawImage(this.enhanceVideos[7], 768, 170, 256, 170);
+            this.ctx.strokeRect(768, 170, 256, 170);
         }
         if (this.selected[8] && this.isReady[8]) {
             this.ctx.drawImage(this.enhanceVideos[8], 0, 340, 256, 170);
+            this.ctx.strokeRect(0, 340, 256, 170);
         }
         if (this.selected[9] && this.isReady[9]) {
             this.ctx.drawImage(this.enhanceVideos[9], 256, 340, 256, 170);
+            this.ctx.strokeRect(256, 340, 256, 170);
         }
         if (this.selected[10] && this.isReady[10]) {
             this.ctx.drawImage(this.enhanceVideos[10], 512, 340, 256, 170);
+            this.ctx.strokeRect(512, 340, 256, 170);
         }
         if (this.selected[11] && this.isReady[11]) {
             this.ctx.drawImage(this.enhanceVideos[11], 768, 340, 256, 170);
+            this.ctx.strokeRect(768, 340, 256, 170);
         }
     }
 

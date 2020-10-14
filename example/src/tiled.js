@@ -6,7 +6,8 @@ class TiledDemo extends React.Component {
     state = {
         isFullScreen: false,
         onOrientationControls: false,
-        isDataReady: false
+        isDataReady: false,
+        operationVisible: true
     }
 
     constructor(props) {
@@ -31,8 +32,8 @@ class TiledDemo extends React.Component {
         this.xrManager.connectCameraControl();
     }
 
-
     render() {
+        const operation_visible = this.state.operationVisible ? "visible" : "hidden";
         return (
             <div>
                 {
@@ -42,14 +43,14 @@ class TiledDemo extends React.Component {
                             height="100vh"
                             camera_position={{
                                 x: 0,
-                                y: 450,
+                                y: 10,
                                 z: 0
                             }}
                             onCreated={this.onXRCreated}
                             scene_texture_resource={
                                 this.xrConfigure.res_urls
                             }
-                            axes_helper_display={true}
+                            axes_helper_display={false}
                             is_full_screen={this.state.isFullScreen}
                             onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
                             onEventHandler={this.onEventHandler}
@@ -57,7 +58,15 @@ class TiledDemo extends React.Component {
                         :
                         <div>加载中</div>
                 }
-                <div id="operation" style={{ "position": "fixed", "bottom": "0" }}>
+                <button style={{ "position": "fixed", "top": "0" }}
+                    onClick={() => this.setState({ operationVisible: !this.state.operationVisible })}
+                >操作</button>
+                <div id="operation" style={{
+                    "position": "fixed", "bottom": "0",
+                    "color": "white",
+                    "visibility": operation_visible
+                }}>
+                    分块选择
                     <table>
                         <tr>
                             <button id='tile0-0'>tile0-0</button>
@@ -79,7 +88,7 @@ class TiledDemo extends React.Component {
                         </tr>
                     </table>
                 </div>
-            </div >
+            </ div>
         )
     }
 }

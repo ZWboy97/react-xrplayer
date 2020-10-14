@@ -58,6 +58,7 @@ class XRPlayerManager {
         this.hotSpotHelper = null;
 
         this.vrHelper = null;
+        this.CameraHelper = null;
 
         // audio related
         this.audio = document.createElement("audio");
@@ -108,6 +109,7 @@ class XRPlayerManager {
         const {
             scene_texture_resource: textureResource,
             axes_helper_display: isAxesHelperDisplay,
+            camera_helper_display: isCameraHelperDisplay
         } = this.props;
         const { panoramic_type = '360', radius = 500, height = 1000 } = textureResource;
         this.sceneContainer = document.getElementById('video');
@@ -130,6 +132,10 @@ class XRPlayerManager {
             this.scene.add(axisHelper);
         }
         this.scene.add(this.camera);
+        if (isCameraHelperDisplay) {
+            this.cameraHelper = new THREE.CameraHelper(this.camera);
+            this.scene.add(this.cameraHelper)
+        }
     }
 
     initRenderer = () => {
@@ -186,6 +192,7 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
+        this.cameraHelper && this.cameraHelper.update();
         this.sceneTextureHelper && this.sceneTextureHelper.update();
         this.textHelper && this.textHelper.update();
         this.embeddedBoxManager && this.embeddedBoxManager.update();
@@ -205,7 +212,7 @@ class XRPlayerManager {
      * @function
      * @name XRPlayerManager#setGlobalVolume
      * @description 设置全局音量大小，会生成global_volume事件
-     * @param {int} volume 音量大小
+     * @param {number} volume 音量大小
      */
     setGlobalVolume = (volume) => {
         this.handler('global_volume', { volume: volume });
@@ -393,19 +400,36 @@ class XRPlayerManager {
         }
     }
 
-    // 相机当前fov接口
+    /**
+     * @function
+     * @name XRPlayerManager#setCameraFov
+     * @description 设置相机当前的fov大小
+     * @param {number} fov 
+     */
     setCameraFov = (fov) => {
         this.innerViewControls.setCameraFov(fov);
     }
+    /**
+     * @function
+     * @name XRPlayerManager#getCameraFov
+     * @description 获取相机的FOV大小
+     * @returns {number}
+     */
     getCameraFov = () => {
         return this.innerViewControls.getCameraFov();
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#enableChangeFov
+     * @description 控制是否允许用户通过鼠标滑轮调整FOV
+     * @param {boolean} enable 
+     */
     enableChangeFov = (enable) => {
         this.innerViewControls.enableChangeFov(enable);
     }
 
     // FOV上下范围设置接口
+
     setFovVerticalScope = (bottom, top) => {
         this.innerViewControls.setFovVerticalScope(bottom, top);
     }

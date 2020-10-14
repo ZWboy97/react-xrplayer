@@ -228,12 +228,25 @@ class InnerViewControls {
         }
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
-        // console.log('lat:', this.lat, ',lon:', this.lon, "phi:", this.phi, ",theta:", this.theta);
-        // console.log('fov', this.camera.fov);
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
+        // console.log('lat:', this.lat, ',lon:', this.lon, "phi:", this.phi, ",theta:", this.theta);
+        // TODO 调试相机位置
+        let { x, y, z } = this.camera.position;
+        console.log('(xyz)', x, y, z)
+        console.log('fov', this.camera.fov);
+        const spherical = new THREE.Spherical();
+        const position = this.camera.position;
+        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        let phi = spherical.phi;
+        let theta = spherical.theta;
+        let distance = spherical.radius;
+        console.log('phi,theta,distance', phi, theta, distance);
+        let lon = 90 - THREE.Math.radToDeg(this.theta);
+        let lat = 90 - THREE.Math.radToDeg(this.phi);
+        console.log('lon,lat', lon, lat);
     }
 
     autoRotate = () => {

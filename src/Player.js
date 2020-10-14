@@ -175,6 +175,7 @@ XRPlayer.protoTypes = {
   hot_spot_list: Proptypes.array,
   event_list: Proptypes.array,
   is_full_screen: Proptypes.bool,
+  camera_helper_display: Proptypes.bool,
 
   onCreated: Proptypes.func,
   onFullScreenChange: Proptypes.func,
@@ -198,6 +199,7 @@ XRPlayer.defaultProps = {
     z: 0
   },
   axes_helper_display: false,
+  camera_helper_display: false,
   hot_spot_list: [],
   event_list: [],
   model_list: [],

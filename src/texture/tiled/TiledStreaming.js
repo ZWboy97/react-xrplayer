@@ -44,39 +44,56 @@ class TiledStreaming {
         for (let i = 0; i < ids.length; i++) {
             let button = document.getElementById(ids[i]);
             button.onclick = () => {
-                this.buttonClick(i);
+                if (this.selected[i]) {
+                    this.unloadTile(i);
+                } else {
+                    this.loadTile(i, 1);
+                }
             }
             this.buttons.push(button);
         }
     }
 
-    buttonClick = (id) => {
-        this.selected[id] = !this.selected[id];
-        if (this.selected[id]) {
-            let video = document.createElement('video');
-            video.style.background = 'black';
-            video.currentTime = this.baseVideo.currentTime;
-            video.oncanplay = () => {
-                this.isReady[id] = true;
-            }
-            this.initVideoNode(video, 320, 180);
-            this.enhanceVideos[id] = video;
-            let dash = MediaPlayer().create();
-            dash.initialize(video, this.resUrls[id + 1], true);
-            video.load();
-            video.play();
-            this.enhanceDash[id] = dash;
-            let asyn = new MCorp.mediaSync(this.enhanceVideos[id], this.timingAsynSrc);
-            this.videoMediaAsyns[id] = asyn;
-        } else {
-            let videoNode = this.enhanceVideos[id];
-            videoNode.pause();
-            let dash = this.enhanceDash[id];
-            dash.reset();
-            this.enhanceDash[id] = null;
-            this.videoMediaAsyns[id] = null;
-            this.isReady[id] = false;
+    /**
+     * @function
+     * @name TiledStreaming#loadTile
+     * @param {number} id , tile分开的编号  
+     * @param {number} level, 加载分块的质量级别 
+     */
+    loadTile = (id, level) => {
+        console.log('load', id);
+        let video = document.createElement('video');
+        video.style.background = 'black';
+        video.currentTime = this.baseVideo.currentTime;
+        video.oncanplay = () => {
+            this.isReady[id] = true;
         }
+        this.initVideoNode(video, 320, 180);
+        this.enhanceVideos[id] = video;
+        let dash = MediaPlayer().create();
+        dash.initialize(video, this.resUrls[id + 1], true);
+        video.load();
+        video.play();
+        this.enhanceDash[id] = dash;
+        let asyn = new MCorp.mediaSync(this.enhanceVideos[id], this.timingAsynSrc);
+        this.videoMediaAsyns[id] = asyn;
+        this.selected[id] = true;
+    }
+
+    /**
+     * @function
+     * @name TiledStreaming#unloadTile
+     * @param {number} id, 写在分块的编号 
+     */
+    unloadTile = (id) => {
+        let videoNode = this.enhanceVideos[id];
+        videoNode.pause();
+        let dash = this.enhanceDash[id];
+        dash.reset();
+        this.enhanceDash[id] = null;
+        this.videoMediaAsyns[id] = null;
+        this.isReady[id] = false;
+        this.selected[id] = false;
     }
 
     createEnhanceLay = () => {

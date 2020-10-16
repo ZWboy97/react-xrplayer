@@ -25,11 +25,61 @@ class TiledDemo extends React.Component {
                     isDataReady: true,
                 });
             });
+        this.tileStreaming = null;
+        this.loadedTileId = -1;
     }
 
     onXRCreated = (manager) => {
         this.xrManager = manager;
         this.xrManager.connectCameraControl();
+        this.xrManager.enableKeyControl(true);
+        this.xrManager.onCameraPositionUpdate((pos) => {
+            console.log('lat', pos.lat, 'lon', pos.lon);
+            if (this.tileStreaming === null) {
+                return;
+            }
+            let id = this.getTileId(pos.lat, pos.lon);
+            console.log('id', id);
+            if (this.loadedTileId === id) {
+                return;
+            }
+            if (this.loadedTileId !== -1) {
+                this.tileStreaming.unloadTile(this.loadedTileId)
+            }
+            this.tileStreaming.loadTile(id, 1);
+            this.loadedTileId = id;
+        });
+        let textureHelper = this.xrManager.getSenceTextureHelper();
+        this.tileStreaming = textureHelper.getTextureMediaSource();
+    }
+
+    getTileX = (lat) => {
+        if (lat >= 120) {
+            return 0;
+        } else if (lat <= 60) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    getTileY = (lon) => {
+        if (lon <= -90) {
+            return 0;
+        } else if (lon > -90 && lon <= 0) {
+            return 1;
+        } else if (lon > 0 && lon <= 90) {
+            return 2;
+        } else if (lon > 90 && lon <= 180) {
+            return 3;
+        }
+    }
+
+    getTileId = (lat, lon) => {
+        let x = this.getTileX(lat);
+        let y = this.getTileY(lon);
+        console.log('x', x, 'y', y);
+        return x * 4 + y;
     }
 
     render() {
@@ -51,6 +101,7 @@ class TiledDemo extends React.Component {
                                 this.xrConfigure.res_urls
                             }
                             axes_helper_display={false}
+                            camera_helper_display={true}
                             is_full_screen={this.state.isFullScreen}
                             onFullScreenChange={(isFull) => { this.setState({ isFullScreen: isFull }) }}
                             onEventHandler={this.onEventHandler}

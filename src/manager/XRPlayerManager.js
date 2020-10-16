@@ -192,7 +192,8 @@ class XRPlayerManager {
         if (this.spriteShapeHelper) {
             this.spriteShapeHelper.update();
         }
-        this.cameraHelper && this.cameraHelper.update();
+        // TODO
+        //this.cameraHelper && this.cameraHelper.update();
         this.sceneTextureHelper && this.sceneTextureHelper.update();
         this.textHelper && this.textHelper.update();
         this.embeddedBoxManager && this.embeddedBoxManager.update();
@@ -219,6 +220,17 @@ class XRPlayerManager {
     }
 
     /****************************全景场景相关控制接口************************* */
+
+    /**
+     * @function
+     * @name XRPlayerManager#getSenceTextureHelper
+     * @description 获取全景场景的背景纹理控制器，通过其可以控制全景背景的行为
+     * @returns {TextureHelper} 背景纹理控制器
+     */
+    getSenceTextureHelper = () => {
+        return this.sceneTextureHelper;
+    }
+
     setSenceResource = (res) => {
         this.sceneTextureHelper && this.sceneTextureHelper.unloadResource();
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
@@ -385,6 +397,15 @@ class XRPlayerManager {
      */
     enableKeyControl = (enable) => {
         this.innerViewControls.enableKeyControl(enable);
+    }
+    /**
+     * @function
+     * @name XRPlayerManager#onCameraPositionUpdate
+     * @description 当相机位置发生改变时，回调该方法
+     * @param {function} ({lat,lon}) => {handler}
+     */
+    onCameraPositionUpdate = (handler) => {
+        this.innerViewControls.setOnCameraPositionUpdate(handler);
     }
 
     // 方向传感器控制开关

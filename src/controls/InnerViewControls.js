@@ -53,6 +53,8 @@ class InnerViewControls {
         this.orientationControls = null;
         this.orientationEnable = false;
 
+        // 相机位置移动回调
+        this.onCameraPositionUpdate = null;
         this.initControlsListener();
     }
 
@@ -164,6 +166,11 @@ class InnerViewControls {
         }
     }
 
+    // 设置相机位置移动的回调处理
+    setOnCameraPositionUpdate = (handler) => {
+        this.onCameraPositionUpdate = handler;
+    }
+
     /*******************************内部方法实现******************************** */
 
     // 将初始化的直角坐标转化为控制所需要的球体坐标数据
@@ -257,13 +264,15 @@ class InnerViewControls {
         } else if (this.lon < -180) {
             this.lon = 360 + this.lon;
         }
+        this.onCameraPositionUpdate && this.onCameraPositionUpdate({
+            lat: this.lat, lon: this.lon
+        });
         this.phi = THREE.Math.degToRad(this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
         // 球坐标系与直角坐标系的转换
         this.camera.position.x = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
         this.camera.position.y = this.distance * Math.cos(this.phi);
         this.camera.position.z = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-        console.log('lon,lat', this.lon, this.lat);
     }
 
     autoRotate = () => {

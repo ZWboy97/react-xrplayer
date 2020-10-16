@@ -59,17 +59,17 @@ class SpriteParticleHelper {
             sprite.y = Math.random() * this.range - this.range / 2;
             sprite.z = Math.random() * this.range - this.range / 2;
             sprite.position.set(sprite.x, sprite.y, sprite.z);
-            if(this.speed_value == 0) {
+            if(this.speed_value === 0) {
                 sprite.velocityY = 0.1 + Math.random() / 5;
                 sprite.velocityX = (Math.random() - 0.5) / 3;
                 sprite.velocityZ = (Math.random() - 0.5) / 3;
             }
-            else if(this.speed_value == 1) {
+            else if(this.speed_value === 1) {
                 sprite.velocityY = 0.4 + Math.random() / 2;
                 sprite.velocityX = 0.2 + (Math.random() - 1.4) / 3;
                 sprite.velocityZ = 0.2 + (Math.random() - 1.4) / 3;
             }
-            else if(this.speed_value == 2) {
+            else if(this.speed_value === 2) {
                 sprite.velocityY = 0.7 + Math.random() ;
                 sprite.velocityX = 0.3 + (Math.random() - 1.7) / 3;
                 sprite.velocityZ = 0.3 + (Math.random() - 1.7) / 3;
@@ -77,9 +77,9 @@ class SpriteParticleHelper {
 
             //sprite.velocityX = (Math.random() - 0.5) /20;
 
-            if(this.size == 0)
+            if(this.size === 0)
                 sprite.scale.set(2,2,2);
-            else if(this.size == 1)
+            else if(this.size === 1)
                 sprite.scale.set(6,6,6);
             else
                 sprite.scale.set(12,12,12);

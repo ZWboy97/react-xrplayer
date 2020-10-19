@@ -18,9 +18,17 @@ class TiledStreaming {
         this.canvas = null;
         this.timingAsynSrc = null;
         this.buttons = [];
-        this.selected = [];
-        this.isReady = [];
+        this.selected = []; // 某个块是否被选中，后期需要升级为被选中哪个版本的块
+        this.isReady = [];  // 该块的视频是否加载成功
         this.resUrls = [];
+
+        this.x = 0;
+        this.y = 0;
+
+        this.loadedTileId = -1; // TODO 临时的，记录上次已经加载的tile
+
+        this.detectCounter = 0;
+
         this.createEnhanceLay();
         this.initSelectedButton();
     }
@@ -40,6 +48,11 @@ class TiledStreaming {
             false, false, false, false,
             false, false, false, false,
             false, false, false, false
+        ]
+        this.tileCenter = [
+            [0.167, 0.125], [0.167, 0.375], [0.167, 0.625], [0.167, 0.875],
+            [0.5, 0.125], [0.5, 0.375], [0.5, 0.625], [0.5, 0.875],
+            [0.833, 0.125], [0.833, 0.375], [0.833, 0.625], [0.833, 0.875]
         ]
         for (let i = 0; i < ids.length; i++) {
             let button = document.getElementById(ids[i]);
@@ -241,6 +254,87 @@ class TiledStreaming {
     reset = () => {
 
     }
+
+    /**
+     * @function
+     * @name TiledStreaming#
+     * @description
+     */
+    onCameraPositionUpdate = (lat, lon) => {
+        this.updateCameraPosXY(lat, lon);
+        console.log('x,y', this.x, this.y);
+        let id = this.getTileId(lat, lon);
+        if (this.detectCounter < 2) {
+            this.detectCounter++;
+            return;
+        } else {
+            this.detectCounter = 0;
+        }
+        for (let i = 0; i < this.tileCenter.length; i++) {
+            let disSqure = this.getCenterDistanceSqure(i);
+            if (disSqure <= 0.1) {
+                if (this.selected[i] !== true) {
+                    this.loadTile(i, 1);
+                }
+            } else {
+                if (this.selected[i] === true) {
+                    this.unloadTile(i);
+                }
+            }
+        }
+        // if (this.loadedTileId === id) {
+        //     return;
+        // }
+        // if (this.loadedTileId !== -1) {
+        //     this.unloadTile(this.loadedTileId)
+        // }
+        // TODO 优化这里的分块选择逻辑，目前只是简单的通过视点中心位置来选择
+        // 与视点中心的距离
+        // 预测可能性，预测未来窗口时长，预测准确度
+        // 黑块率：各个块的质量要均衡
+        // 与以选择块的质量差
+        // this.loadTile(id, 1);
+        // this.loadedTileId = id;
+    }
+    updateCameraPosXY = (lat, lon) => {
+        this.x = (180 - lat) / 180;
+        this.y = (lon + 180) / 360;
+    }
+    getCenterDistanceSqure = (id) => {
+        let tileX = this.tileCenter[id][0];
+        let tileY = this.tileCenter[id][1];
+        return Math.pow(this.x - tileX, 2) + Math.pow(this.y - tileY, 2);
+    }
+    getTileId = (lat, lon) => {
+        let x = this.getTileX(lat);
+        let y = this.getTileY(lon);
+        console.log('x', x, 'y', y);
+        return x * 4 + y;
+    }
+    getTileX = (lat) => {
+        if (lat >= 120) {
+            return 0;
+        } else if (lat <= 60) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    getTileY = (lon) => {
+        if (lon <= -90) {
+            return 0;
+        } else if (lon > -90 && lon <= 0) {
+            return 1;
+        } else if (lon > 0 && lon <= 90) {
+            return 2;
+        } else if (lon > 90 && lon <= 180) {
+            return 3;
+        }
+    }
+
+
+
 }
 
 export default TiledStreaming;

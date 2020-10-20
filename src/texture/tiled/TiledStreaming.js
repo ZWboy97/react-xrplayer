@@ -2,6 +2,9 @@ import { MediaPlayer } from 'dashjs';
 import * as THREE from 'three';
 import TIMINGSRC from 'TIMINGSRC';
 import MCorp from 'MCorp';
+import SimpleLinearRegression from 'ml-regression-simple-linear';
+import { Chart } from '@antv/g2';
+
 
 /**
  * @class
@@ -31,6 +34,125 @@ class TiledStreaming {
 
         this.createEnhanceLay();
         this.initSelectedButton();
+
+        this.trace = [];
+        this.chart = null;
+        this.time = 0;
+        this._renderChart()
+        this.traceX = [];
+        this.traceY = [];
+        this.traceT = [];
+        this.predictX = [];
+        this.predictY = [];
+        this.px = 0;
+        this.py = 0;
+        this.errorX = 0;
+        this.errorY = 0;
+        this.errorCount = 0;
+        this.predictChart = null;
+    }
+
+    _updateChart = () => {
+        this.trace.push({
+            time: this.time,
+            x: this.x,
+            y: this.y,
+            px: this.px,
+            py: this.py,
+            errX: this.errorX / this.errorCount,
+            errY: this.errorY / this.errorCount
+        })
+        if (this.trace.length > 100) {
+            this.trace = this.trace.slice(this.trace.length - 100, this.trace.length);
+        }
+        this.time++;
+        this.chart.changeData(this.trace);
+    }
+
+
+    _renderChart = () => {
+        // Step 1: 创建 Chart 对象
+        let chart = new Chart({
+            container: 'c1', // 指定图表容器 ID
+            width: 1200, // 指定图表宽度
+            height: 300, // 指定图表高度
+            autoFit: true,
+        });
+
+        // Step 2: 载入数据源
+        chart.data(this.trace);
+
+        // Step 3: 创建图形语法，绘制柱状图
+        chart.scale({
+            time: {
+                range: [0, 1],
+                alias: '时间'
+            },
+            x: {
+                alias: 'x坐标',
+                min: 0,
+                nice: true,
+                max: 1
+            },
+            y: {
+                alias: 'y坐标',
+                min: 0,
+                nice: true,
+                max: 1
+            },
+            px: {
+                alias: 'x预测',
+                min: 0,
+                nice: true,
+                max: 1
+            },
+            py: {
+                alias: 'y预测',
+                min: 0,
+                nice: true,
+                max: 1
+            },
+        });
+        chart.axis('time', {
+            title: {}
+        });
+        chart.axis('x', {
+            title: {}
+        });
+        chart.axis('y', {
+            title: {}
+        });
+        chart.axis('px', {
+            title: {}
+        });
+        chart.axis('py', {
+            title: {}
+        });
+        chart.tooltip({
+            showCrosshairs: true, // 展示 Tooltip 辅助线
+            shared: true,
+        });
+        chart.legend({
+            custom: 'true',
+            items: [
+                { name: 'x', value: 'x', marker: { symbol: 'line', style: { stroke: '#1890ff', lineWidth: 2 } } },
+                { name: 'y', value: 'y', marker: { symbol: 'line', style: { stroke: '#ff00ff', lineWidth: 2 } } },
+                { name: 'predictX', value: 'px', marker: { symbol: 'line', style: { stroke: '#80ff00', lineWidth: 2 } } },
+                { name: 'predictY', value: 'py', marker: { symbol: 'line', style: { stroke: '#ff0000', lineWidth: 2 } } },
+                { name: 'errorX', value: 'errX', marker: { symbol: 'line', style: { stroke: '#ffff00', lineWidth: 2 } } },
+                { name: 'errorY', value: 'errY', marker: { symbol: 'line', style: { stroke: '#ff8000', lineWidth: 2 } } },
+
+            ],
+        });
+        chart.line().position('time*x').color('#1890ff');
+        chart.line().position('time*y').color('#ff00ff');
+        chart.line().position('time*px').color('#80ff00');
+        chart.line().position('time*py').color('#ff0000');
+        // chart.line().position('time*errX').color('#ffff00');
+        // chart.line().position('time*errY').color('#ff8000');
+        // Step 4: 渲染图表
+        chart.render();
+        this.chart = chart;
     }
 
     initSelectedButton = () => {
@@ -74,7 +196,6 @@ class TiledStreaming {
      * @param {number} level, 加载分块的质量级别 
      */
     loadTile = (id, level) => {
-        console.log('load', id);
         let video = document.createElement('video');
         video.style.background = 'black';
         video.currentTime = this.baseVideo.currentTime;
@@ -262,13 +383,36 @@ class TiledStreaming {
      */
     onCameraPositionUpdate = (lat, lon) => {
         this.updateCameraPosXY(lat, lon);
-        console.log('x,y', this.x, this.y);
-        let id = this.getTileId(lat, lon);
-        if (this.detectCounter < 2) {
+        if (this.detectCounter < 5) {
             this.detectCounter++;
+            this.traceT.push(this.detectCounter);
+            this.traceX.push(this.x);
+            this.traceY.push(this.y);
+            if (this.detectCounter >= this.predictX.length) {
+                return;
+            }
+            this.errorX += Math.abs(this.x - this.predictX[this.detectCounter]);
+            this.errorY += Math.abs(this.y - this.predictY[this.detectCounter]);
+            this.errorCount++;
             return;
         } else {
             this.detectCounter = 0;
+            // 执行线性回归预测
+            console.log('X的预测MAE=', this.errorX / this.errorCount);
+            console.log('Y的预测MAE=', this.errorY / this.errorCount);;
+            const regressionX = new SimpleLinearRegression(this.traceT, this.traceX);
+            const regressionY = new SimpleLinearRegression(this.traceT, this.traceY);
+            this.px = this.predictX[this.predictX.length - 1];
+            this.py = this.predictY[this.predictX.length - 1];
+            this.predictX = [];
+            this.predictY = [];
+            for (let i = 5; i < 10; i++) {
+                this.predictX.push(regressionX.predict(i));
+                this.predictY.push(regressionY.predict(i));
+            }
+            this.traceT = [];
+            this.traceX = [];
+            this.traceY = [];
         }
         for (let i = 0; i < this.tileCenter.length; i++) {
             let disSqure = this.getCenterDistanceSqure(i);
@@ -282,19 +426,12 @@ class TiledStreaming {
                 }
             }
         }
-        // if (this.loadedTileId === id) {
-        //     return;
-        // }
-        // if (this.loadedTileId !== -1) {
-        //     this.unloadTile(this.loadedTileId)
-        // }
         // TODO 优化这里的分块选择逻辑，目前只是简单的通过视点中心位置来选择
         // 与视点中心的距离
         // 预测可能性，预测未来窗口时长，预测准确度
         // 黑块率：各个块的质量要均衡
         // 与以选择块的质量差
-        // this.loadTile(id, 1);
-        // this.loadedTileId = id;
+        this._updateChart();
     }
     updateCameraPosXY = (lat, lon) => {
         this.x = (180 - lat) / 180;
@@ -305,36 +442,6 @@ class TiledStreaming {
         let tileY = this.tileCenter[id][1];
         return Math.pow(this.x - tileX, 2) + Math.pow(this.y - tileY, 2);
     }
-    getTileId = (lat, lon) => {
-        let x = this.getTileX(lat);
-        let y = this.getTileY(lon);
-        console.log('x', x, 'y', y);
-        return x * 4 + y;
-    }
-    getTileX = (lat) => {
-        if (lat >= 120) {
-            return 0;
-        } else if (lat <= 60) {
-            return 2;
-        } else {
-            return 1;
-        }
-    }
-
-    getTileY = (lon) => {
-        if (lon <= -90) {
-            return 0;
-        } else if (lon > -90 && lon <= 0) {
-            return 1;
-        } else if (lon > 0 && lon <= 90) {
-            return 2;
-        } else if (lon > 90 && lon <= 180) {
-            return 3;
-        }
-    }
-
-
-
 }
 
 export default TiledStreaming;

@@ -7,7 +7,7 @@ class TiledDemo extends React.Component {
         isFullScreen: false,
         onOrientationControls: false,
         isDataReady: false,
-        operationVisible: true
+        operation_state: "none"
     }
 
     constructor(props) {
@@ -44,7 +44,7 @@ class TiledDemo extends React.Component {
     }
 
     render() {
-        const operation_visible = this.state.operationVisible ? "visible" : "hidden";
+        const operation_state = this.state.operation_state;
         return (
             <div>
                 {
@@ -70,13 +70,10 @@ class TiledDemo extends React.Component {
                         :
                         <div>加载中</div>
                 }
-                <button style={{ "position": "fixed", "top": "0" }}
-                    onClick={() => this.setState({ operationVisible: !this.state.operationVisible })}
-                >操作</button>
                 <div id="operation" style={{
                     "position": "fixed", "bottom": "0",
                     "color": "white",
-                    "visibility": operation_visible
+                    "visibility": operation_state === 'tile' ? 'visible' : "hidden"
                 }}>
                     分块选择
                     <table>
@@ -99,6 +96,28 @@ class TiledDemo extends React.Component {
                             <button id='tile3-2'>tile3-2</button>
                         </tr>
                     </table>
+                </div>
+                <div
+                    style={{
+                        "position": "fixed", "bottom": "0",
+                        "color": "white",
+                        "background": 'white',
+                        "visibility": operation_state === 'chart' ? 'visible' : "hidden"
+                    }}
+                >
+                    <div id="c1"></div>
+                    <div id="c1"></div>
+                </div>
+                <div style={{ "position": "fixed", "top": "0" }} >
+                    <button
+                        onClick={() => this.setState({ operation_state: "tile" })}
+                    >分块</button>
+                    <button
+                        onClick={() => this.setState({ operation_state: 'chart' })}
+                    >图标</button>
+                    <button
+                        onClick={() => this.setState({ operation_state: 'none' })}
+                    >关闭</button>
                 </div>
             </ div>
         )

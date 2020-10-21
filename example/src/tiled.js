@@ -75,25 +75,55 @@ class TiledDemo extends React.Component {
                     "color": "white",
                     "visibility": operation_state === 'tile' ? 'visible' : "hidden"
                 }}>
-                    分块选择
                     <table>
                         <tr>
-                            <button id='tile0-0'>tile0-0</button>
-                            <button id='tile1-0'>tile1-0</button>
-                            <button id='tile2-0'>tile2-0</button>
-                            <button id='tile3-0'>tile3-0</button>
-                        </tr>
-                        <tr>
-                            <button id='tile0-1'>tile0-1</button>
-                            <button id='tile1-1'>tile1-1</button>
-                            <button id='tile2-1'>tile2-1</button>
-                            <button id='tile3-1'>tile3-1</button>
-                        </tr>
-                        <tr>
-                            <button id='tile0-2'>tile0-2</button>
-                            <button id='tile1-2'>tile1-2</button>
-                            <button id='tile2-2'>tile2-2</button>
-                            <button id='tile3-2'>tile3-2</button>
+                            <td>
+                                <tr>分块选择</tr>
+                                <tr>
+                                    <button id='tile0-0'>tile0-0</button>
+                                    <button id='tile1-0'>tile1-0</button>
+                                    <button id='tile2-0'>tile2-0</button>
+                                    <button id='tile3-0'>tile3-0</button>
+                                </tr>
+                                <tr>
+                                    <button id='tile0-1'>tile0-1</button>
+                                    <button id='tile1-1'>tile1-1</button>
+                                    <button id='tile2-1'>tile2-1</button>
+                                    <button id='tile3-1'>tile3-1</button>
+                                </tr>
+                                <tr>
+                                    <button id='tile0-2'>tile0-2</button>
+                                    <button id='tile1-2'>tile1-2</button>
+                                    <button id='tile2-2'>tile2-2</button>
+                                    <button id='tile3-2'>tile3-2</button>
+                                </tr>
+                            </td>
+                            <td>
+                                <tr>分块操作</tr>
+                                <tr>
+                                    <div>
+                                        <button id='tile_selected'>选择</button>
+                                        <button id='tile_unselected'>移除</button>
+                                        <font id='tile_selected_info'>selected:?</font>
+                                    </div>
+                                    <div>
+                                        <button id='buffer++' >buffer++</button>
+                                        <button id='buffer--'>buffer--</button>
+                                        <font id='buffer_info'>buffer:?</font>
+                                    </div>
+                                    <div>
+                                        <button id='level++' >level++</button>
+                                        <button id='level--'>level--</button>
+                                        <font id='level_info'>level:?</font>
+                                    </div>
+                                    <div>
+                                        <font id='throughput'>throughput:</font>
+                                    </div>
+                                    <div>
+                                        <font id='level_list'>levels:</font>
+                                    </div>
+                                </tr>
+                            </td>
                         </tr>
                     </table>
                 </div>

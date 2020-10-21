@@ -112,6 +112,18 @@ class TiledStreaming {
                 nice: true,
                 max: 1
             },
+            errX: {
+                alias: 'x预测MAE',
+                min: 0,
+                nice: true,
+                max: 0.5
+            },
+            errY: {
+                alias: 'y预测MAE',
+                min: 0,
+                nice: true,
+                max: 0.5
+            }
         });
         chart.axis('time', {
             title: {}
@@ -126,6 +138,12 @@ class TiledStreaming {
             title: {}
         });
         chart.axis('py', {
+            title: {}
+        });
+        chart.axis('errX', {
+            title: {}
+        });
+        chart.axis('errY', {
             title: {}
         });
         chart.tooltip({
@@ -148,8 +166,8 @@ class TiledStreaming {
         chart.line().position('time*y').color('#ff00ff');
         chart.line().position('time*px').color('#80ff00');
         chart.line().position('time*py').color('#ff0000');
-        // chart.line().position('time*errX').color('#ffff00');
-        // chart.line().position('time*errY').color('#ff8000');
+        chart.line().position('time*errX').color('#ffff00');
+        chart.line().position('time*errY').color('#ff8000');
         // Step 4: 渲染图表
         chart.render();
         this.chart = chart;
@@ -179,13 +197,67 @@ class TiledStreaming {
         for (let i = 0; i < ids.length; i++) {
             let button = document.getElementById(ids[i]);
             button.onclick = () => {
-                if (this.selected[i]) {
-                    this.unloadTile(i);
-                } else {
-                    this.loadTile(i, 1);
-                }
+                this.onTileButtonClick(i);
             }
             this.buttons.push(button);
+        }
+    }
+
+    onTileButtonClick = (i) => {
+        let tile_selected_info = document.getElementById('tile_selected_info');
+        let buffer_info = document.getElementById('buffer_info');
+        let level_info = document.getElementById('level_info');
+        let throughput = document.getElementById('throughput');
+        let tile_unselected = document.getElementById('tile_unselected');
+        let tile_selected = document.getElementById('tile_selected');
+        let buffer_add = document.getElementById('buffer++');
+        let buffer_diff = document.getElementById('buffer--');
+        let level_add = document.getElementById('level++');
+        let level_diff = document.getElementById('level--');
+        let level_list = document.getElementById('level_list');
+        if (this.selected[i]) {
+            tile_selected_info.innerHTML = "selected:true";
+            buffer_info.innerHTML = 'buffer:' + this.enhanceDash[i].getBufferLength('video');
+            level_info.innerHTML = 'level:' + this.enhanceDash[i].getQualityFor('video');
+            throughput.innerHTML = 'throughput:' + this.enhanceDash[i].getAverageThroughput('video');
+            let levelList = 'bitrates:';
+            let bitrateList = this.enhanceDash[i].getActiveStream().getBitrateListFor('video');
+            for (let i = 0; i < bitrateList.length; i++) {
+                levelList += `${bitrateList[i].bitrate}(${bitrateList[i].width}x${bitrateList[i].height}) `;
+            }
+            level_list.innerHTML = levelList;
+            tile_unselected.onclick = () => {
+                this.unloadTile(i);
+            }
+            tile_selected.onclick = null;
+            buffer_add.onclick = () => {
+
+            }
+            buffer_diff.onclick = () => {
+
+            }
+            level_add.onclick = () => {
+                let curr = this.enhanceDash[i].getQualityFor('video');
+                this.enhanceDash[i].setQualityFor('video', curr++);
+            }
+            level_diff.onclick = () => {
+                let curr = this.enhanceDash[i].getQualityFor('video');
+                this.enhanceDash[i].setQualityFor('video', curr--);
+            }
+        } else {
+            tile_selected_info.innerHTML = 'selected:false';
+            buffer_info.innerHTML = 'buffer:null';
+            level_info.innerHTML = 'level:null';
+            throughput.innerHTML = 'throughput:null';
+            level_list.innerHTML = 'bitrates:null';
+            tile_unselected.onclick = null;
+            tile_selected.onclick = () => {
+                this.loadTile(i, 1);
+            }
+            buffer_add.onclick = null;
+            buffer_diff.onclick = null;
+            level_add.onclick = null;
+            level_diff.onclick = null;
         }
     }
 

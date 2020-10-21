@@ -166,21 +166,35 @@ class TiledStreaming {
      * @param {number} level, 加载分块的质量级别 
      */
     loadTile = (id, level) => {
-        let video = document.createElement('video');
-        video.style.background = 'black';
-        video.currentTime = this.baseVideo.currentTime;
-        video.oncanplay = () => {
-            this.isReady[id] = true;
+        // 动态创建视频
+        if (this.enhanceVideos[id] === null) {
+            let video = document.createElement('video');
+            video.style.background = 'black';
+            video.oncanplay = () => {
+                this.isReady[id] = true;
+            }
+            this.initVideoNode(video, 320, 180);
+            this.enhanceVideos[id] = video;
+            video.load();
+            // TODO 测试，底层使用播放情况
+            //let panel = document.getElementById('operation');
+            //panel.appendChild(video);
         }
-        this.initVideoNode(video, 320, 180);
-        this.enhanceVideos[id] = video;
-        let dash = MediaPlayer().create();
-        dash.initialize(video, this.resUrls[id + 1], true);
-        video.load();
+        // 动态创建Dash
+        let video = this.enhanceVideos[id];
+        if (this.enhanceDash[id] === null) {
+            let dash = MediaPlayer().create();
+            dash.initialize(video, this.resUrls[id + 1], true);
+            this.enhanceDash[id] = dash;
+        }
+        video.currentTime = this.baseVideo.currentTime;
         video.play();
-        this.enhanceDash[id] = dash;
-        let asyn = new MCorp.mediaSync(this.enhanceVideos[id], this.timingAsynSrc);
-        this.videoMediaAsyns[id] = asyn;
+        // 动态创建同步器
+        if (this.videoMediaAsyns[id] === null) {
+            this.videoMediaAsyns[id] = new MCorp.mediaSync(this.enhanceVideos[id], this.timingAsynSrc);
+        } else {
+            this.videoMediaAsyns[id].pause(false);
+        }
         this.selected[id] = true;
     }
 
@@ -193,9 +207,9 @@ class TiledStreaming {
         let videoNode = this.enhanceVideos[id];
         videoNode.pause();
         let dash = this.enhanceDash[id];
-        dash.reset();
-        this.enhanceDash[id] = null;
-        this.videoMediaAsyns[id] = null;
+        dash.pause();
+        // TODO 阻止dash的继续下载
+        this.videoMediaAsyns[id].pause(true);
         this.isReady[id] = false;
         this.selected[id] = false;
     }

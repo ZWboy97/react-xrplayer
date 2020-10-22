@@ -316,7 +316,7 @@ class InnerViewControls {
             } else {
                 // 在鼠标Down位置叠加偏移量
                 this.lon = (this.onPointerDownPointerX - event.clientX) * 0.1 + this.onPointerDownLon;
-                this.lat = (this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
+                this.lat = -(this.onPointerDownPointerY - event.clientY) * 0.1 + this.onPointerDownLat;
             }
             // 用于立体场景音效
             // mouseActionLocal([lon, lat]);

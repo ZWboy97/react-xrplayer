@@ -177,14 +177,24 @@ class TiledStreaming {
             this.enhanceVideos[id] = video;
             video.load();
             // TODO 测试，底层使用播放情况
-            //let panel = document.getElementById('operation');
-            //panel.appendChild(video);
+            // let panel = document.getElementById('operation');
+            // panel.appendChild(video);
         }
         // 动态创建Dash
         let video = this.enhanceVideos[id];
         if (this.enhanceDash[id] === null) {
             let dash = MediaPlayer().create();
             dash.initialize(video, this.resUrls[id + 1], true);
+            dash.updateSettings({
+                'streaming': {
+                    'stableBufferTime': 3, // 一般质量下，稳定期的buffer大小
+                    'bufferTimeAtTopQuality': 5, // 如果使用的是最高质量，给予其更高的buffer长度
+                    'bufferTimeAtTopQualityLongForm': 20, // 当内容被判断为LongForm时，最高质量给予的buffer长度
+                    'longFormContentDurationThreshold': 200, // 多长被判断为long form内容
+                    'scheduleWhilePaused': false,            // 当播放pause时，阻止后台下载
+                    'fastSwitchEnabled': true,               // 当视频的quality发生up时，清空之后的buffer，换取最新版本的内容
+                }
+            });
             this.enhanceDash[id] = dash;
         }
         video.currentTime = this.baseVideo.currentTime;
@@ -226,6 +236,13 @@ class TiledStreaming {
         this.resUrls = resUrls;
         this.baseDash = MediaPlayer().create();
         this.baseDash.initialize(this.baseVideo, resUrls[0], true);
+        this.baseDash.updateSettings({
+            'fastSwitchEnabled': true,      // 黑块率较高的清空下，基础流也是需要提升质量的
+            'stableBufferTime': 30,         // buffer尽可能的长
+            'bufferTimeAtTopQuality': 60,   // 最高质量不用担心rebuffer，所以可以尽可能的给较长的buffer
+            'bufferTimeAtTopQualityLongForm': 120,
+            'longFormContentDurationThreshold': 200,
+        });
         this.baseVideo.load();
         this.baseVideo.play();
         this.timingAsynSrc = new TIMINGSRC.TimingObject({
@@ -425,6 +442,26 @@ class TiledStreaming {
         let tileX = this.tileCenter[id][0];
         let tileY = this.tileCenter[id][1];
         return Math.pow(this.x - tileX, 2) + Math.pow(this.y - tileY, 2);
+    }
+
+    /**
+     * @function
+     * @name TiledStreaming#getDashBufferList
+     * @description 获取所有dash实例的buffer列表，最后一个是基础层流的buffer
+     */
+    getDashBufferList = () => {
+        let bufferList = [];
+        this.enhanceDash.forEach(dash => {
+            if (dash == null) {
+                bufferList.push(0);
+            } else {
+                bufferList.push(dash.getBufferLength('video'));
+            }
+        });
+        if (this.baseDash != null) {
+            bufferList.push(this.baseDash.getBufferLength('video'));
+        }
+        return bufferList;
     }
 }
 

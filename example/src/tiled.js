@@ -1,5 +1,6 @@
 import React from 'react';
 import XRPlayer from '../../src/index'; // 实际项目中使用，请使用如下方式
+import BufferChart from './charts/BufferChart';
 
 class TiledDemo extends React.Component {
 
@@ -7,7 +8,9 @@ class TiledDemo extends React.Component {
         isFullScreen: false,
         onOrientationControls: false,
         isDataReady: false,
-        operation_state: "none"
+        operation_state: "none",
+        camera_track_visible: false,
+        buffer_chart_visible: false,
     }
 
     constructor(props) {
@@ -26,6 +29,7 @@ class TiledDemo extends React.Component {
                 });
             });
         this.tileStreaming = null;
+        this.bufferChart = null;
     }
 
     onXRCreated = (manager) => {
@@ -43,8 +47,41 @@ class TiledDemo extends React.Component {
         this.tileStreaming = textureHelper.getTextureMediaSource();
     }
 
+    updateBufferDate = () => {
+        if (this.tileStreaming === null) {
+            return;
+        }
+        let bufferList = this.tileStreaming.getDashBufferList();
+        let data = [];
+        let x = 2, y = 0;
+        for (let i = 0; i < bufferList.length - 1; i++) {
+            data.push({
+                x: x,
+                y: y,
+                value: bufferList[i]
+            })
+            y++;
+            if (y % 4 === 0) {
+                x--;
+                y = 0;
+            }
+        }
+        data.push({
+            x: 3,
+            y: 0,
+            value: bufferList[bufferList.length - 1]
+        })
+        if (this.bufferChart === null) {
+            this.bufferChart = new BufferChart(data);
+        } else {
+            this.bufferChart.updateData(data);
+        }
+    }
+
     render() {
         const operation_state = this.state.operation_state;
+        const camera_track_visible = this.state.camera_track_visible;
+        const buffer_chart_visible = this.state.buffer_chart_visible;
         return (
             <div>
                 {
@@ -130,13 +167,42 @@ class TiledDemo extends React.Component {
                 <div
                     style={{
                         "position": "fixed", "bottom": "0",
-                        "color": "white",
-                        "background": 'white',
-                        "visibility": operation_state === 'chart' ? 'visible' : "hidden"
+                        "width": "80%",
+                        "display": operation_state === 'chart' ? 'block' : "none"
                     }}
                 >
-                    <div id="c1"></div>
-                    <div id="c1"></div>
+                    <div id="c1" style={{
+                        "background": 'white',
+                        "display": camera_track_visible ? 'block' : "none"
+                    }}></div>
+                    <div id="c2" style={{
+                        "background": 'white',
+                        "display": buffer_chart_visible ? 'block' : "none"
+                    }}></div>
+                    <button
+                        onClick={() => {
+                            setInterval(this.updateBufferDate, 2000);
+                            this.setState({ buffer_chart_visible: true })
+
+                        }}
+                    >开启buffer统计</button>
+                    <button
+                        onClick={() => {
+                            clearInterval(this.updateBufferDate);
+                            this.setState({ buffer_chart_visible: true })
+
+                        }}
+                    >关闭buffer统计</button>
+                    <button
+                        onClick={() => {
+                            this.setState({ camera_track_visible: true })
+                        }}
+                    >展示Camera Track</button>
+                    <button
+                        onClick={() => {
+                            this.setState({ camera_track_visible: false })
+                        }}
+                    >关闭Camera Track</button>
                 </div>
                 <div style={{ "position": "fixed", "top": "0" }} >
                     <button

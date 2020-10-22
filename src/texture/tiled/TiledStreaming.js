@@ -177,8 +177,8 @@ class TiledStreaming {
             this.enhanceVideos[id] = video;
             video.load();
             // TODO 测试，底层使用播放情况
-            let panel = document.getElementById('operation');
-            panel.appendChild(video);
+            // let panel = document.getElementById('operation');
+            // panel.appendChild(video);
         }
         // 动态创建Dash
         let video = this.enhanceVideos[id];
@@ -442,6 +442,26 @@ class TiledStreaming {
         let tileX = this.tileCenter[id][0];
         let tileY = this.tileCenter[id][1];
         return Math.pow(this.x - tileX, 2) + Math.pow(this.y - tileY, 2);
+    }
+
+    /**
+     * @function
+     * @name TiledStreaming#getDashBufferList
+     * @description 获取所有dash实例的buffer列表，最后一个是基础层流的buffer
+     */
+    getDashBufferList = () => {
+        let bufferList = [];
+        this.enhanceDash.forEach(dash => {
+            if (dash == null) {
+                bufferList.push(0);
+            } else {
+                bufferList.push(dash.getBufferLength('video'));
+            }
+        });
+        if (this.baseDash != null) {
+            bufferList.push(this.baseDash.getBufferLength('video'));
+        }
+        return bufferList;
     }
 }
 

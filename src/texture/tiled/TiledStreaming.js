@@ -417,7 +417,7 @@ class TiledStreaming {
         }
         for (let i = 0; i < this.tileCenter.length; i++) {
             let disSqure = this.getCenterDistanceSqure(i);
-            if (disSqure <= 0.1) {
+            if (disSqure <= 0.13) {
                 if (this.selected[i] !== true) {
                     this.loadTile(i, 1);
                 }
@@ -441,6 +441,12 @@ class TiledStreaming {
     getCenterDistanceSqure = (id) => {
         let tileX = this.tileCenter[id][0];
         let tileY = this.tileCenter[id][1];
+        // 球面上两点直线距离有两点，选择较短的那边
+        if (tileY - this.y > 0.5) {
+            tileY += -1;
+        } else if (this.y - tileY > 0.5) {
+            tileY += 1;
+        }
         return Math.pow(this.x - tileX, 2) + Math.pow(this.y - tileY, 2);
     }
 

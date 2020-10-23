@@ -51,7 +51,7 @@ class TiledDemo extends React.Component {
         if (this.tileStreaming === null) {
             return;
         }
-        let bufferList = this.tileStreaming.getDashBufferList();
+        let bufferList = this.tileStreaming.getDashUsefulBufferList();
         let data = [];
         let x = 2, y = 0;
         for (let i = 0; i < bufferList.length - 1; i++) {

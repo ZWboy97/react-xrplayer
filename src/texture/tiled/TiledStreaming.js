@@ -463,6 +463,37 @@ class TiledStreaming {
         }
         return bufferList;
     }
+
+    /**
+     * @function
+     * @name TiledStreaming#getDashUsefulBufferList
+     * @description 获取各个dash播放器当前有效的buffer大小（暂存的buffer可能是失效的）
+     */
+    getDashUsefulBufferList = () => {
+        let bufferList = [];
+        this.enhanceDash.forEach((dash, index) => {
+            if (dash == null) {
+                bufferList.push(0);
+            } else {
+                let dashCurrentTime = 0;
+                if (this.enhanceVideos[index] !== null) {
+                    dashCurrentTime = this.enhanceVideos[index].currentTime;
+                }
+                if (this.baseVideo.currentTime < dashCurrentTime - 1) {
+                    bufferList.push(0);
+                } else {
+                    let dashBufferTime = dash.getBufferLength('video');
+                    let usefulBufferTime = dashCurrentTime + dashBufferTime - this.baseVideo.currentTime;
+                    usefulBufferTime = usefulBufferTime < 0 ? 0 : usefulBufferTime;
+                    bufferList.push(usefulBufferTime);
+                }
+            }
+        });
+        if (this.baseDash != null) {
+            bufferList.push(this.baseDash.getBufferLength('video'));
+        }
+        return bufferList;
+    }
 }
 
 export default TiledStreaming;

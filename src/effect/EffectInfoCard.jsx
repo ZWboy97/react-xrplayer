@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Iframe from 'react-iframe'
-import '../style/EffectInfoCard.less';
+import './style/EffectInfoCard.less';
 
 class EffectInfoCard extends Component {
 

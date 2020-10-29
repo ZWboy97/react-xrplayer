@@ -19,9 +19,8 @@ class EffectImageCard extends Component {
     }
 
     render() {
-        console.log('imageurl', this.props.imageUrl);
         return (
-            <div className="overlay">
+            <div className="img-overlay">
                 <div className="container">
                     <img
                         className="image"
@@ -30,7 +29,7 @@ class EffectImageCard extends Component {
                         alt=""></img>
                 </div>
                 <div
-                    className="close"
+                    className="img-close"
                     onClick={this.onCloseClickListener}
                 ></div>
             </div>

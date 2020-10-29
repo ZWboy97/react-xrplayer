@@ -20,7 +20,7 @@ class InnerViewControls {
         this.onMouseDownLat = 0;
         this.phi = 0;
         this.theta = 0;
-        this.distance = 10;
+        this.distance = 100;
         this.onPointerDownPointerX = 0;
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
@@ -54,6 +54,7 @@ class InnerViewControls {
         this.orientationEnable = false;
 
         this.initControlsListener();
+        this.initSphericalData();
     }
 
     /******************************对外接口************************* */
@@ -103,6 +104,9 @@ class InnerViewControls {
     setAutoRotateSpeed = (speed) => {
         this.autoRotateSpeed = speed;
         this.getRotateAngle();
+    }
+    getAutoRotateSpeed = () => {
+        return this.autoRotateSpeed;
     }
     setAutoRotateDirection = (direction) => {
         this.autoRotateDirection = direction;

@@ -76,6 +76,8 @@ class XRPlayerManager {
         this.textHelper = null;
         this.textBoxes = new Set();
 
+        this.senceConfig = null;
+
         this.init();
     }
 
@@ -190,6 +192,76 @@ class XRPlayerManager {
         this.embeddedBoxManager && this.embeddedBoxManager.update();
     }
 
+    /******************************配置导入导出******************************** */
+
+    /**
+     * @function
+     * @name XRPlayerManager#loadConfig
+     * @description 从一个配置对象中初始化整个场景
+     * @param {object}} config 
+     */
+    loadConfig = (config) => {
+        this.senceConfig = config;
+        if (config.hasOwnProperty('res_urls')) {
+            this.setSenceResource(config.res_urls[0]);
+        }
+        if (config.hasOwnProperty('camera_fov')) {
+            this.setCameraFov(config.camera_fov);
+        }
+        if (config.hasOwnProperty('fov_scope')) {
+            this.setFovHorizontalScope(config.fov_scope[0], config.fov_scope[1]);
+            this.setFovVerticalScope(config.fov_scope[2], config.fov_scope[3]);
+        }
+        if (config.hasOwnProperty('enable_auto_rotate')) {
+            this.setEnableAutoRotate(config.enable_auto_rotate);
+            if (config.hasOwnProperty('auto_rotate_speed')) {
+                this.setAutoRotateSpeed(config.auto_rotate_speed);
+            }
+        }
+        if (config.hasOwnProperty('volume')) {
+            this.setGlobalVolume(config.volume);
+        }
+        if (config.hasOwnProperty('muted')) {
+            this.setGlobalMuted(config.muted);
+        }
+        if (config.hasOwnProperty('hot_spot_list')
+            && config.hasOwnProperty('event_list')) {
+            this.setHotSpots(config.hot_spot_list, config.event_list);
+        }
+        if (config.hasOwnProperty('particle_effect')) {
+            this.setParticleEffectRes(config.particle_effect);
+        }
+        if (config.hasOwnProperty('model_list')) {
+            this.setModels(config.model_list);
+        }
+    }
+
+    /**
+     * @function
+     * @name XRPlayerManager#exportConfig
+     * @description 将当前场景的配置导出到配置对象中
+     * @returns {object} config
+     */
+    exportConfig = () => {
+        let config = {};
+        config.res_urls = this.senceConfig.res_urls;
+        config.camera_fov = this.getCameraFov();
+        let hFovScope = this.getFovHorizontalScope();
+        let vFovScope = this.getFovVerticalScope();
+        config.fov_scope = [hFovScope[0], hFovScope[1], vFovScope[0], vFovScope[1]];
+        config.enable_auto_rotate = this.getEnableAutoRotate();
+        config.auto_rotate_speed = this.getAutoRotateSpeed();
+        // TODO 需要从状态中读取,即需要解决一致性问题
+        config.volume = this.senceConfig.volume;
+        config.muted = this.senceConfig.muted;
+        config.hot_spot_list = this.senceConfig.hot_spot_list;
+        config.event_list = this.senceConfig.event_list;
+        config.model_list = this.senceConfig.model_list;
+        config.particle_effect = this.senceConfig.particle_effect;
+        return config;
+    }
+
+
     /*****************************全局接口************************************ */
     /**
      * @function
@@ -242,6 +314,10 @@ class XRPlayerManager {
 
     setAutoRotateSpeed = (speed) => {
         this.innerViewControls.setAutoRotateSpeed(speed);
+    }
+
+    getAutoRotateSpeed = () => {
+        this.innerViewControls.getAutoRotateSpeed();
     }
 
     setAutoRotateDirection = (direction) => {

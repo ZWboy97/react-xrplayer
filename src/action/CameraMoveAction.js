@@ -14,6 +14,7 @@ class CameraMoveAction {
         this.init(endState, duration, delay);
     }
 
+    // TODO 升级采用lat，lon的方式来控制相机动画
     init = (endState, duration = 5000, delay = 1000) => {
         const coords = { // Start 
             x: this.camera.position.x,

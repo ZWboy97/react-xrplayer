@@ -234,6 +234,9 @@ class XRPlayerManager {
         if (config.hasOwnProperty('model_list')) {
             this.setModels(config.model_list);
         }
+        if (config.hasOwnProperty('auto_guide_list')) {
+            this.createCameraTweenGroup(config.auto_guide_list, true);
+        }
     }
 
     /**
@@ -258,6 +261,7 @@ class XRPlayerManager {
         config.event_list = this.senceConfig.event_list;
         config.model_list = this.senceConfig.model_list;
         config.particle_effect = this.senceConfig.particle_effect;
+        config.auto_guide_list = this.senceConfig.auto_guide_list;
         return config;
     }
 
@@ -753,6 +757,14 @@ class XRPlayerManager {
         fov                             非必需
     }
     */
+    getCameraAnimationList = () => {
+        if (this.senceConfig && this.senceConfig.hasOwnProperty('auto_guide_list')) {
+            return this.senceConfig.auto_guide_list;
+        } else {
+            return [];
+        }
+    }
+
     createCameraTweenGroup = (animationList, loop) => {
         if (!!!loop) {
             loop = false;
@@ -832,6 +844,9 @@ class XRPlayerManager {
         this.cameraTweenGroup.enableLoop(enable);
     }
 
+    /**
+     * @description 事件处理与分发
+     */
     emitEvent = (eventKey, callback = () => { }) => {
         if (this.spriteEventList && this.spriteEventList.has(eventKey)) {
             const data = this.spriteEventList.get(eventKey);

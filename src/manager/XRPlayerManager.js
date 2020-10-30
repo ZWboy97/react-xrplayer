@@ -380,6 +380,8 @@ class XRPlayerManager {
     resetModels = () => {
         if (!this.centerModelHelper) {
             this.centerModelHelper = new CenterModelHelper(this.scene);
+        } else {
+            this.centerModelHelper.removeAllModel();
         }
     }
 

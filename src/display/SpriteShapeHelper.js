@@ -9,7 +9,6 @@ class SpriteShapeHelper {
 
     constructor(scene, camera, renderer, container) {
 
-        console.log("o",container);
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
@@ -51,6 +50,8 @@ class SpriteShapeHelper {
             this.hotSpotMeshMap = new Map();
             this.hotSpotLabelMap = new Map();
             this.bindEvent();
+        } else {
+            this.removeAllHotSpot();
         }
     }
 
@@ -75,6 +76,26 @@ class SpriteShapeHelper {
             this.resetHotSpotGroup();
         }
         this.createPoint(hot_spot.key, hot_spot.value)
+    }
+
+    /**
+     * 清空场景中的所有热点标签
+     */
+    removeAllHotSpot = () => {
+        this.hotSpotMeshMap.forEach((mesh, key) => {
+            if (mesh) {
+                this.pointGroup.remove(mesh);
+            }
+            let div = document.getElementById(key);
+            if (div !== null) {
+                this.container.removeChild(div);
+            }
+        });
+        this.hotSpotLabelMap.forEach((label, key) => {
+            if (label) {
+                this.pointGroup.remove(label);
+            }
+        });
     }
 
     removeHotSpot = (hot_spot_key) => {

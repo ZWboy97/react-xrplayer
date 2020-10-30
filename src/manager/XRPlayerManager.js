@@ -376,7 +376,11 @@ class XRPlayerManager {
     }
 
     /*****************************模型控制相关接口**************************** */
-
+    /**
+     * @function
+     * @name XRPlayerManager#resetModels
+     * @description reset模型相关的配置，会移除所有已经添加的模型
+     */
     resetModels = () => {
         if (!this.centerModelHelper) {
             this.centerModelHelper = new CenterModelHelper(this.scene);
@@ -384,20 +388,40 @@ class XRPlayerManager {
             this.centerModelHelper.removeAllModel();
         }
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#resetModels
+     * @param {array} model_list 
+     * @description 通过一个模型列表，一次性添加多个模型到场景中
+     */
     setModels = (model_list) => {
         this.resetModels();
         this.centerModelHelper.loadModelList(model_list);
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#addModel
+     * @param {string} model_key 
+     * @param {object} model 
+     * @description 通过key value的方式添加一个模型到场景中
+     */
     addModel = (model_key, model) => {
         this.centerModelHelper.loadModel(model_key, model);
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#removeModel
+     * @param {string} model_key 
+     * @description 通过模型的key，移除之前添加的一个模型
+     */
     removeModel = (model_key) => {
         this.centerModelHelper.removeModel(model_key);
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#removeAllModel
+     * @description 移除所有之前添加的模型
+     */
     removeAllModel = () => {
         this.centerModelHelper.removeAllModel();
     }
@@ -420,8 +444,22 @@ class XRPlayerManager {
         this.viewConvertHelper.toPlanetView(durtime, delay);
     }
 
-    moveCameraTo = (descPos, onStart, onEnd, duration = 5000) => {
-        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, duration, 0);
+    /**
+     * @function
+     * @name XRPlayerManager#moveCameraTo
+     * @param {*} descPos 相机目标位置，采用lat，lon表示
+     * @param {function} onStart 移动开始事件回调
+     * @param {functon} onEnd 移动结束事件回调
+     * @param {number} duration 相机移动动画的持续时长
+     * @param {number} delay 相机动画延迟启动时长
+     */
+    moveCameraTo = (endPos, onStart, onEnd, duration = 5000, delay = 0) => {
+        if (!this.innerViewControls) return;
+        let startPos = this.innerViewControls.getCameraLatLonFovDisPosition();
+        var cameraMoveAction = new CameraMoveAction(startPos, endPos, duration, delay);
+        cameraMoveAction.onUpdateHandler = (pos) => {
+            this.innerViewControls.setCameraLatLonFovPosition(pos.lat, pos.lon, pos.fov, pos.distance);
+        }
         cameraMoveAction.onStartHandler = () => {
             this.innerViewControls && this.innerViewControls.disConnect();
             onStart && onStart();

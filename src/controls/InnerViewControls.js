@@ -143,6 +143,21 @@ class InnerViewControls {
         this.camera.position.set(x, y, z);
         this.initSphericalData();
     }
+    getCameraLatLonFovDisPosition = () => {
+        return {
+            lat: this.lat,
+            lon: this.lon,
+            fov: this.camera.fov,
+            distance: this.distance
+        }
+    }
+    setCameraLatLonFovPosition = (lat, lon, fov, distance) => {
+        this.lat = lat;
+        this.lon = lon;
+        this.camera.fov = fov;
+        this.distance = distance;
+        this.updateCameraPosition();
+    }
 
     // 相机FOV接口
     getCameraFov = () => {

@@ -251,7 +251,7 @@ class XRPlayerManager {
         config.camera_fov = this.getCameraFov();
         let hFovScope = this.getFovHorizontalScope();
         let vFovScope = this.getFovVerticalScope();
-        config.fov_scope = [hFovScope[0], hFovScope[1], vFovScope[0], vFovScope[1]];
+        config.fov_scope = [hFovScope.left, hFovScope.right, vFovScope.bottom, vFovScope.top];
         config.enable_auto_rotate = this.getEnableAutoRotate();
         config.auto_rotate_speed = this.getAutoRotateSpeed();
         // TODO 需要从状态中读取,即需要解决一致性问题
@@ -321,7 +321,7 @@ class XRPlayerManager {
     }
 
     getAutoRotateSpeed = () => {
-        this.innerViewControls.getAutoRotateSpeed();
+        return this.innerViewControls.getAutoRotateSpeed();
     }
 
     setAutoRotateDirection = (direction) => {

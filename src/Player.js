@@ -5,7 +5,6 @@ import EffectContainer from './effect/EffectContainer';
 import FullScreen from './utils/fullscreen';
 import Proptypes from 'prop-types';
 import XRPlayerManager from './manager/XRPlayerManager';
-import { MOCKAPI, TestAPI } from 'myaxios/api.js';
 import './App.css';
 
 class XRPlayer extends Component {
@@ -70,13 +69,7 @@ class XRPlayer extends Component {
         this.props.setEffectData(data);
         break;
       case 'roaming':
-        let sence_id = props.data.sence_id;
-        MOCKAPI.get(`/mock/${sence_id}.json`)
-          .then(res => {
-            if (res.status === 200) {
-              this.xrManager.loadConfig(res.data);
-            }
-          });
+        //let sence_id = props.data.sence_id;
         break;
       case 'close_effect_container':
         this.onCloseEffectContainer();

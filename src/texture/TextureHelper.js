@@ -41,8 +41,9 @@ class TextureHelper {
         this.containerNode.setAttribute('x5-video-orientation', 'portrait')
         this.containerNode.setAttribute('style', 'object-fit: fill')
         this.containerNode.setAttribute('loop', "loop")
-        this.containerNode.addEventListener('canplay', this.onVideoStarted, false);
+        this.containerNode.addEventListener('canplay', this.onVideoStarted, true);
     }
+
 
     onVideoStarted = () => {
         this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);

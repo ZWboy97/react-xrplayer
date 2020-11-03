@@ -36,8 +36,8 @@ class CameraTween {
         this.easing = params.easing;
         this.pos0 = {};
         this.pos1 = {};
-        Object.assign(this.pos0, params.pos0);
-        Object.assign(this.pos1, params.pos1);
+        Object.assign(this.pos0, params.start);
+        Object.assign(this.pos1, params.end);
         this.tween = new TWEEN.Tween(this.pos0).to(this.pos1, params.duration);
         this.tween.onStart(() => {
             this.started = true;

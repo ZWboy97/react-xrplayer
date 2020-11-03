@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import '../style/EffectVideoPanel.less';
+import './style/EffectVideoPanel.less';
 import Hls from 'hls.js';
 import { connect } from 'react-redux'
 

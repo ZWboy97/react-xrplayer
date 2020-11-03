@@ -20,7 +20,7 @@ class InnerViewControls {
         this.onMouseDownLat = 0;
         this.phi = 0;
         this.theta = 0;
-        this.distance = 10;
+        this.distance = 100;
         this.onPointerDownPointerX = 0;
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
@@ -56,6 +56,7 @@ class InnerViewControls {
         // 相机位置移动回调
         this.onCameraPositionUpdate = null;
         this.initControlsListener();
+        this.initSphericalData();
     }
 
     /******************************对外接口************************* */
@@ -106,6 +107,9 @@ class InnerViewControls {
         this.autoRotateSpeed = speed;
         this.getRotateAngle();
     }
+    getAutoRotateSpeed = () => {
+        return this.autoRotateSpeed;
+    }
     setAutoRotateDirection = (direction) => {
         this.autoRotateDirection = direction;
     }
@@ -140,6 +144,21 @@ class InnerViewControls {
     setCameraPosition = (x, y, z) => {
         this.camera.position.set(x, y, z);
         this.initSphericalData();
+    }
+    getCameraLatLonFovDisPosition = () => {
+        return {
+            lat: this.lat,
+            lon: this.lon,
+            fov: this.camera.fov,
+            distance: this.distance
+        }
+    }
+    setCameraLatLonFovPosition = (lat, lon, fov, distance) => {
+        this.lat = lat;
+        this.lon = lon;
+        this.camera.fov = fov;
+        this.distance = distance;
+        this.updateCameraPosition();
     }
 
     // 相机FOV接口

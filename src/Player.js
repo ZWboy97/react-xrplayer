@@ -68,6 +68,9 @@ class XRPlayer extends Component {
         const data = { ...props.data, margin: margin }
         this.props.setEffectData(data);
         break;
+      case 'roaming':
+        //let sence_id = props.data.sence_id;
+        break;
       case 'close_effect_container':
         this.onCloseEffectContainer();
         break;
@@ -129,12 +132,6 @@ class XRPlayer extends Component {
             background: '#fff', overflow: "hidden"
           }}
         >
-          <div
-            id="canvas"
-            style={{ width: '100%', height: '100%', background: '#fff' }}
-            ref={(mount) => { this.mount = mount }}
-          >
-          </div>
           {
             is_effect_displaying ?
               <EffectContainer
@@ -147,6 +144,12 @@ class XRPlayer extends Component {
               :
               ""
           }
+          <div
+            id="canvas"
+            style={{ width: '100%', height: '100%', background: '#fff' }}
+            ref={(mount) => { this.mount = mount }}
+          >
+          </div>
           <video id="video"
             style={{ display: "none" }}
             muted={muted}
@@ -191,7 +194,7 @@ XRPlayer.defaultProps = {
   camera_position: {
     x: 0,
     y: 0,
-    z: 10
+    z: 100
   },
   camera_target: {
     x: 0,

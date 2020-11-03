@@ -77,6 +77,8 @@ class XRPlayerManager {
         this.textHelper = null;
         this.textBoxes = new Set();
 
+        this.senceConfig = null;
+
         this.init();
     }
 
@@ -121,7 +123,9 @@ class XRPlayerManager {
         }
         geometry.scale(-1, 1, 1);
         this.sceneTextureHelper = new TextureHelper(this.sceneContainer);
-        this.sceneTextureHelper.onCanPlayHandler = (resUrl) => this.handler('sence_res_ready', { resUrl: resUrl });
+        this.sceneTextureHelper.onCanPlayHandler = (resUrl) => {
+            this.handler('sence_res_ready', { resUrl: resUrl });
+        };
         let texture = this.sceneTextureHelper.loadTexture(textureResource);
         let material = new THREE.MeshBasicMaterial({ map: texture });
         this.sceneMesh = new THREE.Mesh(geometry, material);
@@ -199,6 +203,80 @@ class XRPlayerManager {
         this.embeddedBoxManager && this.embeddedBoxManager.update();
     }
 
+    /******************************配置导入导出******************************** */
+
+    /**
+     * @function
+     * @name XRPlayerManager#loadConfig
+     * @description 从一个配置对象中初始化整个场景
+     * @param {object}} config 
+     */
+    loadConfig = (config) => {
+        this.senceConfig = config;
+        if (config.hasOwnProperty('res_urls')) {
+            this.setSenceResource(config.res_urls[0]);
+        }
+        if (config.hasOwnProperty('camera_fov')) {
+            this.setCameraFov(config.camera_fov);
+        }
+        if (config.hasOwnProperty('fov_scope')) {
+            this.setFovHorizontalScope(config.fov_scope[0], config.fov_scope[1]);
+            this.setFovVerticalScope(config.fov_scope[2], config.fov_scope[3]);
+        }
+        if (config.hasOwnProperty('enable_auto_rotate')) {
+            this.setEnableAutoRotate(config.enable_auto_rotate);
+            if (config.hasOwnProperty('auto_rotate_speed')) {
+                this.setAutoRotateSpeed(config.auto_rotate_speed);
+            }
+        }
+        if (config.hasOwnProperty('volume')) {
+            this.setGlobalVolume(config.volume);
+        }
+        if (config.hasOwnProperty('muted')) {
+            this.setGlobalMuted(config.muted);
+        }
+        if (config.hasOwnProperty('hot_spot_list')
+            && config.hasOwnProperty('event_list')) {
+            this.setHotSpots(config.hot_spot_list, config.event_list);
+        }
+        if (config.hasOwnProperty('particle_effect')) {
+            this.setParticleEffectRes(config.particle_effect);
+        }
+        if (config.hasOwnProperty('model_list')) {
+            this.setModels(config.model_list);
+        }
+        if (config.hasOwnProperty('auto_guide_list')) {
+            this.createCameraTweenGroup(config.auto_guide_list, true);
+        }
+    }
+
+    /**
+     * @function
+     * @name XRPlayerManager#exportConfig
+     * @description 将当前场景的配置导出到配置对象中
+     * @returns {object} config
+     */
+    exportConfig = () => {
+        let config = {};
+        config.res_urls = this.senceConfig.res_urls;
+        config.camera_fov = this.getCameraFov();
+        let hFovScope = this.getFovHorizontalScope();
+        let vFovScope = this.getFovVerticalScope();
+        config.fov_scope = [hFovScope.left, hFovScope.right, vFovScope.bottom, vFovScope.top];
+        config.enable_auto_rotate = this.getEnableAutoRotate();
+        config.auto_rotate_speed = this.getAutoRotateSpeed();
+        // TODO 需要从状态中读取,即需要解决一致性问题
+        config.volume = this.senceConfig.volume;
+        config.muted = this.senceConfig.muted;
+        config.hot_spot_list = this.senceConfig.hot_spot_list;
+        config.event_list = this.senceConfig.event_list;
+        config.model_list = this.senceConfig.model_list;
+        config.particle_effect = this.senceConfig.particle_effect;
+        config.auto_guide_list = this.senceConfig.auto_guide_list;
+        return config;
+    }
+
+
     /*****************************全局接口************************************ */
     /**
      * @function
@@ -239,16 +317,34 @@ class XRPlayerManager {
         this.sceneMesh.material = material;
     }
 
-    // 背景全景视频播放控制
+    /**
+     * @function
+     * @name XRPlayerManager#startDisplaySenceResource
+     * @description 启动播放全景背景视频
+     */
     startDisplaySenceResource = () => {
         if (this.sceneTextureHelper) {
             this.sceneTextureHelper.startDisplay();
         }
     }
+    /**
+     * @function
+     * @name XRPlayerManager#pauseDisplaySenceResource
+     * @description 暂停播放全景背景视频
+     */
     pauseDisplaySenceResource = () => {
         if (this.sceneTextureHelper) {
             this.sceneTextureHelper.pauseDisplay();
         }
+    }
+    /**
+     * @function
+     * @name XRPlayerManager#getDisplaySenceResourceCurrentTime
+     * @description 获取全景背景视频的当前播放时间 
+     * @returns {number} currentTime
+     */
+    getDisplaySenceResourceCurrentTime = () => {
+        return this.sceneContainer.currentTime;
     }
 
     // 自动旋转相关接口
@@ -262,6 +358,10 @@ class XRPlayerManager {
 
     setAutoRotateSpeed = (speed) => {
         this.innerViewControls.setAutoRotateSpeed(speed);
+    }
+
+    getAutoRotateSpeed = () => {
+        return this.innerViewControls.getAutoRotateSpeed();
     }
 
     setAutoRotateDirection = (direction) => {
@@ -316,26 +416,52 @@ class XRPlayerManager {
     }
 
     /*****************************模型控制相关接口**************************** */
-
+    /**
+     * @function
+     * @name XRPlayerManager#resetModels
+     * @description reset模型相关的配置，会移除所有已经添加的模型
+     */
     resetModels = () => {
         if (!this.centerModelHelper) {
             this.centerModelHelper = new CenterModelHelper(this.scene);
+        } else {
+            this.centerModelHelper.removeAllModel();
         }
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#resetModels
+     * @param {array} model_list 
+     * @description 通过一个模型列表，一次性添加多个模型到场景中
+     */
     setModels = (model_list) => {
         this.resetModels();
         this.centerModelHelper.loadModelList(model_list);
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#addModel
+     * @param {string} model_key 
+     * @param {object} model 
+     * @description 通过key value的方式添加一个模型到场景中
+     */
     addModel = (model_key, model) => {
         this.centerModelHelper.loadModel(model_key, model);
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#removeModel
+     * @param {string} model_key 
+     * @description 通过模型的key，移除之前添加的一个模型
+     */
     removeModel = (model_key) => {
         this.centerModelHelper.removeModel(model_key);
     }
-
+    /**
+     * @function
+     * @name XRPlayerManager#removeAllModel
+     * @description 移除所有之前添加的模型
+     */
     removeAllModel = () => {
         this.centerModelHelper.removeAllModel();
     }
@@ -358,8 +484,22 @@ class XRPlayerManager {
         this.viewConvertHelper.toPlanetView(durtime, delay);
     }
 
-    moveCameraTo = (descPos, onStart, onEnd, duration = 5000) => {
-        var cameraMoveAction = new CameraMoveAction(this.camera, descPos, duration, 0);
+    /**
+     * @function
+     * @name XRPlayerManager#moveCameraTo
+     * @param {*} descPos 相机目标位置，采用lat，lon表示
+     * @param {function} onStart 移动开始事件回调
+     * @param {functon} onEnd 移动结束事件回调
+     * @param {number} duration 相机移动动画的持续时长
+     * @param {number} delay 相机动画延迟启动时长
+     */
+    moveCameraTo = (endPos, onStart, onEnd, duration = 5000, delay = 0) => {
+        if (!this.innerViewControls) return;
+        let startPos = this.innerViewControls.getCameraLatLonFovDisPosition();
+        var cameraMoveAction = new CameraMoveAction(startPos, endPos, duration, delay);
+        cameraMoveAction.onUpdateHandler = (pos) => {
+            this.innerViewControls.setCameraLatLonFovPosition(pos.lat, pos.lon, pos.fov, pos.distance);
+        }
         cameraMoveAction.onStartHandler = () => {
             this.innerViewControls && this.innerViewControls.disConnect();
             onStart && onStart();
@@ -426,17 +566,27 @@ class XRPlayerManager {
     setCameraPosition = (x, y, z) => {
         this.innerViewControls.setCameraPosition(x, y, z);
     }
+    /**
+     * @function
+     * @name XRPlayerManager#getCameraLatLon
+     * @description 以lat，lon的方式获取相机的坐标
+     * @returns {object} latLonPos, lat【-180，180】，lon【0，180】
+     */
     getCameraLatLon = () => {
-        const position = this.getCameraPosition();
-        const spherical = new THREE.Spherical();
-        spherical.setFromCartesianCoords(position.x, position.y, position.z);
-        var phi = spherical.phi;
-        var theta = spherical.theta;
-        var lon = THREE.Math.radToDeg(theta);
-        var lat = THREE.Math.radToDeg(phi);
+        return this.innerViewControls.getCameraLatLonFovDisPosition();
+    }
+    /**
+     * @function
+     * @name XRPlayerManager#getCameraUVPosition
+     * @description 以UV坐标的方式获取球面映射到二维平面上的UV坐标
+     */
+    getCameraUVPosition = () => {
+        let pos = this.getCameraLatLon();
+        let u = (180 - pos.lat) / 180;
+        let v = (pos.lon + 180) / 360;
         return {
-            lat: lat,
-            lon: lon
+            u: u,
+            v: v
         }
     }
 
@@ -723,6 +873,14 @@ class XRPlayerManager {
         fov                             非必需
     }
     */
+    getCameraAnimationList = () => {
+        if (this.senceConfig && this.senceConfig.hasOwnProperty('auto_guide_list')) {
+            return this.senceConfig.auto_guide_list;
+        } else {
+            return [];
+        }
+    }
+
     createCameraTweenGroup = (animationList, loop) => {
         if (!!!loop) {
             loop = false;
@@ -802,6 +960,9 @@ class XRPlayerManager {
         this.cameraTweenGroup.enableLoop(enable);
     }
 
+    /**
+     * @description 事件处理与分发
+     */
     emitEvent = (eventKey, callback = () => { }) => {
         if (this.spriteEventList && this.spriteEventList.has(eventKey)) {
             const data = this.spriteEventList.get(eventKey);

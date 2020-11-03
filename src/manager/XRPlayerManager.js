@@ -544,17 +544,7 @@ class XRPlayerManager {
      * @returns {object} latLonPos, lat【-180，180】，lon【0，180】
      */
     getCameraLatLon = () => {
-        const position = this.getCameraPosition();
-        const spherical = new THREE.Spherical();
-        spherical.setFromCartesianCoords(position.x, position.y, position.z);
-        var phi = spherical.phi;
-        var theta = spherical.theta;
-        var lon = THREE.Math.radToDeg(theta);
-        var lat = THREE.Math.radToDeg(phi);
-        return {
-            lat: lat,
-            lon: lon
-        }
+        return this.innerViewControls.getCameraLatLonFovDisPosition();
     }
     /**
      * @function

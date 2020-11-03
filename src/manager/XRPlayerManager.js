@@ -297,16 +297,34 @@ class XRPlayerManager {
         this.sceneMesh.material = material;
     }
 
-    // 背景全景视频播放控制
+    /**
+     * @function
+     * @name XRPlayerManager#startDisplaySenceResource
+     * @description 启动播放全景背景视频
+     */
     startDisplaySenceResource = () => {
         if (this.sceneTextureHelper) {
             this.sceneTextureHelper.startDisplay();
         }
     }
+    /**
+     * @function
+     * @name XRPlayerManager#pauseDisplaySenceResource
+     * @description 暂停播放全景背景视频
+     */
     pauseDisplaySenceResource = () => {
         if (this.sceneTextureHelper) {
             this.sceneTextureHelper.pauseDisplay();
         }
+    }
+    /**
+     * @function
+     * @name XRPlayerManager#getDisplaySenceResourceCurrentTime
+     * @description 获取全景背景视频的当前播放时间 
+     * @returns {number} currentTime
+     */
+    getDisplaySenceResourceCurrentTime = () => {
+        return this.sceneContainer.currentTime;
     }
 
     // 自动旋转相关接口
@@ -519,6 +537,12 @@ class XRPlayerManager {
     setCameraPosition = (x, y, z) => {
         this.innerViewControls.setCameraPosition(x, y, z);
     }
+    /**
+     * @function
+     * @name XRPlayerManager#getCameraLatLon
+     * @description 以lat，lon的方式获取相机的坐标
+     * @returns {object} latLonPos, lat【-180，180】，lon【0，180】
+     */
     getCameraLatLon = () => {
         const position = this.getCameraPosition();
         const spherical = new THREE.Spherical();
@@ -530,6 +554,20 @@ class XRPlayerManager {
         return {
             lat: lat,
             lon: lon
+        }
+    }
+    /**
+     * @function
+     * @name XRPlayerManager#getCameraUVPosition
+     * @description 以UV坐标的方式获取球面映射到二维平面上的UV坐标
+     */
+    getCameraUVPosition = () => {
+        let pos = this.getCameraLatLon();
+        let u = (180 - pos.lat) / 180;
+        let v = (pos.lon + 180) / 360;
+        return {
+            u: u,
+            v: v
         }
     }
 

@@ -6,36 +6,33 @@ import TWEEN from '@tweenjs/tween.js';
 
 class CameraMoveAction {
 
-    constructor(camera, endState, duration = 5000, delay = 1000) {
-        this.camera = camera;
+    constructor(start, end, duration = 5000, delay = 1000) {
         this.tween = null;
         this.onCompleteHandler = null;
         this.onStartHandler = null;
-        this.init(endState, duration, delay);
+        this.onUpdateHandler = null;
+        this.init(start, end, duration, delay);
     }
 
-    init = (endState, duration = 5000, delay = 1000) => {
-        const coords = { // Start 
-            x: this.camera.position.x,
-            y: this.camera.position.y,
-            z: this.camera.position.z,
-            fov: this.camera.fov
-        };
+    init = (start, end, duration, delay) => {
+        let coords = start;
         this.tween = new TWEEN.Tween(coords)
             .to({
-                x: endState.x,
-                y: endState.y,
-                z: endState.z,
-                fov: endState.fov
+                lat: end.lat,
+                lon: end.lon,
+                fov: end.fov,
+                distance: end.distance
             }, duration)
             .delay(delay)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(() => {
-                this.camera.position.x = coords.x;
-                this.camera.position.y = coords.y;
-                this.camera.position.z = coords.z;
-                this.camera.fov = coords.fov;
-                this.camera.updateProjectionMatrix();
+                let pos = {
+                    lat: coords.lat,
+                    lon: coords.lon,
+                    fov: coords.fov,
+                    distance: coords.distance
+                }
+                this.onUpdateHandler && this.onUpdateHandler(pos);
             })
             .onStart(() => {
                 this.onStartHandler && this.onStartHandler();
@@ -49,10 +46,6 @@ class CameraMoveAction {
         if (this.tween) {
             this.tween.start();
         }
-    }
-
-    update = () => {
-        TWEEN.update();
     }
 }
 

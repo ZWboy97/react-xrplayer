@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import EmbeddedTextBox from "./EmbeddedTextBox";
-import EmbeddedImageBox from "./EmbeddedImageBox";
 
 class EmbeddedBoxManager {
     constructor(XRPlayerManager) {
@@ -151,7 +149,7 @@ class EmbeddedBoxManager {
         if (tip) {
             let wpPosition = new THREE.Vector3();
             let pos = box.planeMesh.getWorldPosition(wpPosition).applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
-            if ((pos.x >= -1 && pos.x <= (1 - tip.width/container.clientWidth)) && (pos.y >= -(1 - tip.height/container.clientHeight) && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
+            if ((pos.x >= -1 && pos.x <= (1 - tip.width / container.clientWidth)) && (pos.y >= -(1 - tip.height / container.clientHeight) && pos.y <= 1) && (pos.z >= -1 && pos.z <= 1)) {
                 if (box.visible === true && box.showType === '2d') {
                     ans.display = "block";
                 }
@@ -214,7 +212,7 @@ class EmbeddedBoxManager {
     }
 
     onDocumentMouseUp = (event) => {
-        if(!this.isDragging) {  //只有当不被拖拽时才能触发点击回调，防止误触
+        if (!this.isDragging) {  //只有当不被拖拽时才能触发点击回调，防止误触
             let array = [];
             this.embeddedBoxes.forEach(value => {
                 if (value.callback !== null)

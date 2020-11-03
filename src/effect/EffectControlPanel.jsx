@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import '../style/EffectControlPanel.less';
+import './style/EffectControlPanel.less';
 
 class EffectControlPanel extends Component {
 

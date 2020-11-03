@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Iframe from 'react-iframe'
-import '../style/EffectInfoCard.less';
+import './style/EffectInfoCard.less';
 
 class EffectInfoCard extends Component {
 
@@ -14,7 +14,7 @@ class EffectInfoCard extends Component {
 
     render() {
         return (
-            <div className="overlay">
+            <div className="info-overlay">
                 <Iframe
                     url={this.props.iframeUrl}
                     className="iframe"
@@ -23,7 +23,7 @@ class EffectInfoCard extends Component {
                     display="initial" />
 
                 <div
-                    className="close"
+                    className="info-close"
                     onClick={this.onCloseClickListener}
                 ></div>
             </div>)

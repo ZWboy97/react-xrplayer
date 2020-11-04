@@ -140,4 +140,4 @@ npm run build
 7. 我们会尽快回复您的pul request。
 
 #### contributors
-[@zwboy](https://github.com/ZWboy97) [@bigint405](https://github.com/bigint405)
+[@zwboy](https://github.com/ZWboy97) [@bigint405](https://github.com/bigint405) [@muyatian](https://github.com/muyatian)

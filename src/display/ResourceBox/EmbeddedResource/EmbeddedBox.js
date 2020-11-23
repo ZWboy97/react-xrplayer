@@ -13,8 +13,13 @@ class EmbeddedBox {
         this.scale2DY = 1;
         this.meshReady = false;
         this.showTypeChangable = false;
-
         this.showType = 'embed';
+
+        this.dragging2d = false;
+        this.startX = 0;
+        this.startY = 0;//拖拽起始位置
+        this.canvasX = 0;
+        this.canvasY = 0;//拖拽起始画布位置
     }
 
     //外部接口
@@ -30,6 +35,13 @@ class EmbeddedBox {
     }
 
     getPosition = () => {
+        if (this.planeMesh) {
+            let pos = this.planeMesh.position;
+            let lat = Math.atan(pos.y/Math.sqrt(pos.x*pos.x + pos.z*pos.z));
+            let lon = Math.atan(pos.z/pos.x);
+            this.lat = 90 - THREE.MathUtils.radToDeg(lat);
+            this.lon = THREE.MathUtils.radToDeg(lon);
+        }
         return {lat: this.lat, lon: this.lon};
     }
 
@@ -46,6 +58,7 @@ class EmbeddedBox {
                 this.manager.dragMeshes.delete(this.planeMesh);
             }
         }
+        if (this.dragging2d) this.dragging2d = false;
     }
 
     getDraggable = () => {
@@ -115,6 +128,27 @@ class EmbeddedBox {
         this.canvas.style.top = "100px";
         this.canvas.style.transform = "scale("+this.scale2DX+","+this.scale2DY+")";
         // document.body.appendChild(this.canvas)
+        let sup = this;
+        this.canvas.onMouseDown = (event) => {
+            if (sup.draggable === false) return;
+            sup.dragging2d = true;
+            sup.startX = event.clientX;
+            sup.startY = event.clientY;
+            sup.canvasX = sup.canvas.style.left;
+            sup.canvasY = sup.canvas.style.top;
+            console.log('down')
+        };
+        this.canvas.onMouseMove = (event) => {
+            if (sup.draggable === false || sup.dragging2d === false) return;
+            sup.canvas.style.left = (sup.canvasX - sup.startX + event.clientX) + 'px';
+            sup.canvas.style.top = (sup.canvasY - sup.startY + event.clientY) + 'px';
+            console.log('move')
+        };
+        this.canvas.onMouseUp = (event) => {
+            if (sup.draggable === false) return;
+            sup.dragging2d = false;
+            console.log('up')
+        };
     }
 
     updateDisplay = () => {

@@ -6,6 +6,8 @@ import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
 import { OS } from '../utils/osuitls';
+import EventBus from '../event/EventBus';
+import Events from '../event/Events'
 import { MediaPlayer } from 'dashjs';
 import TiledStreaming from './tiled/TiledStreaming';
 /**
@@ -15,6 +17,7 @@ import TiledStreaming from './tiled/TiledStreaming';
  * @param {Element} video h5 video 实例 
  * @return {TextureHelper} 背景纹理管理
  */
+
 class TextureHelper {
 
     /**
@@ -25,7 +28,6 @@ class TextureHelper {
         this.containerNode = containerNode;
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
-        this.onCanPlayHandler = null;
         this.videoLoader = null;
         this.resType = 'image'
         this.resUrl = '';
@@ -55,7 +57,7 @@ class TextureHelper {
 
 
     onVideoStarted = () => {
-        this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
+        EventBus.trigger(Events.EVENT_SENCE_RES_READY, { resUrl: this.resUrl });
     }
 
     getTextureFromVideo = (video) => {
@@ -139,7 +141,7 @@ class TextureHelper {
     loadImage = (resUrl) => {
         this.resUrl = resUrl;
         var texture = new THREE.TextureLoader().load(resUrl);
-        this.onCanPlayHandler && this.onCanPlayHandler();
+        EventBus.trigger(Events.EVENT_SENCE_RES_READY, { resUrl: this.resUrl });
         return texture;
     }
 

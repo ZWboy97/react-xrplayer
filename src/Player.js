@@ -5,6 +5,8 @@ import EffectContainer from './effect/EffectContainer';
 import FullScreen from './utils/fullscreen';
 import Proptypes from 'prop-types';
 import XRPlayerManager from './manager/XRPlayerManager';
+import Events from './event/Events'
+import EventBus from './event/EventBus'
 import './App.css';
 
 class XRPlayer extends Component {
@@ -80,16 +82,17 @@ class XRPlayer extends Component {
       case 'global_volume':
         this.props.setGlobalVolume(props.volume);
         break;
-      case 'sence_res_ready':
-        break;
       default: break;
     }
   }
 
   initEvent = () => {
+    EventBus.on(Events.EVENT_SENCE_RES_READY, (props) => {
+      let result = this.props.onEventHandler(props.type, props);
+      if (result) return;
+    }, this);
     window.addEventListener('resize', this.onWindowResize, false);
   }
-
 
   onWindowResize = () => {
     this.xrManager.onWindowResize(this.mount.clientWidth,

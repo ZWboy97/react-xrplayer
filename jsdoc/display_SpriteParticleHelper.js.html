@@ -42,7 +42,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li></ul></li></ul></div>
+    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#addModel">addModel</a></li><li data-type='method'><a href="XRPlayerManager.html#connectCameraControl">connectCameraControl</a></li><li data-type='method'><a href="XRPlayerManager.html#disConnectCameraControl">disConnectCameraControl</a></li><li data-type='method'><a href="XRPlayerManager.html#enableKeyControl">enableKeyControl</a></li><li data-type='method'><a href="XRPlayerManager.html#exportConfig">exportConfig</a></li><li data-type='method'><a href="XRPlayerManager.html#getCameraLatLon">getCameraLatLon</a></li><li data-type='method'><a href="XRPlayerManager.html#getCameraUVPosition">getCameraUVPosition</a></li><li data-type='method'><a href="XRPlayerManager.html#getDisplaySenceResourceCurrentTime">getDisplaySenceResourceCurrentTime</a></li><li data-type='method'><a href="XRPlayerManager.html#loadConfig">loadConfig</a></li><li data-type='method'><a href="XRPlayerManager.html#moveCameraTo">moveCameraTo</a></li><li data-type='method'><a href="XRPlayerManager.html#pauseDisplaySenceResource">pauseDisplaySenceResource</a></li><li data-type='method'><a href="XRPlayerManager.html#removeAllModel">removeAllModel</a></li><li data-type='method'><a href="XRPlayerManager.html#removeModel">removeModel</a></li><li data-type='method'><a href="XRPlayerManager.html#resetModels">resetModels</a></li><li data-type='method'><a href="XRPlayerManager.html#resetModels">resetModels</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li><li data-type='method'><a href="XRPlayerManager.html#startDisplaySenceResource">startDisplaySenceResource</a></li></ul></li></ul></div>
 </nav>
 
 <div id="main">
@@ -79,19 +79,22 @@ class SpriteParticleHelper {
         this.range = 500;
         this.color = 0xffffff;
         this.sizeAtEtenuation = true;
-        this.isEnableDisplay = false
-
+        this.isEnableDisplay = false;
+        this.size = 0;
+        this.speed_value = 0;
         this.group = null;
     }
 
     setResource = (res) => {
         const { url = "", num = 5000, range = 500,
-            color = 0xffffff, sizeAttenuation = true } = res;
+            color = 0xffffff, sizeAttenuation = true, size = 0, speed_value = 0 } = res;
         this.url = url;
         this.num = num;
         this.range = range;
         this.color = color;
         this.sizeAttenuation = sizeAttenuation;
+        this.size = size;
+        this.speed_value = speed_value;
         this.initGroup();
     }
 
@@ -115,9 +118,30 @@ class SpriteParticleHelper {
             sprite.y = Math.random() * this.range - this.range / 2;
             sprite.z = Math.random() * this.range - this.range / 2;
             sprite.position.set(sprite.x, sprite.y, sprite.z);
-            sprite.velocityY = 0.1 + Math.random() / 5;
-            sprite.velocityX = (Math.random() - 0.5) / 3;
-            sprite.velocityZ = (Math.random() - 0.5) / 3;
+            if (this.speed_value === 0) {
+                sprite.velocityY = 0.1 + Math.random() / 5;
+                sprite.velocityX = (Math.random() - 0.5) / 3;
+                sprite.velocityZ = (Math.random() - 0.5) / 3;
+            }
+            else if (this.speed_value === 1) {
+                sprite.velocityY = 0.4 + Math.random() / 2;
+                sprite.velocityX = 0.2 + (Math.random() - 1.4) / 3;
+                sprite.velocityZ = 0.2 + (Math.random() - 1.4) / 3;
+            }
+            else if (this.speed_value === 2) {
+                sprite.velocityY = 0.7 + Math.random();
+                sprite.velocityX = 0.3 + (Math.random() - 1.7) / 3;
+                sprite.velocityZ = 0.3 + (Math.random() - 1.7) / 3;
+            }
+
+            //sprite.velocityX = (Math.random() - 0.5) /20;
+
+            if (this.size === 0)
+                sprite.scale.set(2, 2, 2);
+            else if (this.size === 1)
+                sprite.scale.set(6, 6, 6);
+            else
+                sprite.scale.set(12, 12, 12);
             this.group.add(sprite);
         }
     }
@@ -174,7 +198,7 @@ export default SpriteParticleHelper;</code></pre>
 <script>prettyPrint();</script>
 <script src="scripts/linenumber.js"></script>
 <script>
-var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"}];
+var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#addModel","link":"<a href=\"XRPlayerManager.html#addModel\">XRPlayerManager &rtrif; addModel</a>"},{"title":"XRPlayerManager#connectCameraControl","link":"<a href=\"XRPlayerManager.html#connectCameraControl\">XRPlayerManager &rtrif; connectCameraControl</a>"},{"title":"XRPlayerManager#disConnectCameraControl","link":"<a href=\"XRPlayerManager.html#disConnectCameraControl\">XRPlayerManager &rtrif; disConnectCameraControl</a>"},{"title":"XRPlayerManager#enableKeyControl","link":"<a href=\"XRPlayerManager.html#enableKeyControl\">XRPlayerManager &rtrif; enableKeyControl</a>"},{"title":"XRPlayerManager#exportConfig","link":"<a href=\"XRPlayerManager.html#exportConfig\">XRPlayerManager &rtrif; exportConfig</a>"},{"title":"XRPlayerManager#getCameraLatLon","link":"<a href=\"XRPlayerManager.html#getCameraLatLon\">XRPlayerManager &rtrif; getCameraLatLon</a>"},{"title":"XRPlayerManager#getCameraUVPosition","link":"<a href=\"XRPlayerManager.html#getCameraUVPosition\">XRPlayerManager &rtrif; getCameraUVPosition</a>"},{"title":"XRPlayerManager#getDisplaySenceResourceCurrentTime","link":"<a href=\"XRPlayerManager.html#getDisplaySenceResourceCurrentTime\">XRPlayerManager &rtrif; getDisplaySenceResourceCurrentTime</a>"},{"title":"XRPlayerManager#loadConfig","link":"<a href=\"XRPlayerManager.html#loadConfig\">XRPlayerManager &rtrif; loadConfig</a>"},{"title":"XRPlayerManager#moveCameraTo","link":"<a href=\"XRPlayerManager.html#moveCameraTo\">XRPlayerManager &rtrif; moveCameraTo</a>"},{"title":"XRPlayerManager#pauseDisplaySenceResource","link":"<a href=\"XRPlayerManager.html#pauseDisplaySenceResource\">XRPlayerManager &rtrif; pauseDisplaySenceResource</a>"},{"title":"XRPlayerManager#removeAllModel","link":"<a href=\"XRPlayerManager.html#removeAllModel\">XRPlayerManager &rtrif; removeAllModel</a>"},{"title":"XRPlayerManager#removeModel","link":"<a href=\"XRPlayerManager.html#removeModel\">XRPlayerManager &rtrif; removeModel</a>"},{"title":"XRPlayerManager#resetModels","link":"<a href=\"XRPlayerManager.html#resetModels\">XRPlayerManager &rtrif; resetModels</a>"},{"title":"XRPlayerManager#resetModels","link":"<a href=\"XRPlayerManager.html#resetModels\">XRPlayerManager &rtrif; resetModels</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"},{"title":"XRPlayerManager#startDisplaySenceResource","link":"<a href=\"XRPlayerManager.html#startDisplaySenceResource\">XRPlayerManager &rtrif; startDisplaySenceResource</a>"}];
 setupSearch(list)
 </script>
 

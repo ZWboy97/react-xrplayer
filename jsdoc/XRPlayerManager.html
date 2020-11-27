@@ -42,7 +42,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li></ul></li></ul></div>
+    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#addModel">addModel</a></li><li data-type='method'><a href="XRPlayerManager.html#connectCameraControl">connectCameraControl</a></li><li data-type='method'><a href="XRPlayerManager.html#disConnectCameraControl">disConnectCameraControl</a></li><li data-type='method'><a href="XRPlayerManager.html#enableKeyControl">enableKeyControl</a></li><li data-type='method'><a href="XRPlayerManager.html#exportConfig">exportConfig</a></li><li data-type='method'><a href="XRPlayerManager.html#getCameraLatLon">getCameraLatLon</a></li><li data-type='method'><a href="XRPlayerManager.html#getCameraUVPosition">getCameraUVPosition</a></li><li data-type='method'><a href="XRPlayerManager.html#getDisplaySenceResourceCurrentTime">getDisplaySenceResourceCurrentTime</a></li><li data-type='method'><a href="XRPlayerManager.html#loadConfig">loadConfig</a></li><li data-type='method'><a href="XRPlayerManager.html#moveCameraTo">moveCameraTo</a></li><li data-type='method'><a href="XRPlayerManager.html#pauseDisplaySenceResource">pauseDisplaySenceResource</a></li><li data-type='method'><a href="XRPlayerManager.html#removeAllModel">removeAllModel</a></li><li data-type='method'><a href="XRPlayerManager.html#removeModel">removeModel</a></li><li data-type='method'><a href="XRPlayerManager.html#resetModels">resetModels</a></li><li data-type='method'><a href="XRPlayerManager.html#resetModels">resetModels</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li><li data-type='method'><a href="XRPlayerManager.html#startDisplaySenceResource">startDisplaySenceResource</a></li></ul></li></ul></div>
 </nav>
 
 <div id="main">
@@ -228,7 +228,7 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line19">line 19</a>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line18">line 18</a>
             </li></ul></dd>
         </div>
     
@@ -300,9 +300,1826 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="emitEvent"><span class="type-signature"></span>emitEvent<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>事件处理与分发</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line916">line 916</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="addModel"><span class="type-signature"></span>addModel<span class="signature">(model_key, model)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>通过key value的方式添加一个模型到场景中</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>model_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>model</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line417">line 417</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="connectCameraControl"><span class="type-signature"></span>connectCameraControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>连接相机视角控制器，视角可以通过鼠标等方式调整</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line492">line 492</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="disConnectCameraControl"><span class="type-signature"></span>disConnectCameraControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>关闭连接器，无法通过鼠标方式调整视野</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line500">line 500</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="enableKeyControl"><span class="type-signature"></span>enableKeyControl<span class="signature">(enable)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>视口开启键盘控制相机视角</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line508">line 508</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="exportConfig"><span class="type-signature"></span>exportConfig<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>将当前场景的配置导出到配置对象中</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line240">line 240</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>config</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getCameraLatLon"><span class="type-signature"></span>getCameraLatLon<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>以lat，lon的方式获取相机的坐标</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line536">line 536</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>latLonPos, lat【-180，180】，lon【0，180】</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getCameraUVPosition"><span class="type-signature"></span>getCameraUVPosition<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>以UV坐标的方式获取球面映射到二维平面上的UV坐标</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line545">line 545</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getDisplaySenceResourceCurrentTime"><span class="type-signature"></span>getDisplaySenceResourceCurrentTime<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>获取全景背景视频的当前播放时间</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line316">line 316</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>currentTime</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="loadConfig"><span class="type-signature"></span>loadConfig<span class="signature">(})</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>从一个配置对象中初始化整个场景</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>}</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>config</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line195">line 195</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="moveCameraTo"><span class="type-signature"></span>moveCameraTo<span class="signature">(descPos, onStart, onEnd, duration, delay)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>descPos</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>相机目标位置，采用lat，lon表示</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onStart</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>移动开始事件回调</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onEnd</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">functon</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>移动结束事件回调</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>duration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>相机移动动画的持续时长</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>delay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>相机动画延迟启动时长</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line463">line 463</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="pauseDisplaySenceResource"><span class="type-signature"></span>pauseDisplaySenceResource<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>暂停播放全景背景视频</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line306">line 306</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="removeAllModel"><span class="type-signature"></span>removeAllModel<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>移除所有之前添加的模型</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line436">line 436</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="removeModel"><span class="type-signature"></span>removeModel<span class="signature">(model_key)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>通过模型的key，移除之前添加的一个模型</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>model_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line427">line 427</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="resetModels"><span class="type-signature"></span>resetModels<span class="signature">(model_list)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>通过一个模型列表，一次性添加多个模型到场景中</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>model_list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line407">line 407</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="resetModels"><span class="type-signature"></span>resetModels<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>reset模型相关的配置，会移除所有已经添加的模型</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line395">line 395</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
             
@@ -412,7 +2229,7 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line194">line 194</a>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line268">line 268</a>
             </li></ul></dd>
         </div>
     
@@ -547,7 +2364,91 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line203">line 203</a>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line277">line 277</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="startDisplaySenceResource"><span class="type-signature"></span>startDisplaySenceResource<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>启动播放全景背景视频</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="manager_XRPlayerManager.js.html">manager/XRPlayerManager.js</a>, <a href="manager_XRPlayerManager.js.html#line296">line 296</a>
             </li></ul></dd>
         </div>
     
@@ -598,7 +2499,7 @@
 <script>prettyPrint();</script>
 <script src="scripts/linenumber.js"></script>
 <script>
-var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"}];
+var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#addModel","link":"<a href=\"XRPlayerManager.html#addModel\">XRPlayerManager &rtrif; addModel</a>"},{"title":"XRPlayerManager#connectCameraControl","link":"<a href=\"XRPlayerManager.html#connectCameraControl\">XRPlayerManager &rtrif; connectCameraControl</a>"},{"title":"XRPlayerManager#disConnectCameraControl","link":"<a href=\"XRPlayerManager.html#disConnectCameraControl\">XRPlayerManager &rtrif; disConnectCameraControl</a>"},{"title":"XRPlayerManager#enableKeyControl","link":"<a href=\"XRPlayerManager.html#enableKeyControl\">XRPlayerManager &rtrif; enableKeyControl</a>"},{"title":"XRPlayerManager#exportConfig","link":"<a href=\"XRPlayerManager.html#exportConfig\">XRPlayerManager &rtrif; exportConfig</a>"},{"title":"XRPlayerManager#getCameraLatLon","link":"<a href=\"XRPlayerManager.html#getCameraLatLon\">XRPlayerManager &rtrif; getCameraLatLon</a>"},{"title":"XRPlayerManager#getCameraUVPosition","link":"<a href=\"XRPlayerManager.html#getCameraUVPosition\">XRPlayerManager &rtrif; getCameraUVPosition</a>"},{"title":"XRPlayerManager#getDisplaySenceResourceCurrentTime","link":"<a href=\"XRPlayerManager.html#getDisplaySenceResourceCurrentTime\">XRPlayerManager &rtrif; getDisplaySenceResourceCurrentTime</a>"},{"title":"XRPlayerManager#loadConfig","link":"<a href=\"XRPlayerManager.html#loadConfig\">XRPlayerManager &rtrif; loadConfig</a>"},{"title":"XRPlayerManager#moveCameraTo","link":"<a href=\"XRPlayerManager.html#moveCameraTo\">XRPlayerManager &rtrif; moveCameraTo</a>"},{"title":"XRPlayerManager#pauseDisplaySenceResource","link":"<a href=\"XRPlayerManager.html#pauseDisplaySenceResource\">XRPlayerManager &rtrif; pauseDisplaySenceResource</a>"},{"title":"XRPlayerManager#removeAllModel","link":"<a href=\"XRPlayerManager.html#removeAllModel\">XRPlayerManager &rtrif; removeAllModel</a>"},{"title":"XRPlayerManager#removeModel","link":"<a href=\"XRPlayerManager.html#removeModel\">XRPlayerManager &rtrif; removeModel</a>"},{"title":"XRPlayerManager#resetModels","link":"<a href=\"XRPlayerManager.html#resetModels\">XRPlayerManager &rtrif; resetModels</a>"},{"title":"XRPlayerManager#resetModels","link":"<a href=\"XRPlayerManager.html#resetModels\">XRPlayerManager &rtrif; resetModels</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"},{"title":"XRPlayerManager#startDisplaySenceResource","link":"<a href=\"XRPlayerManager.html#startDisplaySenceResource\">XRPlayerManager &rtrif; startDisplaySenceResource</a>"}];
 setupSearch(list)
 </script>
 

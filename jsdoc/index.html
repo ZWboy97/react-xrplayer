@@ -42,7 +42,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li></ul></li></ul></div>
+    <h2><a href="index.html"><div class="text">react-xrplayer</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><ul><li><a href='http://blog.zwboy.cn/react-xrplayer/' class='some-class' id='some-id' target='_blank'>Website</a></li><li><a href='https://github.com/ZWboy97/react-xrplayer' class='some-class' id='some-id' target='_blank'>Github</a></li></ul><h3>Classes</h3><ul><li><a href="SpriteParticleHelper.html">SpriteParticleHelper</a></li><li><a href="XRPlayerManager.html">XRPlayerManager</a><ul class='methods'><li data-type='method'><a href="XRPlayerManager.html#addModel">addModel</a></li><li data-type='method'><a href="XRPlayerManager.html#connectCameraControl">connectCameraControl</a></li><li data-type='method'><a href="XRPlayerManager.html#disConnectCameraControl">disConnectCameraControl</a></li><li data-type='method'><a href="XRPlayerManager.html#enableKeyControl">enableKeyControl</a></li><li data-type='method'><a href="XRPlayerManager.html#exportConfig">exportConfig</a></li><li data-type='method'><a href="XRPlayerManager.html#getCameraLatLon">getCameraLatLon</a></li><li data-type='method'><a href="XRPlayerManager.html#getCameraUVPosition">getCameraUVPosition</a></li><li data-type='method'><a href="XRPlayerManager.html#getDisplaySenceResourceCurrentTime">getDisplaySenceResourceCurrentTime</a></li><li data-type='method'><a href="XRPlayerManager.html#loadConfig">loadConfig</a></li><li data-type='method'><a href="XRPlayerManager.html#moveCameraTo">moveCameraTo</a></li><li data-type='method'><a href="XRPlayerManager.html#pauseDisplaySenceResource">pauseDisplaySenceResource</a></li><li data-type='method'><a href="XRPlayerManager.html#removeAllModel">removeAllModel</a></li><li data-type='method'><a href="XRPlayerManager.html#removeModel">removeModel</a></li><li data-type='method'><a href="XRPlayerManager.html#resetModels">resetModels</a></li><li data-type='method'><a href="XRPlayerManager.html#resetModels">resetModels</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalMuted">setGlobalMuted</a></li><li data-type='method'><a href="XRPlayerManager.html#setGlobalVolume">setGlobalVolume</a></li><li data-type='method'><a href="XRPlayerManager.html#startDisplaySenceResource">startDisplaySenceResource</a></li></ul></li></ul></div>
 </nav>
 
 <div id="main">
@@ -78,6 +78,7 @@
 <hr>
 <p>react-xrplayer 是一款功能丰富、架构合理的Web全景互动直播播放器。基于React以及Three.js等框架，以React组件方式输出能力。支持常见的全景直播能力，比如全景图片、点播以及直播，双目VR，热点标签点击、全景漫游等能力。</p>
 <hr>
+<p><a href="http://blog.zwboy.cn/react-xrplayer/">主页</a> | <a href="http://blog.zwboy.cn/react-xrplayer/jsdoc/index.html">API</a> | <a href="http://client.youmuvideo.com/react-xrplayer/">Demo</a> | <a href="./doc/feature-and-todo.md">Todos</a></p>
 <p><img src="./doc/imgs/react-xrplayer-preview.png" alt=""></p>
 <h4>动机与愿景</h4>
 <p>目前常见的全景主要以全景图片或者全景视频为主，常用在静态的讲解介绍等场景，观完即走，互动性不足。</p>
@@ -85,8 +86,9 @@
 <h4>关联项目</h4>
 <p>基于react-xrplayer的关联项目</p>
 <ul>
-<li>基于react-xrplayer开发的全景互动编辑器</li>
-<li>基于react-xrplayer开发的全景互动观看端</li>
+<li>基于react-xrplayer开发的全景互动编辑器(进行中)</li>
+<li>基于react-xrplayer开发的全景互动观看端(进行中)</li>
+<li><a href="https://github.com/ZWboy97/react-xrplayer/tree/tiled-stream">实验性探索：全景FOV分块传输(tile-stream分支)</a></li>
 </ul>
 <h2>二、特性与规划</h2>
 <ul>
@@ -131,7 +133,8 @@ export default App;
 </code></pre>
 <h4>3. 详细接入与开发文档</h4>
 <p>更多丰富的功能实现，请查阅react-xrplayer的<a href="./doc/api-doc.md">接口设计与开发文档</a></p>
-<p>我们开始使用JSdoc来自动生成API文档，<a href="./jsdoc/index.html">API</a>， 生成JSDoc文档</p>
+<p>我们开始使用JSdoc来自动生成API文档，<a href="http://blog.zwboy.cn/react-xrplayer/jsdoc/index.html">API</a>，</p>
+<p>使用如下命令，生成JSDoc文档</p>
 <pre class="prettyprint source lang-js"><code>npm run jsdoc
 </code></pre>
 <h2>四、播放器架构</h2>
@@ -164,7 +167,7 @@ export default App;
 <li>我们会尽快回复您的pul request。</li>
 </ol>
 <h4>contributors</h4>
-<p><a href="https://github.com/ZWboy97">@zwboy</a> <a href="https://github.com/bigint405">@bigint405</a></p></article>
+<p><a href="https://github.com/ZWboy97">@zwboy</a> <a href="https://github.com/bigint405">@bigint405</a> <a href="https://github.com/muyatian">@muyatian</a></p></article>
     </section>
 
 
@@ -183,7 +186,7 @@ export default App;
 <script>prettyPrint();</script>
 <script src="scripts/linenumber.js"></script>
 <script>
-var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"}];
+var list = [{"title":"SpriteParticleHelper","link":"<a href=\"SpriteParticleHelper.html\">SpriteParticleHelper</a>"},{"title":"XRPlayerManager","link":"<a href=\"XRPlayerManager.html\">XRPlayerManager</a>"},{"title":"XRPlayerManager#addModel","link":"<a href=\"XRPlayerManager.html#addModel\">XRPlayerManager &rtrif; addModel</a>"},{"title":"XRPlayerManager#connectCameraControl","link":"<a href=\"XRPlayerManager.html#connectCameraControl\">XRPlayerManager &rtrif; connectCameraControl</a>"},{"title":"XRPlayerManager#disConnectCameraControl","link":"<a href=\"XRPlayerManager.html#disConnectCameraControl\">XRPlayerManager &rtrif; disConnectCameraControl</a>"},{"title":"XRPlayerManager#enableKeyControl","link":"<a href=\"XRPlayerManager.html#enableKeyControl\">XRPlayerManager &rtrif; enableKeyControl</a>"},{"title":"XRPlayerManager#exportConfig","link":"<a href=\"XRPlayerManager.html#exportConfig\">XRPlayerManager &rtrif; exportConfig</a>"},{"title":"XRPlayerManager#getCameraLatLon","link":"<a href=\"XRPlayerManager.html#getCameraLatLon\">XRPlayerManager &rtrif; getCameraLatLon</a>"},{"title":"XRPlayerManager#getCameraUVPosition","link":"<a href=\"XRPlayerManager.html#getCameraUVPosition\">XRPlayerManager &rtrif; getCameraUVPosition</a>"},{"title":"XRPlayerManager#getDisplaySenceResourceCurrentTime","link":"<a href=\"XRPlayerManager.html#getDisplaySenceResourceCurrentTime\">XRPlayerManager &rtrif; getDisplaySenceResourceCurrentTime</a>"},{"title":"XRPlayerManager#loadConfig","link":"<a href=\"XRPlayerManager.html#loadConfig\">XRPlayerManager &rtrif; loadConfig</a>"},{"title":"XRPlayerManager#moveCameraTo","link":"<a href=\"XRPlayerManager.html#moveCameraTo\">XRPlayerManager &rtrif; moveCameraTo</a>"},{"title":"XRPlayerManager#pauseDisplaySenceResource","link":"<a href=\"XRPlayerManager.html#pauseDisplaySenceResource\">XRPlayerManager &rtrif; pauseDisplaySenceResource</a>"},{"title":"XRPlayerManager#removeAllModel","link":"<a href=\"XRPlayerManager.html#removeAllModel\">XRPlayerManager &rtrif; removeAllModel</a>"},{"title":"XRPlayerManager#removeModel","link":"<a href=\"XRPlayerManager.html#removeModel\">XRPlayerManager &rtrif; removeModel</a>"},{"title":"XRPlayerManager#resetModels","link":"<a href=\"XRPlayerManager.html#resetModels\">XRPlayerManager &rtrif; resetModels</a>"},{"title":"XRPlayerManager#resetModels","link":"<a href=\"XRPlayerManager.html#resetModels\">XRPlayerManager &rtrif; resetModels</a>"},{"title":"XRPlayerManager#setGlobalMuted","link":"<a href=\"XRPlayerManager.html#setGlobalMuted\">XRPlayerManager &rtrif; setGlobalMuted</a>"},{"title":"XRPlayerManager#setGlobalVolume","link":"<a href=\"XRPlayerManager.html#setGlobalVolume\">XRPlayerManager &rtrif; setGlobalVolume</a>"},{"title":"XRPlayerManager#startDisplaySenceResource","link":"<a href=\"XRPlayerManager.html#startDisplaySenceResource\">XRPlayerManager &rtrif; startDisplaySenceResource</a>"}];
 setupSearch(list)
 </script>
 

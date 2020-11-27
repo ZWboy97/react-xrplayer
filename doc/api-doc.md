@@ -272,142 +272,208 @@ Label
 ##### 回调方法 onClick(Label)
 - 该标签被点击之后的回调
 
-
 ## 三、内嵌内容模块
+#### 概述
+该模块提供四种类型的内嵌资源（文本、图片、视频、模型），用户可在自己的代码中设计好这些资源后通过内嵌资源管理器（EmbeddedBoxManager）添加到XR场景中。
 
-#### 内嵌支持的内容
+### 1. 内嵌资源
+#### 支持内嵌的内容
 内嵌文本
 
 - 以3D的方式将文本框内容嵌入到全景场景中
-- TextBox
+- EmbeddedTextBox
 
 内嵌图片
 
 - 以3D的方式将图片框嵌入到全景场景中
-- ImageBox
+- EmbeddedImageBox
 
 内嵌视频
 
 - 以3D的方式将视频嵌入到全景场景中
-- VideoBox
+- EmbeddedVideoBox
 
 内嵌模型
 
 - 以3D方式将模型嵌入到全景场景中
-- ModelBox
+- EmbeddedModelBox
+- 未实现
 
 #### 数据结构
+##### 基类
 ```js
 EmbeddedBox
 {
-    // 公共字段
+    // 信息字段
     id:'e_xxxxx',
     type: 'text',// 类型【text,image, video,model】
+    callback: function,// 点击回调函数
     lat: -90, lon: -10, // 标签位置
-    event_id: 'e_xxx' // 响应事件id
+    dragable: false,//可否拖拽
+    visible: true;// 是否可见
 
-    // TextBox字段
-    text: 'lable', // 文字内容
-    text_size: 'big', // 文字大小[large, medium, small]
-
-    // ImageBox字段
-    url: '', //url
-    width: 30, // 宽度
-    height: 30, // 高度
-
-    // VideoBox字段
-    url: '', //url
-    width: 30, // 宽度
-    height: 30, // 高度
-    autoplay: false,
-    poster: 'url',
-
-    // ModelBox 字段
-    model_type: 'fbx',
-    model_res:{
-        url...
-    },  // 对应模型所需要的资源字段
-    scale:2, // 模型大小缩放
+    // 控制字段
+    planeMesh: null,// three.js中的mesh，代表资源实体
+    canvas: null,// canvas画布，用于生成材质
+    width: 0, height: 0,// 具体大小参数
+    manager: null,// 与之关联的内嵌资源管理器
+    meshReady: false,// 标记mesh实体是否已经准备好添加到场景中
 }
 ```
-
-#### 嵌入内容管理器
-
-##### getEmbedBoxManager()
-
-- 标签相关的接口统一通过`EmbedBoxManager`实例对外提供服务
-- 通过`XRPlayerManager.getEmbedBoxManager()`
-- 返回`getEmbedBoxManager`实例
-
-#### 嵌入内容管理器-嵌入内容容器
-
-以下接口均由`EmbedBoxManager`提供,用于向嵌入内容容器中添加和删除标签。
-
-##### addEmbedBox(EmbedBox)
-- 添加一个内嵌内容
-
-##### removeEmbedBox(id)
-- 
-##### getEmbedBox(id) 
-- 
-
-##### addEmbedBoxList(EmbedBoxList)
-- 
-##### clearAllEmbedBoxs()
-- 
-##### 回调方法 onEmbedBoxClicked(EmbedBox)
-- 
-
-#### 嵌入内容共用接口
-
-##### setPosition(int lat, int lon)
-- 设置嵌入内容在全景场景中的位置
+##### 内嵌文本
+```js
+EmbeddedTextBox
+{
+    // 目前已提供接口的参数
+    text: "请输入文字",// 文本框中的文字
+    textSize: "medium",// 字体大小【large, medium, small】
+    // 未提供接口，但可修改的参数，以下为默认值
+    this.font = 'Arial';    //字体
+    this.fontSize = 36;     //字体大小
+    this.borderThickness = 5;   //边框厚度
+    this.maxWidth = 100;     //一行中文字占用的最多像素，超过就换行
+    this.borderDistanceX = 15;  //左边距
+    this.borderDistanceY = 15;  //上边距
+    this.fontColor = { r:255, g:255, b:255, a:1.0 };    //字体颜色（默认白色不透明）
+    this.borderColor = { r:100, g:100, b:100, a:0.5 };  //边框颜色（默认灰色半透明）
+    this.backgroundColor = { r:100, g:100, b:100, a:0.5 };  //背景颜色（默认灰色半透明）
+}
+```
+##### 内嵌图片
+```js
+EmbeddedImageBox
+{
+    url = '',// 图片位置
+}
+```
+##### 内嵌视频
+```js
+EmbeddedVideoBox
+{
+    url = '',// 视频位置
+    autoplay = false;// 是否自动播放
+}
+```
+#### 接口
+----共用接口----
+##### setPosition(lat, lon)
+- 设置当前内嵌资源位置
+- 参数为经纬度，角度制
 
 ##### getPosition()
-- 获取嵌入在全景场景中的位置
-- lat，lon
+- 获取当前内嵌资源经纬度
+- `{lat: this.lat, lon: this.lon}`
 
-##### setDragable(enable)
-- 更改是否可拖动
+##### setDraggable(enable)
+- 设置当前资源可否被鼠标拖动
+- enable取值：[true, false]
 
-##### getDragable()
-- 返回是否允许拖动嵌入内容
-- true,false
+##### getDraggable()
+- 获取当前资源可否被鼠标拖动
 
-##### 回调接口 onClick(EmbedBox)
-- 该嵌入内容被点击后的回调
+##### setVisible(visible)
+- 设置当前资源是否可见
 
-#### 嵌入内容TextBox
+##### getVisible()
+- 获取当前资源可见性
 
-##### setText(text)
-- 
+##### onClick(callback)
+- 设置当前资源被点击后的回调函数
 
-##### setTextSize(size)
-- 
+----EmbeddedTextBox特有接口----
+##### setText(String)
+- 设置文本资源的文字内容
+
+##### setTextSize(textSize)
+- 设置文本资源字体大小
+- 可选参数：["small", "medium", "large"]
 
 ##### getTextInfo()
-- 
+- 返回当前资源文本内容
 
-#### 嵌入内容ImageBox
 
-##### setImage(url, width, height)
-- 设置图片url
+----EmbeddedImageBox特有接口----
+##### setImage(url, width = 30, height = 30)
+- 设置图片资源地址，大小
+- 宽高默认为30像素
 
-##### setImageSize(width,height)
-- 更改图片大小
+##### setImageSize(width, height)
+- 设置图片大小，单位为像素
 
 ##### getImageInfo()
-- 返回图片相关信息
-- `url, width,height`
+- 返回资源信息
+- {url: this.url, width: this.width, height: this.height}
 
-#### 嵌入内容VideoBox
-##### setVideo(url, width,height)
-- 
+##### -----EmbeddedVideoBox特有接口-----
+##### setVideo(url, width = 30, height = 30)
+- 设置视频资源地址，大小
+- 宽高默认为30像素
 
 ##### setVideoSize(width, height)
-- 
+- 设置视频大小，单位为像素
 
-##### setEnableDisplay(enable)
-- 是否允许自动播放
+##### setEnableAutoDisplay(enable)
+- 设置视频自动播放
 
+##### play()
+- 播放视频
+
+##### pause()
+- 暂停视频
+
+### 2. 嵌入资源管理器
+用户设置好内嵌资源后，可以通过嵌入资源管理器（EmbeddedManager）将内嵌资源添加到xr场景中，同时提供根据id查找内嵌资源的功能。
+#### 接口
+-----以下为XRPlayerManager提供-----
+##### getEmbeddedBoxManager()
+- 返回该XRPlayerManager对应的内嵌资源管理器（EmbeddedBoxManager实例）
+
+-----以下为EmbeddedBoxManager提供-----
+##### addEmbeddedBox(embeddedBox)
+- 传入一个设置好的内嵌资源（尤其是id），并将其添加到xr场景中。
+
+##### removeEmbeddedBox(id)
+- 从场景和管理器中删除指定id的内嵌资源
+
+##### getEmbeddedBox(id)
+- 根据id返回对应的内嵌资源（EmbeddedBox实例）
+
+##### clearAllEmbeddedBox()
+- 删除场景和管理器中的所有内嵌资源
+
+### 3. 快捷接口
+XRPlayerManager为一些常用的功能提供了快捷接口
+#### simpleCreateTextBox(id)
+- 在相机注视位置创建一个初始文本框
+
+#### simpleCreateImageBox(id)
+- 在相机注视位置创建一个初始图片框
+
+#### simpleCreateVideoBox(id)
+- 在相机注视位置创建一个初始视频框
+
+#### simpleSetEmbeddedBoxEvent(boxId, data)
+- 快捷设置嵌入文本框的点击事件，如展示图片、视频、网页
+- data格式：展示网页
+```js
+{
+    type: 'infocard',
+    iframeUrl: url//网址
+}
+```
+- data格式：展示图片
+```js
+{
+    type: 'image',
+    imageUrl: url_1,//图片网址
+    jumpUrl: url_2,//点击图片跳转网址
+}
+```
+- data格式：展示视频
+```js
+{
+    type: 'video',
+    videoUrl: url//视频网址
+}
+```
 ## 四、事件响应模块

@@ -28,8 +28,9 @@ react-xrplayer 旨在将更多的内容和互动形式融合到全景中，支�
 #### 关联项目
 
 基于react-xrplayer的关联项目
-- 基于react-xrplayer开发的全景互动编辑器
-- 基于react-xrplayer开发的全景互动观看端
+- 基于react-xrplayer开发的全景互动编辑器(进行中)
+- 基于react-xrplayer开发的全景互动观看端(进行中)
+- [实验性探索：全景FOV分块传输(tile-stream分支)](https://github.com/ZWboy97/react-xrplayer/tree/tiled-stream)
 
 ## 二、特性与规划
 
@@ -139,4 +140,4 @@ npm run build
 7. 我们会尽快回复您的pul request。
 
 #### contributors
-[@zwboy](https://github.com/ZWboy97) [@bigint405](https://github.com/bigint405)
+[@zwboy](https://github.com/ZWboy97) [@bigint405](https://github.com/bigint405) [@muyatian](https://github.com/muyatian)

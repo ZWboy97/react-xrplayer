@@ -36,8 +36,8 @@ class CameraTween {
         this.easing = params.easing;
         this.pos0 = {};
         this.pos1 = {};
-        Object.assign(this.pos0, params.pos0);
-        Object.assign(this.pos1, params.pos1);
+        Object.assign(this.pos0, params.start);
+        Object.assign(this.pos1, params.end);
         this.tween = new TWEEN.Tween(this.pos0).to(this.pos1, params.duration);
         this.tween.onStart(() => {
             this.started = true;
@@ -112,7 +112,7 @@ class CameraTween {
     spherical2Cartesian = (lat, lon, distance) => {
         const pos = { x: 0, y: 0, z: 0 };
         lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
-        const phi = THREE.Math.degToRad(90 - lat);
+        const phi = THREE.Math.degToRad(lat);
         const theta = THREE.Math.degToRad(lon);
         pos.x = distance * Math.sin(phi) * Math.cos(theta);
         pos.y = distance * Math.cos(phi);

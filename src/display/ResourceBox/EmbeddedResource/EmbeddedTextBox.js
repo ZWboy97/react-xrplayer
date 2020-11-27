@@ -17,6 +17,7 @@ class EmbeddedTextBox extends EmbeddedBox {
         this.borderColor = { r: 100, g: 100, b: 100, a: 0.5 };  //边框颜色（默认灰色半透明）
         this.backgroundColor = { r: 100, g: 100, b: 100, a: 0.5 };  //背景颜色（默认灰色半透明）
 
+        this.showTypeChangable = true;
         this.update();
     }
 
@@ -52,13 +53,11 @@ class EmbeddedTextBox extends EmbeddedBox {
     update = () => {
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d');
+        this.initCanvas();
         this.updateCanvas();
-
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
         this.createPlane();
-
         this.updateDisplay();
+        this.meshReady = true;
     }
 
     updateCanvas = () => {
@@ -95,6 +94,8 @@ class EmbeddedTextBox extends EmbeddedBox {
             this.canvasHeight = this.borderHeight + r * 2 + this.borderThickness * 2;
             this.canvas.height = this.canvasHeight;
         }
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
     }
 
     //在画布上画一个圆角矩形，x0,y0:起始坐标，x,y:除去半径的宽和高, r:半径

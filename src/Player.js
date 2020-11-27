@@ -5,6 +5,8 @@ import EffectContainer from './effect/EffectContainer';
 import FullScreen from './utils/fullscreen';
 import Proptypes from 'prop-types';
 import XRPlayerManager from './manager/XRPlayerManager';
+import Events from './event/Events'
+import EventBus from './event/EventBus'
 import './App.css';
 
 class XRPlayer extends Component {
@@ -68,6 +70,9 @@ class XRPlayer extends Component {
         const data = { ...props.data, margin: margin }
         this.props.setEffectData(data);
         break;
+      case 'roaming':
+        //let sence_id = props.data.sence_id;
+        break;
       case 'close_effect_container':
         this.onCloseEffectContainer();
         break;
@@ -77,16 +82,17 @@ class XRPlayer extends Component {
       case 'global_volume':
         this.props.setGlobalVolume(props.volume);
         break;
-      case 'sence_res_ready':
-        break;
       default: break;
     }
   }
 
   initEvent = () => {
+    EventBus.on(Events.EVENT_SENCE_RES_READY, (props) => {
+      let result = this.props.onEventHandler(props.type, props);
+      if (result) return;
+    }, this);
     window.addEventListener('resize', this.onWindowResize, false);
   }
-
 
   onWindowResize = () => {
     this.xrManager.onWindowResize(this.mount.clientWidth,
@@ -129,12 +135,6 @@ class XRPlayer extends Component {
             background: '#fff', overflow: "hidden"
           }}
         >
-          <div
-            id="canvas"
-            style={{ width: '100%', height: '100%', background: '#fff' }}
-            ref={(mount) => { this.mount = mount }}
-          >
-          </div>
           {
             is_effect_displaying ?
               <EffectContainer
@@ -147,6 +147,12 @@ class XRPlayer extends Component {
               :
               ""
           }
+          <div
+            id="canvas"
+            style={{ width: '100%', height: '100%', background: '#fff' }}
+            ref={(mount) => { this.mount = mount }}
+          >
+          </div>
           <video id="video"
             style={{ display: "none" }}
             muted={muted}
@@ -170,7 +176,7 @@ XRPlayer.protoTypes = {
   camera_far: Proptypes.number,
   camera_position: Proptypes.object,
   camera_target: Proptypes.object,
-  scene_texture_resource: Proptypes.object.isRequired,
+  scene_texture_resource: Proptypes.object,
   axes_helper_display: Proptypes.bool,
   hot_spot_list: Proptypes.array,
   event_list: Proptypes.array,
@@ -190,7 +196,7 @@ XRPlayer.defaultProps = {
   camera_position: {
     x: 0,
     y: 0,
-    z: 10
+    z: 100
   },
   camera_target: {
     x: 0,

@@ -6,6 +6,8 @@ import Hls from 'hls.js';
 import * as THREE from 'three';
 import flvjs from 'flv.js/dist/flv.min.js';
 import { OS } from '../utils/osuitls';
+import EventBus from '../event/EventBus';
+import Events from '../event/Events'
 
 class TextureHelper {
 
@@ -17,7 +19,6 @@ class TextureHelper {
         this.containerNode = containerNode;
         this.onLoadSuccessHandler = null;
         this.onLoadErrorHandler = null;
-        this.onCanPlayHandler = null;
         this.videoLoader = null;
         this.resType = 'image'
         this.resUrl = '';
@@ -41,11 +42,12 @@ class TextureHelper {
         this.containerNode.setAttribute('x5-video-orientation', 'portrait')
         this.containerNode.setAttribute('style', 'object-fit: fill')
         this.containerNode.setAttribute('loop', "loop")
-        this.containerNode.addEventListener('canplay', this.onVideoStarted, false);
+        this.containerNode.addEventListener('canplay', this.onVideoStarted, true);
     }
 
+
     onVideoStarted = () => {
-        this.onCanPlayHandler && this.onCanPlayHandler(this.resUrl);
+        EventBus.trigger(Events.EVENT_SENCE_RES_READY, { resUrl: this.resUrl });
     }
 
     getTextureFromVideo = (video) => {
@@ -129,7 +131,7 @@ class TextureHelper {
     loadImage = (resUrl) => {
         this.resUrl = resUrl;
         var texture = new THREE.TextureLoader().load(resUrl);
-        this.onCanPlayHandler && this.onCanPlayHandler();
+        EventBus.trigger(Events.EVENT_SENCE_RES_READY, { resUrl: this.resUrl });
         return texture;
     }
 

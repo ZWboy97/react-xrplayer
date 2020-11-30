@@ -19,9 +19,9 @@ class TiledStreaming {
         this.videoMediaAsyns = [];
         this.canvas = null;
         this.timingAsynSrc = null;
-        this.buttons = [];
+        // this.buttons = []; // TODO remove
         this.selected = []; // 某个块是否被选中，后期需要升级为被选中哪个版本的块
-        this.isReady = [];  // 该块的视频是否加载成功
+        this.isReady = [];  // 该块的视频是否加载成功,后期升级到status
         this.resUrls = [];
 
         this.x = 0;
@@ -72,11 +72,6 @@ class TiledStreaming {
     }
 
     initSelectedButton = () => {
-        let ids = [
-            'tile0-0', 'tile1-0', 'tile2-0', 'tile3-0',
-            'tile0-1', 'tile1-1', 'tile2-1', 'tile3-1',
-            'tile0-2', 'tile1-2', 'tile2-2', 'tile3-2'
-        ]
         this.selected = [
             false, false, false, false,
             false, false, false, false,
@@ -87,76 +82,12 @@ class TiledStreaming {
             false, false, false, false,
             false, false, false, false
         ]
+        // 粗略计算分块区域的中点，用于计算视点与分块的距离
         this.tileCenter = [
             [0.167, 0.125], [0.167, 0.375], [0.167, 0.625], [0.167, 0.875],
             [0.5, 0.125], [0.5, 0.375], [0.5, 0.625], [0.5, 0.875],
             [0.833, 0.125], [0.833, 0.375], [0.833, 0.625], [0.833, 0.875]
         ]
-        for (let i = 0; i < ids.length; i++) {
-            let button = document.getElementById(ids[i]);
-            button.onclick = () => {
-                this.onTileButtonClick(i);
-            }
-            this.buttons.push(button);
-        }
-    }
-
-    onTileButtonClick = (i) => {
-        let tile_selected_info = document.getElementById('tile_selected_info');
-        let buffer_info = document.getElementById('buffer_info');
-        let level_info = document.getElementById('level_info');
-        let throughput = document.getElementById('throughput');
-        let tile_unselected = document.getElementById('tile_unselected');
-        let tile_selected = document.getElementById('tile_selected');
-        let buffer_add = document.getElementById('buffer++');
-        let buffer_diff = document.getElementById('buffer--');
-        let level_add = document.getElementById('level++');
-        let level_diff = document.getElementById('level--');
-        let level_list = document.getElementById('level_list');
-        if (this.selected[i]) {
-            tile_selected_info.innerHTML = "selected:true";
-            buffer_info.innerHTML = 'buffer:' + this.enhanceDash[i].getBufferLength('video');
-            level_info.innerHTML = 'level:' + this.enhanceDash[i].getQualityFor('video');
-            throughput.innerHTML = 'throughput:' + this.enhanceDash[i].getAverageThroughput('video');
-            let levelList = 'bitrates:';
-            let bitrateList = this.enhanceDash[i].getActiveStream().getBitrateListFor('video');
-            for (let i = 0; i < bitrateList.length; i++) {
-                levelList += `${bitrateList[i].bitrate}(${bitrateList[i].width}x${bitrateList[i].height}) `;
-            }
-            level_list.innerHTML = levelList;
-            tile_unselected.onclick = () => {
-                this.unloadTile(i);
-            }
-            tile_selected.onclick = null;
-            buffer_add.onclick = () => {
-
-            }
-            buffer_diff.onclick = () => {
-
-            }
-            level_add.onclick = () => {
-                let curr = this.enhanceDash[i].getQualityFor('video');
-                this.enhanceDash[i].setQualityFor('video', curr++);
-            }
-            level_diff.onclick = () => {
-                let curr = this.enhanceDash[i].getQualityFor('video');
-                this.enhanceDash[i].setQualityFor('video', curr--);
-            }
-        } else {
-            tile_selected_info.innerHTML = 'selected:false';
-            buffer_info.innerHTML = 'buffer:null';
-            level_info.innerHTML = 'level:null';
-            throughput.innerHTML = 'throughput:null';
-            level_list.innerHTML = 'bitrates:null';
-            tile_unselected.onclick = null;
-            tile_selected.onclick = () => {
-                this.loadTile(i, 1);
-            }
-            buffer_add.onclick = null;
-            buffer_diff.onclick = null;
-            level_add.onclick = null;
-            level_diff.onclick = null;
-        }
     }
 
     /**
@@ -261,7 +192,7 @@ class TiledStreaming {
     initVideoNode = (videoInstance, width, height) => {
         videoInstance.width = width;
         videoInstance.height = height;
-        videoInstance.loop = true;
+        videoInstance.loop = false;
         videoInstance.crossOrigin = "anonymous";
         videoInstance.autoplay = true;
         videoInstance.muted = true;
@@ -276,7 +207,6 @@ class TiledStreaming {
         videoInstance.setAttribute('x5-video-player-fullscreen', true)
         videoInstance.setAttribute('x5-video-orientation', 'portrait')
         videoInstance.setAttribute('style', 'object-fit: fill')
-        videoInstance.setAttribute('loop', "loop")
         videoInstance.addEventListener('canplay', this.onVideoStarted, false);
     }
 
@@ -379,7 +309,7 @@ class TiledStreaming {
 
     /**
      * @function
-     * @name TiledStreaming#
+     * @name TiledStreaming#onCameraPositionUpdate
      * @description
      */
     onCameraPositionUpdate = (lat, lon) => {
@@ -499,6 +429,22 @@ class TiledStreaming {
             bufferList.push(this.baseDash.getBufferLength('video'));
         }
         return bufferList;
+    }
+
+    getDashThroughOutPutList = () => {
+        let throughtOutPut = [];
+        this.enhanceDash.forEach((dash, index) => {
+            if (dash == null) {
+                throughtOutPut.push(0);
+            } else {
+                let output = dash.getAverageThroughput('video');
+                throughtOutPut.push(output);
+            }
+        })
+        if (this.baseDash != null) {
+            throughtOutPut.push(this.baseDash.getAverageThroughput('video'));
+        }
+        return throughtOutPut;
     }
 }
 

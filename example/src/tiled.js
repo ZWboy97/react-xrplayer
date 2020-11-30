@@ -1,6 +1,7 @@
 import React from 'react';
 import XRPlayer from '../../src/index'; // 实际项目中使用，请使用如下方式
 import BufferChart from './charts/BufferChart';
+import NetChart from './charts/NetChart';
 
 class TiledDemo extends React.Component {
 
@@ -30,6 +31,7 @@ class TiledDemo extends React.Component {
             });
         this.tileStreaming = null;
         this.bufferChart = null;
+        this.netChart = null;
     }
 
     onXRCreated = (manager) => {
@@ -45,6 +47,40 @@ class TiledDemo extends React.Component {
         });
         let textureHelper = this.xrManager.getSenceTextureHelper();
         this.tileStreaming = textureHelper.getTextureMediaSource();
+
+        setInterval(this.updateNetWorkDate, 2000);
+
+    }
+
+    updateNetWorkDate = () => {
+        if (this.tileStreaming === null) {
+            return;
+        }
+        let throughtOutPut = this.tileStreaming.getDashThroughOutPutList();
+        let data = [];
+        let x = 2, y = 0;
+        for (let i = 0; i < throughtOutPut.length - 1; i++) {
+            data.push({
+                x: x,
+                y: y,
+                value: throughtOutPut[i]
+            })
+            y++;
+            if (y % 4 === 0) {
+                x--;
+                y = 0;
+            }
+        }
+        data.push({
+            x: 3,
+            y: 0,
+            value: throughtOutPut[throughtOutPut.length - 1]
+        })
+        if (this.netChart === null) {
+            this.netChart = new NetChart(data);
+        } else {
+            this.netChart.updateData(data);
+        }
     }
 
     updateBufferDate = () => {
@@ -112,57 +148,6 @@ class TiledDemo extends React.Component {
                     "color": "white",
                     "visibility": operation_state === 'tile' ? 'visible' : "hidden"
                 }}>
-                    <table>
-                        <tr>
-                            <td>
-                                <tr>分块选择</tr>
-                                <tr>
-                                    <button id='tile0-0'>tile0-0</button>
-                                    <button id='tile1-0'>tile1-0</button>
-                                    <button id='tile2-0'>tile2-0</button>
-                                    <button id='tile3-0'>tile3-0</button>
-                                </tr>
-                                <tr>
-                                    <button id='tile0-1'>tile0-1</button>
-                                    <button id='tile1-1'>tile1-1</button>
-                                    <button id='tile2-1'>tile2-1</button>
-                                    <button id='tile3-1'>tile3-1</button>
-                                </tr>
-                                <tr>
-                                    <button id='tile0-2'>tile0-2</button>
-                                    <button id='tile1-2'>tile1-2</button>
-                                    <button id='tile2-2'>tile2-2</button>
-                                    <button id='tile3-2'>tile3-2</button>
-                                </tr>
-                            </td>
-                            <td>
-                                <tr>分块操作</tr>
-                                <tr>
-                                    <div>
-                                        <button id='tile_selected'>选择</button>
-                                        <button id='tile_unselected'>移除</button>
-                                        <font id='tile_selected_info'>selected:?</font>
-                                    </div>
-                                    <div>
-                                        <button id='buffer++' >buffer++</button>
-                                        <button id='buffer--'>buffer--</button>
-                                        <font id='buffer_info'>buffer:?</font>
-                                    </div>
-                                    <div>
-                                        <button id='level++' >level++</button>
-                                        <button id='level--'>level--</button>
-                                        <font id='level_info'>level:?</font>
-                                    </div>
-                                    <div>
-                                        <font id='throughput'>throughput:</font>
-                                    </div>
-                                    <div>
-                                        <font id='level_list'>levels:</font>
-                                    </div>
-                                </tr>
-                            </td>
-                        </tr>
-                    </table>
                 </div>
                 <div
                     style={{
@@ -175,9 +160,14 @@ class TiledDemo extends React.Component {
                         "background": 'white',
                         "display": camera_track_visible ? 'block' : "none"
                     }}></div>
+
                     <div id="c2" style={{
                         "background": 'white',
                         "display": buffer_chart_visible ? 'block' : "none"
+                    }}></div>
+                    <div id="c3" style={{
+                        "background": 'white',
+                        "display": true ? 'block' : "none"
                     }}></div>
                     <button
                         onClick={() => {

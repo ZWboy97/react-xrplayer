@@ -367,7 +367,8 @@ module.exports = function (webpackEnv) {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
               include: [
                 paths.appSrc,
-                paths.exampleAppSrc
+                paths.exampleAppSrc,
+                paths.dashjsSrc
               ],
               loader: require.resolve('babel-loader'),
               options: {

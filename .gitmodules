@@ -1,0 +1,3 @@
+[submodule "dashjs"]
+	path = dashjs
+	url = http://gitlab.youmuvideo.com/xrlive/dash.js.git

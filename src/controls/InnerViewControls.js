@@ -193,14 +193,14 @@ class InnerViewControls {
         this.phi = spherical.phi;
         this.theta = spherical.theta;
         this.distance = spherical.radius;
-        this.lon = THREE.Math.radToDeg(this.theta);
+        this.lon = 90 - THREE.Math.radToDeg(this.theta);
         this.lat = THREE.Math.radToDeg(this.phi);
         return { lat: this.lat, lon: this.lon };
     };
 
     initControlsListener = () => {
         const container = document.getElementById('xr-container')
-
+        this.isUserInteracting = false;
         container.addEventListener('touchstart', this.onTouchstart, false);
         container.addEventListener('touchmove', this.onTouchmove, false);
         container.addEventListener('touchend', this.onTouchend, false);
@@ -328,7 +328,7 @@ class InnerViewControls {
     }
 
     onDocumentMouseMove = (event) => {
-        if (this.isUserInteracting === true) {
+        if (this.isUserInteracting === true && this.isConnected === true) {
             if (this.isPointerInteracting) {
                 this.lon = event.movementX * 0.1 + this.lon;
                 this.lat = event.movementY * 0.1 + this.lat;

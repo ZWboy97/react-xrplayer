@@ -26,13 +26,8 @@ class EmbeddedBox {
     setPosition = (lat, lon) => {
         this.lat = lat;
         this.lon = lon;
-        console.log('lat lon')
-        console.log(lat, lon)
         if (this.planeMesh) {
             let pos = this.Sph2Cart(this.lat, this.lon);
-            console.log('pos')
-            console.log(pos)
-            console.log(this.lat, this.lon)
             this.planeMesh.position.set(pos.x, pos.y, pos.z);
             this.planeMesh.lookAt(0, 0, 0);
         }
@@ -43,8 +38,8 @@ class EmbeddedBox {
             const spherical = new THREE.Spherical();
             const position = this.planeMesh.position;
             spherical.setFromCartesianCoords(position.x, position.y, position.z);
-            this.lon = 90 - THREE.MathUtils.radToDeg(spherical.theta);
-            this.lat = 90 - THREE.MathUtils.radToDeg(spherical.phi);
+            this.lon = THREE.MathUtils.radToDeg(spherical.theta);
+            this.lat = THREE.MathUtils.radToDeg(spherical.phi);
         }
         return {lat: this.lat, lon: this.lon};
     }
@@ -186,12 +181,12 @@ class EmbeddedBox {
     }
 
     Sph2Cart = (lat, lon) => {
-        let phi = THREE.Math.degToRad(90 - lat);
+        let phi = THREE.Math.degToRad(lat);
         let theta = THREE.Math.degToRad(lon);
         return new THREE.Vector3(
-            500 * Math.sin(phi) * Math.cos(theta),
+            500 * Math.sin(phi) * Math.sin(theta),
             500 * Math.cos(phi),
-            500 * Math.sin(phi) * Math.sin(theta)
+            500 * Math.sin(phi) * Math.cos(theta)
         );
     };
 

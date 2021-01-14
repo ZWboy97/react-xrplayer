@@ -10,6 +10,8 @@ class CameraTween {
         this.duration = null;
         this.easing = null;
         this.tween = null;
+        this.onUpdate = null;
+        this.focus = new THREE.Vector3(0, 0, 0);
 
         this.camera = camera;
         this.distance = cameraDistance;
@@ -21,7 +23,7 @@ class CameraTween {
         this.startTime = 0;
         this.endTime = 0;
 
-        this.posType = 0;                   // 0 采用经纬度， 1 采用xyz
+        this.posType = 0;                   // 0 表示都不用， 1 采用xyz， 2 采用经纬度
         this.fovChange = false;             //是否涉及fov的改变
         this.disChange = false;             //是否涉及distance的改变
 
@@ -36,8 +38,8 @@ class CameraTween {
         this.easing = params.easing;
         this.pos0 = {};
         this.pos1 = {};
-        Object.assign(this.pos0, params.start);
-        Object.assign(this.pos1, params.end);
+        Object.assign(this.pos0, params.pos0);
+        Object.assign(this.pos1, params.pos1);
         this.tween = new TWEEN.Tween(this.pos0).to(this.pos1, params.duration);
         this.tween.onStart(() => {
             this.started = true;
@@ -63,7 +65,10 @@ class CameraTween {
             this.tween.easing(easing);
         }
         if (this.pos0.hasOwnProperty("x")) {
-            this.posType = 1
+            this.posType = 1;
+        }
+        if (this.pos0.hasOwnProperty("lat")) {
+            this.posType = 2;
         }
         if (this.pos0.hasOwnProperty("fov")) {
             this.fovChange = true;
@@ -74,7 +79,10 @@ class CameraTween {
 
         const cameraTween = this;
         this.tween.onUpdate((pos) => {
-            if (cameraTween.posType === 0) {
+            if (this.onUpdate) {
+                this.onUpdate(pos);
+            }
+            if (cameraTween.posType === 2) {
                 if (!this.disChange) {
                     pos.distance = this.distance;
                 }
@@ -83,7 +91,7 @@ class CameraTween {
                 cameraTween.camera.position.y = newPos.y;
                 cameraTween.camera.position.z = newPos.z;
             }
-            else {
+            else if (cameraTween.posType === 1) {
                 cameraTween.camera.position.x = pos.x;
                 cameraTween.camera.position.y = pos.y;
                 cameraTween.camera.position.z = pos.z;
@@ -94,6 +102,12 @@ class CameraTween {
             }
             cameraTween.camera.lookAt(cameraTween.camera.target);
         });
+    }
+
+    setFocus = (focus) => {
+        this.focus.x = focus.x;
+        this.focus.y = focus.y;
+        this.focus.z = focus.z;
     }
 
     getEasingFunc = (name) => {
@@ -111,12 +125,12 @@ class CameraTween {
     //经纬度到xyz的转换
     spherical2Cartesian = (lat, lon, distance) => {
         const pos = { x: 0, y: 0, z: 0 };
-        lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
+        // lat = Math.max(this.fovDownEdge, Math.min(this.fovTopEdge, lat));
         const phi = THREE.Math.degToRad(lat);
         const theta = THREE.Math.degToRad(lon);
-        pos.x = distance * Math.sin(phi) * Math.cos(theta);
-        pos.y = distance * Math.cos(phi);
-        pos.z = distance * Math.sin(phi) * Math.sin(theta);
+        pos.x = this.focus.x + distance * Math.sin(phi) * Math.sin(theta);
+        pos.y = this.focus.y + distance * Math.cos(phi);
+        pos.z = this.focus.z + distance * Math.sin(phi) * Math.cos(theta);
         return pos;
     }
 

@@ -38,15 +38,19 @@ class App extends React.Component {
     onXRCreated = (manager) => {
         this.xrManager = manager;
         window.xrManager = manager;
-        this.xrManager.setHotSpots(this.xrConfigure.hot_spot_list, this.xrConfigure.event_list);
-        this.xrManager.toNormalView(5000, 1000);
-        this.xrManager.setModels(this.xrConfigure.model_list);
+
+        this.xrManager.loadConfig(this.xrConfigure);
+
+        // this.xrManager.setHotSpots(this.xrConfigure.hot_spot_list, this.xrConfigure.event_list);
+        // this.xrManager.setModels(this.xrConfigure.model_list);
+        // this.xrManager.setParticleEffectRes(this.xrConfigure.particle_effect);
+        this.xrManager.toNormalView(0, 0);
         this.xrManager.connectCameraControl();
         this.xrManager.setFovVerticalScope(0, 180);
         this.xrManager.enableKeyControl(true);
         this.xrManager.enableChangeFov(true);
-        this.xrManager.setParticleEffectRes(this.xrConfigure.particle_effect);
-        this.onCameraAnimationSet();
+        this.xrManager.cameraTweenGroup.enableAutoNext(true);
+        // this.onCameraAnimationSet();
     }
 
     onCameraAnimationSet = () => {
@@ -185,18 +189,18 @@ class App extends React.Component {
     onCreateTextBox = () => {
         let textBox = new EmbeddedTextBox('box1');
         // textBox.setText('helloooooooooooooooooooooo');
-        textBox.setPosition(-30, 0);
+        textBox.setPosition(120, 0);
         this.boxManager = this.xrManager.getEmbeddedBoxManager();
         this.boxManager.addEmbeddedBox(textBox);
 
         let imageBox = new EmbeddedImageBox('box2');
         imageBox.setImage(process.env.PUBLIC_URL + '/logo192.png', 192, 192);
-        imageBox.setPosition(0, 45);
+        imageBox.setPosition(90, 45);
         this.boxManager.addEmbeddedBox(imageBox);
 
         let videoBox = new EmbeddedVideoBox('box3');
         videoBox.setVideo(process.env.PUBLIC_URL + '/shuttle.mp4', 426, 240);
-        videoBox.setPosition(0, 120);
+        videoBox.setPosition(90, 120);
         // videoBox.setEnableAutoDisplay(true);
         this.boxManager.addEmbeddedBox(videoBox);
     }
@@ -344,6 +348,10 @@ class App extends React.Component {
         this.xrManager.startCameraTweenGroup();
     }
 
+    debugFunc = () => {
+        let videoBox = this.boxManager.getEmbeddedBox('box3');
+        console.log(videoBox.getPosition())
+    }
 
     render() {
         return (
@@ -406,6 +414,7 @@ class App extends React.Component {
                     <button onClick={() => { this.xrManager.stopCameraTweenGroup(); }}>停止</button>
                     <button onClick={this.onPickDirector}>拾取导览点</button>
                     <button onClick={this.onStartAutoDisplay}>开始自动导览</button>
+                    <button onClick={this.debugFunc}>debug</button>
                 </div>
             </div >
         )

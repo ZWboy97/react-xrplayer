@@ -59,8 +59,8 @@ class App extends React.Component {
 
         let animateList = [
             {
-                start: { lat: 0, lon: 180, fov: 80, distance: 100 },
-                end: { lat: 0, lon: 0, fov: 80, distance: 100 },
+                start: { lat: 0, lon: 180, fov: 80, distance: 500 },
+                end: { lat: 0, lon: 0, fov: 80, distance: 500 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             },
             {
@@ -329,14 +329,14 @@ class App extends React.Component {
     onPickDirector = () => {
         let pos = this.xrManager.getCameraLatLon();
         let fov = this.xrManager.getCameraFov();
-        let startLat = 0, startLon = 180;
+        let startLat = 90, startLon = 180;
         if (this.autoDisplayList.length !== 0) {
             startLat = this.autoDisplayList[this.autoDisplayList.length - 1].end.lat;
             startLon = this.autoDisplayList[this.autoDisplayList.length - 1].end.lon;
         }
         this.autoDisplayList.push({
-            start: { lat: startLat, lon: startLon, fov: 80, distance: 100 },
-            end: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 100 },
+            start: { lat: startLat, lon: startLon, fov: 80, distance: 500 },
+            end: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 500 },
             duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
         })
     }

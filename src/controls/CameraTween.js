@@ -204,7 +204,6 @@ class CameraTweenGroup {
                 this.currentIndex = itemIndex;
                 this.state = 'running';
                 this.startTime = new Date().getTime();
-                console.log('set Start')
                 this.onCameraAnimationStart &&
                     this.onCameraAnimationStart(key);
             }
@@ -262,7 +261,6 @@ class CameraTweenGroup {
         this.stop();
         this.currentIndex = index;
         this.cameraTweens[this.currentIndex].start();
-        this.startTime = new Date().getTime();
     }
 
     stop = () => {
@@ -285,9 +283,6 @@ class CameraTweenGroup {
         if (this.state !== 'running') return;
         this.pauseTime = new Date().getTime();
         let duration = this.cameraTweens[this.currentIndex].duration + this.startTime - this.pauseTime;
-        console.log('d:',this.cameraTweens[this.currentIndex].duration)
-        console.log('sT:',this.startTime)
-        console.log('pT:',this.pauseTime)
         const nowTween = this.cameraTweens[this.currentIndex];  //当前tween
 
         if (this.playTween) {  //仍然在原来的PlayTween里面
@@ -301,9 +296,6 @@ class CameraTweenGroup {
         }
 
         //连接后继tween
-        console.log('len')
-        console.log(this.len)
-        console.log(this.currentIndex)
         if (this.currentIndex + 1 < this.len) {
             this.playTween.chain(this.cameraTweens[this.currentIndex + 1]);
         } else if (this.loop) {
@@ -360,18 +352,12 @@ class CameraTweenGroup {
         };
 
         this.playTween.onCameraAnimationStop = nowTween.onCameraAnimationStop;
-
-        console.log('playTween')
-        console.log(this.playTween)
     }
 
     play = () => {
         if (this.state === 'paused') {
             this.playTween && this.playTween.start();
-            let nt = new Date().getTime();
-            this.startTime = nt + this.startTime - this.pauseTime;
-            console.log('nT:',nt)
-            console.log('psT:',this.startTime)
+            this.startTime = new Date().getTime() + this.startTime - this.pauseTime;
         }
     }
 

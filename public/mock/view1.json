@@ -7,7 +7,7 @@
     "res_urls": [
         {
             "type": "image",
-            "res_url": "/react-xrplayer/test.jpg",
+            "res_url": "https://live360bucket.oss-cn-beijing.aliyuncs.com/vrresource/pano_pic_test.jpg",
             "panoramic_type": "360",
             "radius": 500
         }
@@ -188,12 +188,12 @@
     "auto_guide_list": [
         {
             "key": "zhong_shan_ji_nian_tang",
-            "pos0": {
+            "start": {
                 "lat": 90,
                 "lon": -15,
                 "fov": 90
             },
-            "pos1": {
+            "end": {
                 "lat": 69,
                 "lon": 110,
                 "fov": 58
@@ -203,12 +203,12 @@
         },
         {
             "key": "ling_ze_xu",
-            "pos0": {
+            "start": {
                 "lat": 69,
                 "lon": 110,
                 "fov": 58
             },
-            "pos1": {
+            "end": {
                 "lat": 105,
                 "lon": 110,
                 "fov": 58
@@ -218,12 +218,12 @@
         },
         {
             "key": "ma_qiu_chang",
-            "pos0": {
+            "start": {
                 "lat": 105,
                 "lon": 110,
                 "fov": 58
             },
-            "pos1": {
+            "end": {
                 "lat": 100,
                 "lon": 137,
                 "fov": 38
@@ -233,12 +233,12 @@
         },
         {
             "key": "ren_shou_tang",
-            "pos0": {
+            "start": {
                 "lat": 100,
                 "lon": 137,
                 "fov": 38
             },
-            "pos1": {
+            "end": {
                 "lat": 100,
                 "lon": 180,
                 "fov": 70
@@ -248,12 +248,12 @@
         },
         {
             "key": "ou_ye_chi",
-            "pos0": {
+            "start": {
                 "lat": 100,
                 "lon": 180,
                 "fov": 70
             },
-            "pos1": {
+            "end": {
                 "lat": 91.5,
                 "lon": 206,
                 "fov": 80
@@ -263,12 +263,12 @@
         },
         {
             "key": "zhong_shan_she_qu",
-            "pos0": {
+            "start": {
                 "lat": 91.5,
                 "lon": 206,
                 "fov": 80
             },
-            "pos1": {
+            "end": {
                 "lat": 90,
                 "lon": -15,
                 "fov": 90

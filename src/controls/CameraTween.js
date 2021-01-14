@@ -38,8 +38,8 @@ class CameraTween {
         this.easing = params.easing;
         this.pos0 = {};
         this.pos1 = {};
-        Object.assign(this.pos0, params.pos0);
-        Object.assign(this.pos1, params.pos1);
+        Object.assign(this.pos0, params.start);
+        Object.assign(this.pos1, params.end);
         this.tween = new TWEEN.Tween(this.pos0).to(this.pos1, params.duration);
         this.tween.onStart(() => {
             this.started = true;
@@ -200,9 +200,11 @@ class CameraTweenGroup {
                 this.onCameraAnimationEnded &&
                     this.onCameraAnimationEnded(key);
             }
-            item.onCameraAnimationStart = (key) => {
+            item.onCameraAnimationStart = (key) => {//以后修改这个函数时记得同步修改createPlayTween的start函数
                 this.currentIndex = itemIndex;
                 this.state = 'running';
+                this.startTime = new Date().getTime();
+                console.log('set Start')
                 this.onCameraAnimationStart &&
                     this.onCameraAnimationStart(key);
             }
@@ -283,6 +285,9 @@ class CameraTweenGroup {
         if (this.state !== 'running') return;
         this.pauseTime = new Date().getTime();
         let duration = this.cameraTweens[this.currentIndex].duration + this.startTime - this.pauseTime;
+        console.log('d:',this.cameraTweens[this.currentIndex].duration)
+        console.log('sT:',this.startTime)
+        console.log('pT:',this.pauseTime)
         const nowTween = this.cameraTweens[this.currentIndex];  //当前tween
 
         if (this.playTween) {  //仍然在原来的PlayTween里面
@@ -296,6 +301,9 @@ class CameraTweenGroup {
         }
 
         //连接后继tween
+        console.log('len')
+        console.log(this.len)
+        console.log(this.currentIndex)
         if (this.currentIndex + 1 < this.len) {
             this.playTween.chain(this.cameraTweens[this.currentIndex + 1]);
         } else if (this.loop) {
@@ -307,7 +315,7 @@ class CameraTweenGroup {
         //记录断点信息
         const nowTween = Tween;
         let pos0 = null;
-        if (nowTween.posType === 0) {                   //暂停的是经纬度
+        if (nowTween.posType === 2) {                   //暂停的是经纬度
             pos0 = this.cameraControl.initSphericalData();
             while (pos0.lon > 180) pos0.lon -= 360;
             while (pos0.lon < -180) pos0.lon += 360;
@@ -318,7 +326,7 @@ class CameraTweenGroup {
                 pos0.distance = this.cameraControl.distance;
             }
         }
-        else {                                          //xyz
+        else if (nowTween.posType === 1) {                                          //xyz
             pos0 = {
                 x: this.cameraControl.camera.position.x, y: this.cameraControl.camera.position.y,
                 z: this.cameraControl.camera.position.z
@@ -333,28 +341,37 @@ class CameraTweenGroup {
 
         //创建新tween
         this.playTween = new CameraTween({
-            pos0: pos0, pos1: nowTween.pos1,
+            start: pos0, end: nowTween.pos1,
             duration: duration,
             easing: nowTween.easing
         },
             this.cameraControl.camera,
-            100,
+            this.distance,
             this.cameraControl
         );
         this.playTween.onCameraAnimationEnded = () => {
             nowTween.onCameraAnimationEnded();
             this.playTween = null;
         }
-        this.playTween.onCameraAnimationStart = nowTween.onCameraAnimationStart;
-        this.playTween.onCameraAnimationStop = () => {
-            nowTween.onCameraAnimationStop();
-        }
+        this.playTween.onCameraAnimationStart = (key) => {
+            this.state = 'running';
+            this.onCameraAnimationStart &&
+                this.onCameraAnimationStart(key);
+        };
+
+        this.playTween.onCameraAnimationStop = nowTween.onCameraAnimationStop;
+
+        console.log('playTween')
+        console.log(this.playTween)
     }
 
     play = () => {
         if (this.state === 'paused') {
             this.playTween && this.playTween.start();
-            this.startTime = new Date().getTime() + this.startTime - this.pauseTime;
+            let nt = new Date().getTime();
+            this.startTime = nt + this.startTime - this.pauseTime;
+            console.log('nT:',nt)
+            console.log('psT:',this.startTime)
         }
     }
 

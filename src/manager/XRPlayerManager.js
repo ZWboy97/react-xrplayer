@@ -841,7 +841,7 @@ class XRPlayerManager {
             cameraTweens.push(animation);
         });
         var cameraTweenGroup = new CameraTweenGroup(cameraTweens,
-            100, this.innerViewControls);
+            500, this.innerViewControls);
         cameraTweenGroup.onCameraAnimationEnded = (key) => {
             this.onCameraAnimationEnded &&
                 this.onCameraAnimationEnded(key);

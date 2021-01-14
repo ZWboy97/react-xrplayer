@@ -59,13 +59,13 @@ class App extends React.Component {
 
         let animateList = [
             {
-                pos0: { lat: 0, lon: 180, fov: 80, distance: 100 },
-                pos1: { lat: 0, lon: 0, fov: 80, distance: 100 },
+                start: { lat: 0, lon: 180, fov: 80, distance: 100 },
+                end: { lat: 0, lon: 0, fov: 80, distance: 100 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             },
             {
-                pos0: { lat: 0, lon: 0, fov: 80 },
-                pos1: { lat: 0, lon: -180, fov: 80 },
+                start: { lat: 0, lon: 0, fov: 80 },
+                end: { lat: 0, lon: -180, fov: 80 },
                 duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
             }
         ]
@@ -331,12 +331,12 @@ class App extends React.Component {
         let fov = this.xrManager.getCameraFov();
         let startLat = 0, startLon = 180;
         if (this.autoDisplayList.length !== 0) {
-            startLat = this.autoDisplayList[this.autoDisplayList.length - 1].pos1.lat;
-            startLon = this.autoDisplayList[this.autoDisplayList.length - 1].pos1.lon;
+            startLat = this.autoDisplayList[this.autoDisplayList.length - 1].end.lat;
+            startLon = this.autoDisplayList[this.autoDisplayList.length - 1].end.lon;
         }
         this.autoDisplayList.push({
-            pos0: { lat: startLat, lon: startLon, fov: 80, distance: 100 },
-            pos1: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 100 },
+            start: { lat: startLat, lon: startLon, fov: 80, distance: 100 },
+            end: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 100 },
             duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
         })
     }

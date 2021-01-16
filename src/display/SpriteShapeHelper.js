@@ -100,12 +100,12 @@ class SpriteShapeHelper {
 
     contertSph2Rect = (lat, lon) => {
         let r = Radius;
-        const phi = THREE.Math.degToRad(90 - lat);
+        const phi = THREE.Math.degToRad(lat);
         const theta = THREE.Math.degToRad(lon);
         return [
-            r * Math.sin(phi) * Math.cos(theta),
             r * Math.sin(phi) * Math.sin(theta),
-            r * Math.cos(phi)
+            r * Math.cos(phi),
+            r * Math.sin(phi) * Math.cos(theta)
         ];
     }
 

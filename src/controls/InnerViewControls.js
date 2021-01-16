@@ -26,6 +26,7 @@ class InnerViewControls {
         this.onPointerDownPointerY = 0;
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
+        this.focus = new THREE.Vector3(0, 0, 0);
 
         // 视野自动旋转
         this.enableAutoRotate = false;          // 是否自动旋转
@@ -59,6 +60,19 @@ class InnerViewControls {
     }
 
     /******************************对外接口************************* */
+
+    // 设置位置焦点（lat和lon控制位置的基础，target并不会变）
+    setFocus = (focus) => {
+        this.focus.x = focus.x;
+        this.focus.y = focus.y;
+        this.focus.z = focus.z;
+        this.initSphericalData();
+    }
+
+    // 设置相机关注焦点（即target）
+    setTarget = (target) => {
+        this.camera.target = target;
+    }
 
     // 相机控制器开关
     connect = () => {
@@ -190,7 +204,7 @@ class InnerViewControls {
     initSphericalData = () => {
         const spherical = new THREE.Spherical();
         const position = this.camera.position;
-        spherical.setFromCartesianCoords(position.x, position.y, position.z);
+        spherical.setFromCartesianCoords(position.x - this.focus.x, position.y - this.focus.y, position.z - this.focus.z);
         this.phi = spherical.phi;
         this.theta = spherical.theta;
         this.distance = spherical.radius;
@@ -282,9 +296,9 @@ class InnerViewControls {
         this.phi = THREE.Math.degToRad(this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
         // 球坐标系与直角坐标系的转换
-        this.camera.position.x = this.distance * Math.sin(this.phi) * Math.sin(this.theta);
-        this.camera.position.y = this.distance * Math.cos(this.phi);
-        this.camera.position.z = this.distance * Math.sin(this.phi) * Math.cos(this.theta);
+        this.camera.position.x = this.focus.x + this.distance * Math.sin(this.phi) * Math.sin(this.theta);
+        this.camera.position.y = this.focus.y + this.distance * Math.cos(this.phi);
+        this.camera.position.z = this.focus.z + this.distance * Math.sin(this.phi) * Math.cos(this.theta);
     }
 
     autoRotate = () => {

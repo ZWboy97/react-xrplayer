@@ -2,12 +2,12 @@
     "camera_fov": 100,
     "auto_rotate_speed": 1.0,
     "enable_auto_rotate": false,
-    "volume": 90,
+    "volume": 0.9,
     "muted": true,
     "res_urls": [
         {
-            "type": "hls",
-            "res_url": "https://cache2.utovr.com/7c74396d99b247eab358a3b93d784c85/L2_m420in607jbt3xjy.m3u8",
+            "type": "image",
+            "res_url": "https://live360bucket.oss-cn-beijing.aliyuncs.com/vrresource/pano_pic_test.jpg",
             "panoramic_type": "360",
             "radius": 500
         }
@@ -185,16 +185,16 @@
         "color": "0xffffff",
         "sizeAttenuation": true
     },
-    "cameraAnimationList": [
+    "auto_guide_list": [
         {
             "key": "zhong_shan_ji_nian_tang",
-            "pos0": {
-                "lat": 0,
+            "start": {
+                "lat": 90,
                 "lon": -15,
                 "fov": 90
             },
-            "pos1": {
-                "lat": 21,
+            "end": {
+                "lat": 69,
                 "lon": 110,
                 "fov": 58
             },
@@ -203,13 +203,13 @@
         },
         {
             "key": "ling_ze_xu",
-            "pos0": {
-                "lat": 21,
+            "start": {
+                "lat": 69,
                 "lon": 110,
                 "fov": 58
             },
-            "pos1": {
-                "lat": -15,
+            "end": {
+                "lat": 105,
                 "lon": 110,
                 "fov": 58
             },
@@ -218,13 +218,13 @@
         },
         {
             "key": "ma_qiu_chang",
-            "pos0": {
-                "lat": -15,
+            "start": {
+                "lat": 105,
                 "lon": 110,
                 "fov": 58
             },
-            "pos1": {
-                "lat": -10,
+            "end": {
+                "lat": 100,
                 "lon": 137,
                 "fov": 38
             },
@@ -233,13 +233,13 @@
         },
         {
             "key": "ren_shou_tang",
-            "pos0": {
-                "lat": -10,
+            "start": {
+                "lat": 100,
                 "lon": 137,
                 "fov": 38
             },
-            "pos1": {
-                "lat": -10,
+            "end": {
+                "lat": 100,
                 "lon": 180,
                 "fov": 70
             },
@@ -248,13 +248,13 @@
         },
         {
             "key": "ou_ye_chi",
-            "pos0": {
-                "lat": -10,
+            "start": {
+                "lat": 100,
                 "lon": 180,
                 "fov": 70
             },
-            "pos1": {
-                "lat": -1.5,
+            "end": {
+                "lat": 91.5,
                 "lon": 206,
                 "fov": 80
             },
@@ -263,13 +263,13 @@
         },
         {
             "key": "zhong_shan_she_qu",
-            "pos0": {
-                "lat": -1.5,
+            "start": {
+                "lat": 91.5,
                 "lon": 206,
                 "fov": 80
             },
-            "pos1": {
-                "lat": 0,
+            "end": {
+                "lat": 90,
                 "lon": -15,
                 "fov": 90
             },

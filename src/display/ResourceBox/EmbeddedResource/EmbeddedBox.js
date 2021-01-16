@@ -14,6 +14,8 @@ class EmbeddedBox {
         this.meshReady = false;
         this.showTypeChangable = false;
         this.showType = 'embed';
+        this.distance = 500;
+        this.focus = new THREE.Vector3(0, 0, 0);
 
         this.dragging2d = false;
         this.startX = 0;
@@ -31,6 +33,17 @@ class EmbeddedBox {
             this.planeMesh.position.set(pos.x, pos.y, pos.z);
             this.planeMesh.lookAt(0, 0, 0);
         }
+    }
+
+    setXYZ = (x, y, z) => {
+        this.planeMesh.position.set(x, y, z);
+        this.planeMesh.lookAt(this.focus);
+    }
+
+    setFocus = (focus) => {
+        this.focus.x = focus.x;
+        this.focus.y = focus.y;
+        this.focus.z = focus.z;
     }
 
     getPosition = () => {
@@ -126,9 +139,10 @@ class EmbeddedBox {
         this.canvas.style.left = "50px";
         this.canvas.style.top = "100px";
         this.canvas.style.transform = "scale("+this.scale2DX+","+this.scale2DY+")";
-        // document.body.appendChild(this.canvas)
+
         let sup = this;
         this.canvas.onMouseDown = (event) => {
+            this.callback && this.callback();
             if (sup.draggable === false) return;
             sup.dragging2d = true;
             sup.startX = event.clientX;
@@ -184,9 +198,9 @@ class EmbeddedBox {
         let phi = THREE.Math.degToRad(lat);
         let theta = THREE.Math.degToRad(lon);
         return new THREE.Vector3(
-            500 * Math.sin(phi) * Math.sin(theta),
-            500 * Math.cos(phi),
-            500 * Math.sin(phi) * Math.cos(theta)
+            this.distance * Math.sin(phi) * Math.sin(theta),
+            this.distance * Math.cos(phi),
+            this.distance * Math.sin(phi) * Math.cos(theta)
         );
     };
 

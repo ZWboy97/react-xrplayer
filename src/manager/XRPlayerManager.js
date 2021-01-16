@@ -196,7 +196,7 @@ class XRPlayerManager {
      * @function
      * @name XRPlayerManager#loadConfig
      * @description 从一个配置对象中初始化整个场景
-     * @param {object}} config 
+     * @param {object} config
      */
     loadConfig = (config) => {
         this.senceConfig = config;
@@ -627,8 +627,8 @@ class XRPlayerManager {
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         let phi = spherical.phi;
         let theta = spherical.theta;
-        let lon = 90 - THREE.Math.radToDeg(theta);
-        let lat = 90 - THREE.Math.radToDeg(phi);
+        let lon = THREE.Math.radToDeg(theta);
+        let lat = THREE.Math.radToDeg(phi);
         textBox.setPosition(lat, lon);
         return textBox;
     }
@@ -640,8 +640,8 @@ class XRPlayerManager {
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         let phi = spherical.phi;
         let theta = spherical.theta;
-        let lon = 90 - THREE.Math.radToDeg(theta);
-        let lat = 90 - THREE.Math.radToDeg(phi);
+        let lon = THREE.Math.radToDeg(theta);
+        let lat = THREE.Math.radToDeg(phi);
         textBox.setPosition(lat, lon);
         return textBox;
     }
@@ -653,8 +653,8 @@ class XRPlayerManager {
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         let phi = spherical.phi;
         let theta = spherical.theta;
-        let lon = 90 - THREE.Math.radToDeg(theta);
-        let lat = 90 - THREE.Math.radToDeg(phi);
+        let lon = THREE.Math.radToDeg(theta);
+        let lat = THREE.Math.radToDeg(phi);
         textBox.setPosition(lat, lon);
         return textBox;
     }
@@ -841,7 +841,7 @@ class XRPlayerManager {
             cameraTweens.push(animation);
         });
         var cameraTweenGroup = new CameraTweenGroup(cameraTweens,
-            100, this.innerViewControls);
+            500, this.innerViewControls);
         cameraTweenGroup.onCameraAnimationEnded = (key) => {
             this.onCameraAnimationEnded &&
                 this.onCameraAnimationEnded(key);
@@ -859,8 +859,8 @@ class XRPlayerManager {
         return cameraTweenGroup;
     }
 
-    createCameraAnimation = (params) => {  //因为存在入场动画，导致设置相机动画时distance是450，这里直接改为100
-        var cameraTween = new CameraTween(params, this.camera, 100,
+    createCameraAnimation = (params) => {
+        var cameraTween = new CameraTween(params, this.camera, 500,
             this.innerViewControls, this.cameraTweenStatus);
         cameraTween.key = params.key;
         return cameraTween;
@@ -943,11 +943,11 @@ class XRPlayerManager {
 
     spherical2Cartesian = (lat, lon, distance) => {
         let pos = { x: 0, y: 0, z: 0 };
-        const phi = THREE.Math.degToRad(90 - lat);
+        const phi = THREE.Math.degToRad(lat);
         const theta = THREE.Math.degToRad(lon);
-        pos.x = distance * Math.sin(phi) * Math.cos(theta);
+        pos.x = distance * Math.sin(phi) * Math.sin(theta);
         pos.y = distance * Math.cos(phi);
-        pos.z = distance * Math.sin(phi) * Math.sin(theta);
+        pos.z = distance * Math.sin(phi) * Math.cos(theta);
         return pos;
     }
 }

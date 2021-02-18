@@ -1,7 +1,7 @@
 # XRPlayer XR全景互动直播React组件
 ![](https://img.shields.io/npm/v/react-xrplayer.svg)
 ![downloads](https://img.shields.io/npm/dt/react-xrplayer.svg)
-![profileviews](https://windard-visitor-badge.glitch.me/badge?page_id=zwboy97.github.profile)
+![visitor](https://page-views.glitch.me/badge?page_id=zwboy97.github.profile)
 ![](https://img.shields.io/npm/l/express.svg)
 ![](https://img.shields.io/badge/language-javascript-yellow.svg)
 ![](https://img.shields.io/badge/support-chrome-lightgrey.svg)

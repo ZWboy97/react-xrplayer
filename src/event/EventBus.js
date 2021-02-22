@@ -96,7 +96,7 @@ class EventBus {
 
         if (payload.hasOwnProperty('type')) throw new Error('\'type\' is a reserved word for event dispatching');
 
-        payload.type = type;
+        // payload.type = type;
 
         this.handlers[type] = this.handlers[type].filter((item) => item);
         this.handlers[type].forEach(handler => handler && handler.callback.call(handler.scope, payload));

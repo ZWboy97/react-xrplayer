@@ -3,7 +3,8 @@
  */
 
 const EVENT_SENCE_RES_READY = 'event_sence_res_ready';  //全景背景资源准备完成
-
+const EVENT_POP_EFFECT_PANEL = 'event_pop_effect_panel';    //弹出弹窗
 export default {
-    EVENT_SENCE_RES_READY
+    EVENT_SENCE_RES_READY,
+    EVENT_POP_EFFECT_PANEL
 };

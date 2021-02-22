@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { Radius } from '../const/PanoConst';
 import TWEEN from '@tweenjs/tween.js';
+import EventBus from "../event/EventBus";
 
 class SpriteShapeHelper {
 
@@ -16,11 +17,36 @@ class SpriteShapeHelper {
         this.hotSpotMap = null;     // 热点标签数据
         this.hotSpotMeshMap = null; // 热点标签Mesh Map，便于动态缩减
         this.pointGroup = null;     // 场景中的热点组合
+        this.eventMap = null;       // 热点事件
 
         this.objectClickHandler = null;
         this.tagClickHandler = null;
         this.isTipVisible = true;
         this.hotSpotClickable = true;
+
+        this.initHandler();
+    }
+
+    initHandler = () => {
+        this.objectClickHandler = (intersects) => {
+            const key = intersects[0].object.name;
+            if (this.hotSpotMap && this.hotSpotMap.has(key)) {
+                let hotSpot = this.hotSpotMap.get(key);
+                let event = hotSpot.event;
+                if (event) {
+                    EventBus.trigger(event.type, event.props);
+                }
+            }
+        };
+        this.tagClickHandler = (key) => {
+            if (this.hotSpotMap && this.hotSpotMap.has(key)) {
+                let hotSpot = this.hotSpotMap.get(key);
+                let event = hotSpot.event;
+                if (event) {
+                    EventBus.trigger(event.type, event.props);
+                }
+            }
+        }
     }
 
     setIsTipVisible = (enable) => {
@@ -63,18 +89,39 @@ class SpriteShapeHelper {
 
     setHotSpotList = (hot_spot_list) => {
         this.resetHotSpotGroup();
-        this.hotSpotMap = new Map(hot_spot_list);
+        this.hotSpotMap = new Map();
+        // this.eventMap = new Map();
+        hot_spot_list.forEach((spot) => {
+            this.hotSpotMap.set(spot.key, spot.props);
+        });
         this.hotSpotMap.forEach((value, key) => {
             this.createPoint(key, value)
         });
     }
 
-    addHotSpot = (hot_spot) => {
+    // setEventList = (eventList) => {
+    //     this.eventMap = new Map(eventList);
+    //     console.log('event_map')
+    //     console.log(this.eventMap)
+    // }
+
+    addHotSpot = (hot_spot, event) => {
         if (!this.pointGroup) {
             this.resetHotSpotGroup();
         }
-        this.createPoint(hot_spot.key, hot_spot.value)
+        this.hotSpotMap || (this.hotSpotMap = new Map());
+        if (!!!hot_spot.value) return false;
+        hot_spot.value.event = event;
+        this.hotSpotMap.set(hot_spot.key, hot_spot.value);
+        this.createPoint(hot_spot.key, hot_spot.value);
+        return true;
     }
+
+    // addEvent = (event) => {
+    //     if (event && !this.eventMap.has(event.key)) {
+    //         this.eventMap.set(event.key, event.value);
+    //     }
+    // }
 
     /**
      * 清空场景中的所有热点标签
@@ -89,6 +136,7 @@ class SpriteShapeHelper {
                 this.container.removeChild(div);
             }
         });
+        this.hotSpotMap = new Map();
     }
 
     removeHotSpot = (hot_spot_key) => {
@@ -96,9 +144,25 @@ class SpriteShapeHelper {
         if (mesh) {
             this.pointGroup.remove(mesh);
         }
+        this.hotSpotMap.delete(hot_spot_key);
+        this.hotSpotMap && (this.hotSpotMap.delete(hot_spot_key));
     }
 
-    contertSph2Rect = (lat, lon) => {
+    /**
+     * @function
+     * @name SpriteShapeHelper#exportConfig
+     * @description 导出热点标签配置信息
+     */
+    exportConfig = () => {
+        if (!!!this.hotSpotMap) return [];
+        let config = [];
+        this.hotSpotMap.forEach((value, key) => {
+            config.push({key: key, props: value});
+        });
+        return config;
+    }
+
+    convertSph2Rect = (lat, lon) => {
         let r = Radius;
         const phi = THREE.Math.degToRad(lat);
         const theta = THREE.Math.degToRad(lon);
@@ -113,7 +177,7 @@ class SpriteShapeHelper {
         let { lat, lon, res_url, opacity = 1, scale = 16,
             animate = false, title = null, img_url = null,
             img_height = 100, img_width = 100, title_width } = value;
-        let position = this.contertSph2Rect(lat, lon);
+        let position = this.convertSph2Rect(lat, lon);
         let meshGroup = new THREE.Group();
         meshGroup.name = key;
         meshGroup.position.set(...position);
@@ -309,12 +373,12 @@ class SpriteShapeHelper {
         const container = document.getElementById('xr-container')
         container.addEventListener('click', (event) => {
             event.preventDefault();
-            console.log('检测热点点击');
+            // console.log('检测热点点击');
             var intersects = this.getIntersects(event);
             //如果只需要将第一个触发事件，那就取数组的第一个模型
             if (intersects.length > 0) {
                 if (this.objectClickHandler) {
-                    console.log('intersects', intersects);
+                    // console.log('intersects', intersects);
                     this.objectClickHandler(intersects);
                 }
             }

@@ -39,13 +39,13 @@ class XRPlayerManager {
         this.handler = handler;
 
         this.scene = null;
+        this.radius = null;
         this.sceneMesh = null;
         this.camera = null;
         this.renderer = null;
         this.controls = null;
         this.sceneContainer = null; // 全景背景挂载节点
         this.sceneTextureHelper = null; //全景场景纹理加载控制器
-
 
         this.innerViewControls = null;
         this.spriteShapeHelper = null;
@@ -68,7 +68,9 @@ class XRPlayerManager {
             num: 0,
             paused: false
         };
-        this.cameraTweenGroup = null;
+        this.playingCameraTweenGroup = null;
+        this.creatingDirectors = [];
+        this.directorDurations = [];
 
         this.onCameraAnimationEnded = null;
 
@@ -111,6 +113,7 @@ class XRPlayerManager {
             axes_helper_display: isAxesHelperDisplay,
         } = this.props;
         const { panoramic_type = '360', radius = 500, height = 1000 } = textureResource;
+        this.radius = radius;
         this.sceneContainer = document.getElementById('video');
         let geometry;
         if (panoramic_type === '180') {
@@ -222,9 +225,8 @@ class XRPlayerManager {
         if (config.hasOwnProperty('muted')) {
             this.setGlobalMuted(config.muted);
         }
-        if (config.hasOwnProperty('hot_spot_list')
-            && config.hasOwnProperty('event_list')) {
-            this.setHotSpots(config.hot_spot_list, config.event_list);
+        if (config.hasOwnProperty('hot_spot_list')) {
+            this.setHotSpots(config.hot_spot_list);
         }
         if (config.hasOwnProperty('particle_effect')) {
             this.setParticleEffectRes(config.particle_effect);
@@ -255,8 +257,9 @@ class XRPlayerManager {
         // TODO 需要从状态中读取,即需要解决一致性问题
         config.volume = this.senceConfig.volume;
         config.muted = this.senceConfig.muted;
-        config.hot_spot_list = this.senceConfig.hot_spot_list;
-        config.event_list = this.senceConfig.event_list;
+
+        config.hot_spot_list = this.spriteShapeHelper.exportConfig();
+
         config.model_list = this.senceConfig.model_list;
         config.particle_effect = this.senceConfig.particle_effect;
         config.auto_guide_list = this.senceConfig.auto_guide_list;
@@ -347,36 +350,20 @@ class XRPlayerManager {
     /****************************热点标签相关控制接口************************* */
     resetHotSpotsData = () => {
         if (!this.spriteShapeHelper) {
-            this.spriteEventList = new Map();
             this.spriteShapeHelper = new SpriteShapeHelper(this.scene,
                 this.camera, this.renderer, this.mount);
         } else {
-            this.spriteEventList.clear();
+            this.spriteShapeHelper.resetHotSpotGroup();
         }
     }
 
-    setHotSpots = (hot_spot_list, event_list) => {
+    setHotSpots = (hot_spot_list) => {
         this.resetHotSpotsData();
-        this.spriteEventList = new Map(event_list);
         this.spriteShapeHelper.setHotSpotList(hot_spot_list);
-        this.spriteShapeHelper.objectClickHandler = (intersects) => {
-            const key = intersects[0].object.name;
-            this.emitEvent(key, () => {
-                this.closeEffectContainer();
-            })
-        }
-        this.spriteShapeHelper.tagClickHandler = (key) => {
-            this.emitEvent(key, () => {
-                this.closeEffectContainer();
-            })
-        }
     }
 
     addHotSpot = (hot_spot, event) => {
-        this.spriteShapeHelper.addHotSpot(hot_spot);
-        if (event != null && !this.spriteEventList.has(event.key)) {
-            this.spriteEventList.set(event.key, event.value);
-        }
+        return this.spriteShapeHelper.addHotSpot(hot_spot, event);
     }
 
     removeHotSpot = (hot_spot_key) => {
@@ -463,9 +450,9 @@ class XRPlayerManager {
     /**
      * @function
      * @name XRPlayerManager#moveCameraTo
-     * @param {*} descPos 相机目标位置，采用lat，lon表示
+     * @param {*} endPos 相机目标位置，采用lat，lon表示
      * @param {function} onStart 移动开始事件回调
-     * @param {functon} onEnd 移动结束事件回调
+     * @param {function} onEnd 移动结束事件回调
      * @param {number} duration 相机移动动画的持续时长
      * @param {number} delay 相机动画延迟启动时长
      */
@@ -622,7 +609,7 @@ class XRPlayerManager {
     simpleCreateTextBox = (boxId) => { //在相机聚焦位置创建一个初始文本框
         let textBox = new EmbeddedTextBox(boxId);
         textBox.setText('简易文本框');
-        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-this.radius);
         const spherical = new THREE.Spherical();
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         let phi = spherical.phi;
@@ -635,7 +622,7 @@ class XRPlayerManager {
 
     simpleCreateImageBox = (boxId) => { //在相机聚焦位置创建一个初始图片框
         let textBox = new EmbeddedImageBox(boxId);
-        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-this.radius);
         const spherical = new THREE.Spherical();
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         let phi = spherical.phi;
@@ -648,7 +635,7 @@ class XRPlayerManager {
 
     simpleCreateVideoBox = (boxId) => { //在相机聚焦位置创建一个初始视频框
         let textBox = new EmbeddedVideoBox(boxId);
-        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-500);
+        let position = this.getCameraPosition().clone().normalize().multiplyScalar(-this.radius);
         const spherical = new THREE.Spherical();
         spherical.setFromCartesianCoords(position.x, position.y, position.z);
         let phi = spherical.phi;
@@ -810,18 +797,21 @@ class XRPlayerManager {
         2.  stop或自动结束之后再调用start重播
     params的格式:
     {
-        pos0, pos1, duration,           必需
+        start, end, duration,           必需
         easing, callback                非必需（easing是速度变化的方式，详见https://www.createjs.com/docs/tweenjs/classes/Ease.html）
     }
-    pos0、pos1的格式
+    start、end的格式
     {
         lat, lon,                       必需
-        fov                             非必需
+        fov,                            非必需
+        distance                        非必需
     }或
     {
         x, y, z,                        必需
-        fov                             非必需
+        fov,                            非必需
+        distance                        非必需
     }
+    可加入自定义的变量，并通过设置onUpdate使用这些变量
     */
     getCameraAnimationList = () => {
         if (this.senceConfig && this.senceConfig.hasOwnProperty('auto_guide_list')) {
@@ -841,7 +831,7 @@ class XRPlayerManager {
             cameraTweens.push(animation);
         });
         var cameraTweenGroup = new CameraTweenGroup(cameraTweens,
-            500, this.innerViewControls);
+            this.radius, this.innerViewControls);
         cameraTweenGroup.onCameraAnimationEnded = (key) => {
             this.onCameraAnimationEnded &&
                 this.onCameraAnimationEnded(key);
@@ -855,59 +845,168 @@ class XRPlayerManager {
             this.onCameraAnimationStop &&
                 this.onCameraAnimationStop(key);
         }
-        this.cameraTweenGroup = cameraTweenGroup;
+        this.playingCameraTweenGroup = cameraTweenGroup;
         return cameraTweenGroup;
     }
 
     createCameraAnimation = (params) => {
-        var cameraTween = new CameraTween(params, this.camera, 500,
+        var cameraTween = new CameraTween(params, this.camera, this.radius,
             this.innerViewControls, this.cameraTweenStatus);
         cameraTween.key = params.key;
         return cameraTween;
     }
 
     setCameraTweenGroup = (cameraTweenGroup) => {
-        this.cameraTweenGroup = cameraTweenGroup;
+        this.playingCameraTweenGroup = cameraTweenGroup;
     }
 
     getCameraTweenGroup = () => {
-        return this.cameraTweenGroup;
+        return this.playingCameraTweenGroup;
     }
 
     startCameraTweenGroup = (time) => {
-        if (!this.cameraTweenGroup) {
+        if (!this.playingCameraTweenGroup) {
             return;
         }
         if (!!!time) {
-            this.cameraTweenGroup.start();
+            this.playingCameraTweenGroup.start();
         }
         else {
-            this.cameraTweenGroup.start(time);
+            this.playingCameraTweenGroup.start(time);
         }
     }
 
     stopCameraTweenGroup = () => {
-        this.cameraTweenGroup && this.cameraTweenGroup.stop();
+        this.playingCameraTweenGroup && this.playingCameraTweenGroup.stop();
     }
 
     pauseCameraTweenGroup = () => {
-        this.cameraTweenGroup && this.cameraTweenGroup.pause();
+        this.playingCameraTweenGroup && this.playingCameraTweenGroup.pause();
     }
 
     playCameraTweenGroup = () => {
-        this.cameraTweenGroup && this.cameraTweenGroup.play();
+        this.playingCameraTweenGroup && this.playingCameraTweenGroup.play();
     }
 
     nextCameraTween = () => {
-        this.cameraTweenGroup && this.cameraTweenGroup.next();
+        this.playingCameraTweenGroup && this.playingCameraTweenGroup.next();
     }
 
     enableCameraTweenGroupAutoNext = (enable) => {
-        this.cameraTweenGroup.enableAutoNext(enable);
+        this.playingCameraTweenGroup.enableAutoNext(enable);
     }
 
     enableCameraTweenGroupLoop = (enable) => {
-        this.cameraTweenGroup.enableLoop(enable);
+        this.playingCameraTweenGroup.enableLoop(enable);
+    }
+
+    /****************************相机动画接口对接***********************************/
+    /**
+     * @description 选取当前位置为新的导览点并命名，并选择和上一个导览点的时间差（第一个点可忽略）
+     */
+    pickDirector = (name, duration=5000) => {
+        let pos = this.getCameraLatLon();
+        let fov = this.getCameraFov();
+        this.creatingDirectors.push({lat: pos.lat, lon: pos.lon, fov: fov, distance: this.radius, name: name});
+        this.directorDurations.push(duration);
+    }
+
+    /**
+     * @description 根据序号设置之前的导览点（从0开始），成功返回0，序号越界返回-1。
+     * @param {int} index 序号
+     * @param {Object} params 目标样式，包含lat, lon, fov, distance, name,不变的话可以不加进去
+     */
+    setDirector = (index, params) => {
+        if (index >= this.creatingDirectors.length) {
+            return -1;//序号越界
+        }
+        Object.assign(this.creatingDirectors[index], params);
+        return 0;
+    }
+
+    /**
+     * @description 返回导览点名字的序列
+     */
+    getDirectorNames = () => {
+        let names = [];
+        if (!!!this.playingCameraTweenGroup) {
+            return names;
+        }
+        this.playingCameraTweenGroup.cameraTweens.forEach((cameraTween) => {
+            let name = null;
+            if (cameraTween.pos0.hasOwnProperty('name')) {
+                name = cameraTween.pos0.name;
+            }
+            names.push(name);
+        });
+        const l = this.playingCameraTweenGroup.cameraTweens.length;
+        if (l > 1) {
+            let name = null;
+            if (this.playingCameraTweenGroup.cameraTweens[l - 1].pos1.hasOwnProperty('name')) {
+                name = this.playingCameraTweenGroup.cameraTweens[l - 1].pos1.name;
+            }
+            names.push(name);
+        }
+        return names;
+    }
+
+    /**
+     * @description 根据序号删除指定导览点，成功返回0，序号越界返回-1。
+     * @param {int} index 序号
+     */
+    deleteDirector = (index) => {
+        if (index >= this.creatingDirectors.length) {
+            return -1;//序号越界
+        }
+        this.creatingDirectors.splice(index, 1);
+        this.directorDurations.splice(index, 1);
+        return 0;
+    }
+
+    /**
+     * @description 清空所有导览点。
+     */
+    clearDirector = () => {
+        this.creatingDirectors = [];
+        return 0;
+    }
+
+    /**
+     * @description 根据当前选择的点创建演示序列。
+     */
+    createDemonstrateCameraTween = () => {
+        let tweenList = [];
+        if (this.creatingDirectors.length === 0) {//没有点
+            this.playingCameraTweenGroup = null;
+            return;
+        }
+        else if (this.creatingDirectors.length === 1) {//只有一个点
+            let oldPos = {}, newPos = {};
+            Object.assign(oldPos, this.creatingDirectors[0]);
+            Object.assign(newPos, this.creatingDirectors[0]);
+            tweenList.push(this.createCameraAnimation({
+                start: oldPos,
+                end: newPos,
+                duration: 1,
+                easing: "InOut"
+            }));
+        }
+        else {//有多个点
+            for (let i = 1; i < this.creatingDirectors.length; i++)
+            {
+                let oldPos = {}, newPos = {};
+                Object.assign(oldPos, this.creatingDirectors[i - 1]);
+                Object.assign(newPos, this.creatingDirectors[i]);
+                tweenList.push(this.createCameraAnimation({
+                    start: oldPos,
+                    end: newPos,
+                    duration: this.directorDurations[i],
+                    easing: "InOut"
+                }));
+            }
+        }
+        this.playingCameraTweenGroup = new CameraTweenGroup(tweenList,
+            this.radius, this.innerViewControls);
     }
 
     /**

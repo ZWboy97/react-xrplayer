@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
+import EventBus from "../event/EventBus";
+import Events from "../event/Events";
 
 class CameraTween {
     constructor(tweenParams, camera, cameraDistance, cameraControl) {
@@ -20,9 +22,6 @@ class CameraTween {
         this.reset = cameraControl.initSphericalData;        //动画结束后视角停在结束的位置，不会回到之前的位置
         this.started = false;               //在start之后stop之前调用start会导致不会调用onStop，无法使用相机控制
 
-        this.startTime = 0;
-        this.endTime = 0;
-
         this.posType = 0;                   // 0 表示都不用， 1 采用xyz， 2 采用经纬度
         this.fovChange = false;             //是否涉及fov的改变
         this.disChange = false;             //是否涉及distance的改变
@@ -30,6 +29,9 @@ class CameraTween {
         this.onCameraAnimationEnded = null; // 动画结束后回调
         this.onCameraAnimationStop = null;
         this.onCameraAnimationStart = null;
+
+        this.completeEventParams = null;
+
         this.init(tweenParams);
     }
 
@@ -38,6 +40,8 @@ class CameraTween {
         this.easing = params.easing;
         this.pos0 = {};
         this.pos1 = {};
+        this.completeEventParams = {};
+        Object.assign(this.completeEventParams, params.complete_event)
         Object.assign(this.pos0, params.start);
         Object.assign(this.pos1, params.end);
         this.tween = new TWEEN.Tween(this.pos0).to(this.pos1, params.duration);
@@ -52,6 +56,9 @@ class CameraTween {
                 this.onCameraAnimationEnded(this.key);
             this.reset();
             this.started = false;
+            if (this.completeEventParams.type && this.completeEventParams.props) {
+                EventBus.trigger(this.completeEventParams.type, this.completeEventParams.props);
+            }
         });
         this.tween.onStop(() => {
             this.onCameraAnimationStop &&
@@ -102,6 +109,10 @@ class CameraTween {
             }
             cameraTween.camera.lookAt(cameraTween.camera.target);
         });
+    }
+
+    setCompleteEvent = (params) => {
+        this.completeEventParams = params;
     }
 
     setFocus = (focus) => {

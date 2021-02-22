@@ -24,9 +24,9 @@
         ]
     ],
     "hot_spot_list": [
-        [
-            "zhong_shan_she_qu",
-            {
+        {
+            "key": "zhong_shan_she_qu",
+            "props": {
                 "lat": 140,
                 "lon": -40,
                 "position": "top",
@@ -36,12 +36,25 @@
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_she_qu.jpg",
                 "img_height": 100,
-                "img_width": 150
+                "img_width": 150,
+                "event": {
+                    "type": "event_pop_effect_panel",
+                    "props": {
+                        "name": "image",
+                        "props": {
+                            "data": {
+                                "type": "image",
+                                "imageUrl": "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+                                "jumpUrl": "http://www.youmuvideo.com"
+                            }
+                        }
+                    }
+                }
             }
-        ],
-        [
-            "zhong_shan_ji_nian_tang",
-            {
+        },
+        {
+            "key": "zhong_shan_ji_nian_tang",
+            "props": {
                 "lat": 310,
                 "lon": -60,
                 "animate": true,
@@ -50,12 +63,24 @@
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/zhong_shan_ji_nian_tang.jpg",
                 "img_height": 100,
-                "img_width": 150
+                "img_width": 150,
+                "event": {
+                    "type": "event_pop_effect_panel",
+                    "props": {
+                        "name": "video",
+                        "props": {
+                            "data": {
+                                "type": "video",
+                                "videoUrl": "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4"
+                            }
+                        }
+                    }
+                }
             }
-        ],
-        [
-            "ling_ze_xu",
-            {
+        },
+        {
+            "key": "ling_ze_xu",
+            "props": {
                 "lat": 305,
                 "lon": 55,
                 "animate": true,
@@ -65,12 +90,24 @@
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/lin_ze_xu_chu_sheng_di.jpg",
                 "img_height": 100,
-                "img_width": 150
+                "img_width": 150,
+                "event": {
+                    "type": "event_pop_effect_panel",
+                    "props": {
+                        "name": "infocard",
+                        "props": {
+                            "data": {
+                                "type": "infocard",
+                                "iframeUrl": "https://gs.ctrip.com/html5/you/place/14.html"
+                            }
+                        }
+                    }
+                }
             }
-        ],
-        [
-            "ma_qiu_chang",
-            {
+        },
+        {
+            "key": "ma_qiu_chang",
+            "props": {
                 "lat": 320,
                 "lon": 20,
                 "animate": true,
@@ -79,12 +116,31 @@
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/tang_dai_ma_qiu_chang_yi_zhi.jpg",
                 "img_height": 100,
-                "img_width": 150
+                "img_width": 150,
+                "event": {
+                    "type": "event_pop_effect_panel",
+                    "props": {
+                        "name": "alpha_video",
+                        "props": {
+                            "data": {
+                                "id": "video",
+                                "type": "alpha_video",
+                                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
+                                "width": "60vw",
+                                "height": "60vw",
+                                "enableClose": true,
+                                "margin": "auto auto",
+                                "videoMuted": false,
+                                "enableMask": true
+                            }
+                        }
+                    }
+                }
             }
-        ],
-        [
-            "ren_shou_tang",
-            {
+        },
+        {
+            "key": "ren_shou_tang",
+            "props": {
                 "lat": 360,
                 "lon": 20,
                 "animate": true,
@@ -93,12 +149,31 @@
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.jpg",
                 "img_height": 100,
-                "img_width": 150
+                "img_width": 150,
+                "event": {
+                    "type": "event_pop_effect_panel",
+                    "props": {
+                        "name": "alpha_video",
+                        "props": {
+                            "data": {
+                                "id": "video",
+                                "type": "alpha_video",
+                                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
+                                "width": "60vw",
+                                "height": "60vw",
+                                "enableClose": true,
+                                "margin": "auto auto",
+                                "videoMuted": false,
+                                "enableMask": true
+                            }
+                        }
+                    }
+                }
             }
-        ],
-        [
-            "ou_ye_chi",
-            {
+        },
+        {
+            "key": "ou_ye_chi",
+            "props": {
                 "lat": 410,
                 "lon": 40,
                 "animate": true,
@@ -108,75 +183,28 @@
                 "res_url": "https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png",
                 "img_url": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ou_ye_chi_yi_zhi.jpg",
                 "img_height": 100,
-                "img_width": 150
+                "img_width": 150,
+                "event": {
+                    "type": "event_pop_effect_panel",
+                    "props": {
+                        "name": "alpha_video",
+                        "props": {
+                            "data": {
+                                "id": "video",
+                                "type": "alpha_video",
+                                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
+                                "width": "60vw",
+                                "height": "60vw",
+                                "enableClose": true,
+                                "margin": "auto auto",
+                                "videoMuted": false,
+                                "enableMask": true
+                            }
+                        }
+                    }
+                }
             }
-        ]
-    ],
-    "event_list": [
-        [
-            "zhong_shan_she_qu",
-            {
-                "type": "image",
-                "imageUrl": "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
-                "jumpUrl": "http://www.youmuvideo.com"
-            }
-        ],
-        [
-            "zhong_shan_ji_nian_tang",
-            {
-                "type": "video",
-                "videoUrl": "https://video-cloud-bupt.oss-cn-beijing.aliyuncs.com/hangzhou.mp4"
-            }
-        ],
-        [
-            "ling_ze_xu",
-            {
-                "type": "infocard",
-                "iframeUrl": "https://gs.ctrip.com/html5/you/place/14.html"
-            }
-        ],
-        [
-            "ma_qiu_chang",
-            {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
-            }
-        ],
-        [
-            "ou_ye_chi",
-            {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
-            }
-        ],
-        [
-            "ren_shou_tang",
-            {
-                "id": "video",
-                "type": "alpha_video",
-                "videoUrl": "https://youmucloud.oss-cn-beijing.aliyuncs.com/xr/fuzhou/ren_shou_tang.mp4",
-                "width": "60vw",
-                "height": "60vw",
-                "enableClose": true,
-                "margin": "auto auto",
-                "videoMuted": false,
-                "enableMask": true
-            }
-        ]
+        }
     ],
     "particle_effect": {
         "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/snowflake1.png",
@@ -189,26 +217,41 @@
         {
             "key": "zhong_shan_ji_nian_tang",
             "start": {
+                "name": "zhong_shan_ji_nian_tang",
                 "lat": 90,
                 "lon": -15,
                 "fov": 90
             },
             "end": {
+                "name": "ling_ze_xu",
                 "lat": 69,
                 "lon": 110,
                 "fov": 58
             },
             "duration": 5000,
-            "easing": "InOut"
+            "easing": "InOut",
+            "complete_event": {
+                "type": "event_pop_effect_panel",
+                "props": {
+                    "name": "image",
+                    "props": {"data":{
+                        "type": "image",
+                        "imageUrl": "https://pic-cloud-bupt.oss-cn-beijing.aliyuncs.com/5c882ee6443a5.jpg",
+                        "jumpUrl": "http://www.youmuvideo.com"
+                    }}
+                }
+            }
         },
         {
             "key": "ling_ze_xu",
             "start": {
+                "name": "ling_ze_xu",
                 "lat": 69,
                 "lon": 110,
                 "fov": 58
             },
             "end": {
+                "name": "ma_qiu_chang",
                 "lat": 105,
                 "lon": 110,
                 "fov": 58
@@ -219,11 +262,13 @@
         {
             "key": "ma_qiu_chang",
             "start": {
+                "name": "ma_qiu_chang",
                 "lat": 105,
                 "lon": 110,
                 "fov": 58
             },
             "end": {
+                "name": "ren_shou_tang",
                 "lat": 100,
                 "lon": 137,
                 "fov": 38
@@ -234,11 +279,13 @@
         {
             "key": "ren_shou_tang",
             "start": {
+                "name": "ren_shou_tang",
                 "lat": 100,
                 "lon": 137,
                 "fov": 38
             },
             "end": {
+                "name": "ou_ye_chi",
                 "lat": 100,
                 "lon": 180,
                 "fov": 70
@@ -249,11 +296,13 @@
         {
             "key": "ou_ye_chi",
             "start": {
+                "name": "ou_ye_chi",
                 "lat": 100,
                 "lon": 180,
                 "fov": 70
             },
             "end": {
+                "name": "zhong_shan_she_qu",
                 "lat": 91.5,
                 "lon": 206,
                 "fov": 80
@@ -264,11 +313,13 @@
         {
             "key": "zhong_shan_she_qu",
             "start": {
+                "name": "zhong_shan_she_qu",
                 "lat": 91.5,
                 "lon": 206,
                 "fov": 80
             },
             "end": {
+                "name": "end",
                 "lat": 90,
                 "lon": -15,
                 "fov": 90

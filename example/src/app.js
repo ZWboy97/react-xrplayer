@@ -6,6 +6,9 @@ import * as THREE from 'three';
 import EmbeddedTextBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedTextBox";
 import EmbeddedImageBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedImageBox";
 import EmbeddedVideoBox from "../../src/display/ResourceBox/EmbeddedResource/EmbeddedVideoBox";
+import EventBus from "../../src/event/EventBus";
+import Events from "../../src/event/Events";
+
 class App extends React.Component {
 
     state = {
@@ -49,7 +52,7 @@ class App extends React.Component {
         this.xrManager.setFovVerticalScope(0, 180);
         this.xrManager.enableKeyControl(true);
         this.xrManager.enableChangeFov(true);
-        this.xrManager.cameraTweenGroup.enableAutoNext(true);
+        this.xrManager.playingCameraTweenGroup.enableAutoNext(true);
         // this.onCameraAnimationSet();
     }
 
@@ -70,10 +73,10 @@ class App extends React.Component {
             }
         ]
         var cameraTweenGroup = this.xrManager.createCameraTweenGroup(animateList, true);
-        //cameraTweenGroup.enableAutoNext(true);
+        //playingCameraTweenGroup.enableAutoNext(true);
         this.xrManager.setCameraTweenGroup(cameraTweenGroup);
         // this.xrManager.onCameraAnimationEnded = (index) => {
-        //     cameraTweenGroup.next();
+        //     playingCameraTweenGroup.next();
         // }
     }
 
@@ -90,24 +93,28 @@ class App extends React.Component {
 
     onAddHotSpot = () => {
         this.xrManager.addHotSpot({
-            key: `infocard`,
+            key: 'infocard_test',
             value: {
-                lat: - 90, lon: -10,
+                lat: 90, lon: 0,
                 res_url: 'https://live360.oss-cn-beijing.aliyuncs.com/xr/icons/hotspot_video.png'
             }
         }, {
-            key: `infocard`,
-            value: {
-                id: 'infocard',
-                type: 'infocard',
-                iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+            type: "event_pop_effect_panel",
+            props: {
+                name: "infocard",
+                props: {
+                    data: {
+                        type: "infocard",
+                        iframeUrl: "https://gs.ctrip.com/html5/you/place/14.html"
+                    }
+                }
             }
-        })
+        });
         alert(`添加了一个热点标签`)
     }
 
     onRemoveHotSpot = () => {
-        this.xrManager.removeHotSpot('infocard')
+        this.xrManager.removeHotSpot('infocard_test')
         alert(`移除了一个热点标签`);
     }
 
@@ -327,31 +334,17 @@ class App extends React.Component {
     }
 
     onPickDirector = () => {
-        let pos = this.xrManager.getCameraLatLon();
-        let fov = this.xrManager.getCameraFov();
-        let startLat = 90, startLon = 180;
-        if (this.autoDisplayList.length !== 0) {
-            startLat = this.autoDisplayList[this.autoDisplayList.length - 1].end.lat;
-            startLon = this.autoDisplayList[this.autoDisplayList.length - 1].end.lon;
-        }
-        this.autoDisplayList.push({
-            start: { lat: startLat, lon: startLon, fov: 80, distance: 500 },
-            end: { lat: pos.lat, lon: pos.lon, fov: fov, distance: 500 },
-            duration: 5000, easing: TWEEN.Easing.Sinusoidal.InOut,
-        })
+        this.xrManager.pickDirector('name');
     }
 
     onStartAutoDisplay = () => {
-        var cameraTweenGroup = this.xrManager.createCameraTweenGroup(this.autoDisplayList, true);
-        this.xrManager.setCameraTweenGroup(cameraTweenGroup);
-        cameraTweenGroup.enableAutoNext(true);
-        this.xrManager.startCameraTweenGroup();
+        this.xrManager.createDemonstrateCameraTween()
     }
 
     debugFunc = () => {
-        let videoBox = this.boxManager.getEmbeddedBox('box3');
-        console.log(videoBox.getPosition())
+        console.log(this.xrManager.exportConfig());
     }
+
 
     render() {
         return (
@@ -408,12 +401,14 @@ class App extends React.Component {
                     <button onClick={() => { this.xrManager.getAudioMuted() ? this.xrManager.setAudioMuted(false) : this.xrManager.setAudioMuted(true); }}>静音/复原</button>
                     <button onClick={() => { this.xrManager.replayAudio(); }}>回到开头</button>
                     <button onClick={() => { this.xrManager.endAudio(); }}>到达结尾</button>
+                    <button onClick={this.onPickDirector}>拾取导览点</button>
+                    <button onClick={() => {this.xrManager.clearDirector();}}>清空导览点</button>
+                    <button onClick={this.onStartAutoDisplay}>创建导览序列</button>
                     <button onClick={() => { this.xrManager.startCameraTweenGroup(); }}>开始导览</button>
                     <button onClick={() => { this.xrManager.playCameraTweenGroup(); }}>播放</button>
                     <button onClick={() => { this.xrManager.pauseCameraTweenGroup() }}>暂停</button>
+                    <button onClick={() => { this.xrManager.nextCameraTween() }}>下一个</button>
                     <button onClick={() => { this.xrManager.stopCameraTweenGroup(); }}>停止</button>
-                    <button onClick={this.onPickDirector}>拾取导览点</button>
-                    <button onClick={this.onStartAutoDisplay}>开始自动导览</button>
                     <button onClick={this.debugFunc}>debug</button>
                 </div>
             </div >

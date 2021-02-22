@@ -91,6 +91,10 @@ class XRPlayer extends Component {
       let result = this.props.onEventHandler(props.type, props);
       if (result) return;
     }, this);
+    //注册弹窗事件
+    EventBus.on(Events.EVENT_POP_EFFECT_PANEL, (props) => {
+      this.eventHandler(props.name, props.props, props.callback);
+    }, this);
     window.addEventListener('resize', this.onWindowResize, false);
   }
 
